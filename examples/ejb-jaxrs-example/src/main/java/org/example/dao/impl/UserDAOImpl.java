@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 
 @Stateless
 @LocalBean
@@ -19,5 +20,10 @@ public class UserDAOImpl implements UserDAO {
     public List<User> findAll() {
         String query = "SELECT u FROM User u";
         return em.createQuery(query, User.class).getResultList();
+    }
+
+    public Optional<User> findById(String id) {
+        User user = em.find(User.class, id);
+        return Optional.ofNullable(user);
     }
 }
