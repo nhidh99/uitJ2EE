@@ -1,0 +1,94 @@
+$background-color: rgb(239, 239, 239);;
+
+.divider {
+    margin: 0 -16px !important;
+}
+
+.blockDetail {
+    background-color: white;
+}
+
+.blockLeft,
+.blockRight {
+    padding: 10px 0;
+}
+
+.blockChild {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.blockChild:last-of-type {
+    padding-top: 18px;
+}
+
+.blockRight {
+    border-left: 1px solid rgb(239, 239, 239);;
+}
+
+.productName {
+    font-size: 18px;
+    display: block;
+}
+
+.commentCount {
+    margin-left: 5px;
+    color: dodgerblue;
+    font-size: 13px;
+}
+
+.ratingIcon {
+    margin-right: 3px;
+}
+
+.currentPrice {
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.originPrice {
+    margin-left: 5px;
+    text-decoration: line-through;
+}
+
+.discountPrice {
+    margin-left: 5px;
+    font-style: italic;
+}
+
+.promotionLabel {
+    color: #454545;
+    font-weight: bold;
+    margin: 0;
+}
+
+.promotionItem {
+    margin-left: 5px;
+    margin-top: 15px;
+}
+
+.promotionImg {
+    width: 35px;
+    height: 35px;
+    display: inline-block;
+}
+
+.promotionName {
+    margin-left: 10px;
+}
+
+.quantityCol {
+    display: flex;
+    align-items: center;
+}
+
+.quantityLabel {
+    font-weight: bold;
+    width: 120px;
+    margin-right: 10px;
+}
+
+.quantityInput {
+    text-align: center;
+}
