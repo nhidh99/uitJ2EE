@@ -7,6 +7,7 @@ import {
     FaBoxes,
     FaUser,
     FaInfoCircle,
+    FaEdit,
 } from "react-icons/fa";
 import {
     Label,
@@ -17,90 +18,104 @@ import {
     Badge,
 } from "reactstrap";
 import styles from "./styles.module.scss";
-import BannerCategory from "./components/BannerCategory";
 
 class Banner extends Component {
     render() {
         return (
             <div className={styles.container}>
                 <div className={styles.banner}>
-                    <span>
-                        <div className={styles.bannerLeft}>
-                            <Link className={styles.logo} to="/">
-                                <FaLaptopCode
-                                    className={styles.icon}
-                                    color="white"
-                                    size={40}
-                                />
-                                <Label className={styles.name}>
-                                    Laptop Store
-                                </Label>
-                            </Link>
-
-                            <div className={styles.searchBar}>
-                                <InputGroup>
-                                    <InputGroupAddon addonType="prepend">
-                                        <InputGroupText>
-                                            <FaSearch />
-                                        </InputGroupText>
-                                    </InputGroupAddon>
-                                    <Input
-                                        type="text"
-                                        placeholder="Tìm kiếm..."
-                                    />
-                                </InputGroup>
-                            </div>
-                        </div>
-                    </span>
-
-                    <div className={styles.bannerRight}>
-                        <table cellspacing="10">
-                            <tbody>
-                                <tr>
-                                    <td className={styles.category}>
-                                        <BannerCategory
-                                            href="/"
-                                            icon={<FaInfoCircle />}
-                                            title="Thông tin"
-                                        />
-                                    </td>
-
-                                    <td className={styles.category}>
-                                        <BannerCategory
-                                            href="/"
-                                            icon={<FaBoxes />}
-                                            title="Đơn hàng"
-                                        />
-                                    </td>
-
-                                    <td className={styles.category}>
-                                        <BannerCategory
-                                            href="/"
-                                            icon={
-                                                <Fragment>
-                                                    <FaShoppingCart />&nbsp;
-                                                    <Badge pill className={styles.cartCount}>0</Badge>
-                                                </Fragment>
-                                            }
-                                            title="Giỏ hàng"
-                                        />
-                                    </td>
-
-                                    <td className={styles.category}>
-                                        <BannerCategory
-                                            href="/"
-                                            icon={<FaUser />}
-                                            title="Đăng nhập"
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <BannerLeft />
+                    <BannerRight />
                 </div>
             </div>
         );
     }
 }
+
+const BannerLeft = () => (
+    <div className={styles.bannerLeft}>
+        <Link className={styles.logo} to="/">
+            <FaLaptopCode className={styles.icon} color="white" size={35} />
+            <Label className={styles.name}>Laptop Store</Label>
+        </Link>
+
+        <div className={styles.searchBar}>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                        <FaSearch />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input type="text" placeholder="Tìm kiếm..." />
+            </InputGroup>
+        </div>
+    </div>
+);
+
+const BannerRight = () => (
+    <div className={styles.bannerRight}>
+        <table cellspacing="10">
+            <tbody>
+                <tr>
+                    <td className={styles.category}>
+                        <BannerCategory
+                            href="/"
+                            icon={<FaInfoCircle />}
+                            title="Thông tin"
+                        />
+                    </td>
+
+                    <td className={styles.category}>
+                        <BannerCategory
+                            href="/admin/orders"
+                            icon={<FaEdit />}
+                            title="Quản lí"
+                        />
+                    </td>
+
+                    <td className={styles.category}>
+                        <BannerCategory
+                            href="/"
+                            icon={<FaBoxes />}
+                            title="Đơn hàng"
+                        />
+                    </td>
+
+                    <td className={styles.category}>
+                        <BannerCategory
+                            href="/"
+                            icon={
+                                <Fragment>
+                                    <FaShoppingCart />
+                                    &nbsp;
+                                    <Badge pill className={styles.cartCount}>
+                                        0
+                                    </Badge>
+                                </Fragment>
+                            }
+                            title="Giỏ hàng"
+                        />
+                    </td>
+
+                    <td className={styles.category}>
+                        <BannerCategory
+                            href="/"
+                            icon={<FaUser />}
+                            title="Đăng nhập"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+);
+
+const BannerCategory = ({ href, icon, title }) => (
+    <Link to={href}>
+        <span className={styles.icon}>{icon}</span>
+        <br />
+        <Label className={styles.label}>{title}</Label>
+    </Link>
+);
 
 export default Banner;

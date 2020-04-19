@@ -1,0 +1,36 @@
+
+
+.nav {
+    justify-content: space-between;
+}
+
+.link {
+    width: 100%;
+    display: block;
+    color: inherit;
+    padding: 5px 0;
+}
+
+.item {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    border-color: inherit;
+    border-bottom: 1px solid;
+    border-color: #ddd;
+    color: #383838;
+}
+
+.item:not(:last-of-type) {
+    border-right: 1px solid;    
+    border-color: #ddd;
+}
+
+.item:hover {
+    background-color: lightgray;
+}
+
+.selected {
+    background-color: lightgray;
+}

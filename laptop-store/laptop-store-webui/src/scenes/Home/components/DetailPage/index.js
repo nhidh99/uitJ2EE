@@ -4,33 +4,34 @@ import DetailBlock from "./components/DetailBlock";
 import SuggestBlock from "./components/SuggestBlock";
 import RatingBlock from "./components/RatingBlock";
 import CommentBlock from "./components/CommentBlock";
-import AbstractBlock from "./components/AbstractBlock";
+import { Row, Label } from "reactstrap";
+import styles from './styles.module.scss'
 
 class DetailPage extends Component {
     render() {
         return (
             <Fragment>
-                <AbstractBlock
+                <ContentBlock
                     title="Thông tin sản phẩm"
                     component={<OverviewBlock />}
                 />
 
-                <AbstractBlock
+                <ContentBlock
                     title="Thông tin chi tiết"
                     component={<DetailBlock />}
                 />
 
-                <AbstractBlock
+                <ContentBlock
                     title="Sản phẩm tương tự"
                     component={<SuggestBlock />}
                 />
 
-                <AbstractBlock
+                <ContentBlock
                     title="Đánh giá sản phẩm"
                     component={<RatingBlock />}
                 />
 
-                <AbstractBlock
+                <ContentBlock
                     title="Khách hàng nhận xét"
                     component={<CommentBlock />}
                 />
@@ -38,5 +39,12 @@ class DetailPage extends Component {
         );
     }
 }
+
+const ContentBlock = ({ title, component }) => (
+    <section className={styles.section}>
+        <Label className={styles.title}>{title}</Label>
+        <Row className={styles.info}>{component}</Row>
+    </section>
+);
 
 export default DetailPage;

@@ -1,6 +1,6 @@
 .container {
     background-color: #454545;
-    padding: 8px 15px;
+    padding: 4px 15px;
     margin-bottom: 20px;
 }
 
@@ -48,4 +48,18 @@
 
 .cartCount {
     font-size: 10px !important;
+}
+
+.label {
+    color: white;
+    margin-bottom: 0 !important;
+}
+
+.label:hover {
+    cursor: pointer;
+}
+
+.icon {
+    color: white;
+    font-size: 18px;
 }
