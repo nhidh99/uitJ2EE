@@ -9,8 +9,13 @@ function App() {
 		<div>
 			<BrowserRouter>
 				<Switch>
-					<Route exact component={Home} path="/(|detail|result|user)"/>
-					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>        
+					{/* <Route exact component={Home} path="/(|detail|result)"/>
+					<Route exact component={Home} path="/user/(info|password|address)"/>
+					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>    */}
+					<Route exact component={Home} path="/(|detail|result)"/>
+					<Route exact component={Home} path="/user/(info|password|address|save-for-later)"/>
+					<Route exact component={Home} path="/user/address/(|create)"/>
+					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>       
 				</Switch>
 			</BrowserRouter>
 		</div>

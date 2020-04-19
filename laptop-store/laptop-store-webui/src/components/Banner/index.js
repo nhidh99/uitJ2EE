@@ -9,7 +9,7 @@ class Banner extends Component {
                 <Link to="/">Home Page|</Link>
                 <Link to="/result">Result Page|</Link>
                 <Link to="/detail">Detail Page|</Link>
-                <Link to="/user">User Page|</Link>
+                <Link to="/user/info">User Page|</Link>
                 <Link to="/auth/login">Login Page</Link>
             </Fragment>
         )
