@@ -10,15 +10,25 @@ function App() {
     return (
         <BrowserRouter>
             <Banner />
-            <Switch>
-                <Route exact component={Home} path="/(|detail|result|user)" />
-                <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
-                <Route
-                    exact
-                    component={Auth}
-                    path="/auth/(forgot|login|register)"
-                />
-            </Switch>
+            <div className="container">
+                <Switch>
+                    <Route
+                        exact
+                        component={Home}
+                        path="/(|detail|result|user)"
+                    />
+                    <Route
+                        exact
+                        component={Admin}
+                        path="/admin/(|products|orders|promotions)"
+                    />
+                    <Route
+                        exact
+                        component={Auth}
+                        path="/auth/(forgot|login|register)"
+                    />
+                </Switch>
+            </div>
         </BrowserRouter>
     );
 }

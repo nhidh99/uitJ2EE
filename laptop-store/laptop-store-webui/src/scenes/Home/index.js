@@ -4,19 +4,16 @@ import UserPage from "./components/UserPage";
 import ResultPage from "./components/ResultPage";
 import HomePage from "./components/HomePage";
 import DetailPage from "./components/DetailPage";
-import styles from "./styles.module.scss";
 
 class Home extends Component {
     render() {
         return (
-            <div className={styles.container}>
-                <Switch>
-                    <Route exact component={DetailPage} path="/detail" />
-                    <Route exact component={HomePage} path="/" />
-                    <Route exact component={ResultPage} path="/result" />
-                    <Route exact component={UserPage} path="/user" />
-                </Switch>
-            </div>
+            <Switch>
+                <Route exact component={DetailPage} path="/detail" />
+                <Route exact component={HomePage} path="/" />
+                <Route exact component={ResultPage} path="/result" />
+                <Route exact component={UserPage} path="/user" />
+            </Switch>
         );
     }
 }

@@ -1,7 +1,9 @@
-
-
 .nav {
     justify-content: space-between;
+    background-color: white;
+    border: 1px solid #ddd;
+    margin: 0 auto;
+    margin-bottom: 15px !important;
 }
 
 .link {
@@ -17,8 +19,6 @@
     font-size: 14px;
     font-weight: bold;
     border-color: inherit;
-    border-bottom: 1px solid;
-    border-color: #ddd;
     color: #383838;
 }
 

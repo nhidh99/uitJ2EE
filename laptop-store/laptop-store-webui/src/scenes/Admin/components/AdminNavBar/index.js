@@ -24,14 +24,14 @@ const AdminNavBar = () => (
     </Nav>
 );
 
-const AdminNavItem = ({ icon, href }) => {
+const AdminNavItem = ({ icon, href, title }) => {
     const selected = window.location.pathname === href;
     return (
         <NavItem
             className={`${styles.item} ${selected ? styles.selected : ""}`}
         >
             <Link to={href} className={styles.link}>
-                {icon} &nbsp;Khuyến mãi
+                {icon} &nbsp;{title}
             </Link>
         </NavItem>
     );

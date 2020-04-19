@@ -1,0 +1,39 @@
+.table {
+    background-color: white;
+    table-layout: fixed;
+
+    td,
+    th {
+        word-wrap: break-word;
+        text-align: center;
+    }
+}
+
+.idCol {
+    width: 15%;
+}
+
+.nameCol {
+    width: 48%;
+}
+
+td.nameCol {
+    text-align: left;
+}
+
+.priceCol {
+    width: 12%;
+}
+
+.quantityCol {
+    width: 10%;
+}
+
+.actionCol {
+    width: 15%;
+}
+
+.modal {
+    min-width: 1000px !important;
+    max-width: 1000px !important;
+}

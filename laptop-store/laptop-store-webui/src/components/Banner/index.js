@@ -57,53 +57,43 @@ const BannerRight = () => (
         <table cellspacing="10">
             <tbody>
                 <tr>
-                    <td className={styles.category}>
-                        <BannerCategory
-                            href="/"
-                            icon={<FaInfoCircle />}
-                            title="Thông tin"
-                        />
-                    </td>
+                    <BannerCategory
+                        href="/"
+                        icon={<FaInfoCircle />}
+                        title="Thông tin"
+                    />
 
-                    <td className={styles.category}>
-                        <BannerCategory
-                            href="/admin/orders"
-                            icon={<FaEdit />}
-                            title="Quản lí"
-                        />
-                    </td>
+                    <BannerCategory
+                        href="/admin/orders"
+                        icon={<FaEdit />}
+                        title="Quản lí"
+                    />
 
-                    <td className={styles.category}>
-                        <BannerCategory
-                            href="/"
-                            icon={<FaBoxes />}
-                            title="Đơn hàng"
-                        />
-                    </td>
+                    <BannerCategory
+                        href="/"
+                        icon={<FaBoxes />}
+                        title="Đơn hàng"
+                    />
 
-                    <td className={styles.category}>
-                        <BannerCategory
-                            href="/"
-                            icon={
-                                <Fragment>
-                                    <FaShoppingCart />
-                                    &nbsp;
-                                    <Badge pill className={styles.cartCount}>
-                                        0
-                                    </Badge>
-                                </Fragment>
-                            }
-                            title="Giỏ hàng"
-                        />
-                    </td>
+                    <BannerCategory
+                        href="/"
+                        icon={
+                            <Fragment>
+                                <FaShoppingCart />
+                                &nbsp;
+                                <Badge pill className={styles.cartCount}>
+                                    0
+                                </Badge>
+                            </Fragment>
+                        }
+                        title="Giỏ hàng"
+                    />
 
-                    <td className={styles.category}>
-                        <BannerCategory
-                            href="/"
-                            icon={<FaUser />}
-                            title="Đăng nhập"
-                        />
-                    </td>
+                    <BannerCategory
+                        href="/"
+                        icon={<FaUser />}
+                        title="Đăng nhập"
+                    />
                 </tr>
             </tbody>
         </table>
@@ -112,9 +102,10 @@ const BannerRight = () => (
 
 const BannerCategory = ({ href, icon, title }) => (
     <Link to={href}>
-        <span className={styles.icon}>{icon}</span>
-        <br />
-        <Label className={styles.label}>{title}</Label>
+        <td className={styles.category}>
+            <div className={styles.icon}>{icon}</div>
+            <Label className={styles.label}>{title}</Label>
+        </td>
     </Link>
 );
 
