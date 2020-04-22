@@ -1,0 +1,41 @@
+.pageHeader {
+    display: flex;
+    align-items: baseline;
+    padding-bottom: 9px;
+    margin: 10px 0 0px;
+    font-size: 22px;
+}
+.pageTitle {
+    font-size: 16px;
+}
+.content {
+    padding: 0 !important;
+}
+.total {
+    font-size: 20px;
+    color: red;
+    padding-left: 15px;
+}
+.section {
+    background-color: white;
+    padding-bottom: 30px;
+}
+.checkoutBtn {
+    margin-left: 73.4%;
+}
+.checkout {
+    display: inline-block;
+    justify-content: center;
+    font-size: 18px;
+    text-align: right;
+    margin-left: 73.8%;
+    padding-top: 10px;
+    
+}
+.lineBetween {
+    width: 100%;
+    border-width: 1px;
+}
+.title {
+    padding: 0px !important;
+}

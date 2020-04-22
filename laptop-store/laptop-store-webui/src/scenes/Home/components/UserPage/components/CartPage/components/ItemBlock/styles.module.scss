@@ -1,0 +1,62 @@
+.blockCenter a{
+    color:black;
+}
+.blockCenter {
+    margin-top: 20px;
+    width: 75% !important;
+}
+.blockLeft {
+    display: flex;
+    justify-content: center;
+    min-width: 130px;
+    margin-bottom: 2px;
+}
+.blockRight {
+    margin-top: 20px;
+    min-width: 95px;
+    max-width: 120px !important;
+    text-align: center;
+    padding: 0 !important;
+}
+.priceLabel {
+    margin-top: 3px;
+    font-weight: bold;
+    font-size: 15px;
+    color: red;
+}
+.pricePromotion {
+    text-decoration: line-through;
+    color: grey;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size:13px;
+}
+.quantityBtn{
+    width: 28px;
+    text-align: center;
+    color: black !important;
+    background-color: white !important;
+    border-color: #ced4da !important;
+    border-radius: 3px 0 3px 0 !important;
+}
+.quantity{
+    max-width: 35px;
+    padding: 6px !important;
+    text-align: center;
+}
+.remove {
+    margin-top: 20px;
+    background-color: white !important;
+    border-color: white !important;
+    color: grey !important;
+}
+.item {
+    width: 100%;
+    display: inline-flex;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

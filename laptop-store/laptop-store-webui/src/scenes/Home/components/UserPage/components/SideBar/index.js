@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Col, ListGroup, ListGroupItem} from 'reactstrap';
-import {FaBook, FaWrench, FaMapMarkerAlt, FaBell, FaUser, FaHeart, FaRegEye, FaShoppingCart} from 'react-icons/fa';
+import {FaBook, FaWrench, FaMapMarkerAlt, FaBell, FaUser, FaBoxes, FaRegEye, FaShoppingCart} from 'react-icons/fa';
 import styles from './styles.module.scss';
 class SideBar extends Component {
     render() {
@@ -17,7 +17,7 @@ class SideBar extends Component {
                 <br/>
                 <ListGroup>
                     <ListGroupItem color="success"><FaShoppingCart />  Hàng hóa</ListGroupItem>
-                    <ListGroupItem tag="a" href="/user/favorite"><FaHeart />  Yêu thích</ListGroupItem>
+                    <ListGroupItem tag="a" href="/user/order"><FaBoxes/>  Đơn hàng</ListGroupItem>
                     <ListGroupItem tag="a" href="/user/save-for-later"><FaRegEye />  Xem sau</ListGroupItem>
                 </ListGroup>
             </Col>

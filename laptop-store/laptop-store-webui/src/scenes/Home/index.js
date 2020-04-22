@@ -16,8 +16,9 @@ class Home extends Component {
                         <Route exact component={DetailPage} path="/detail" />
                         <Route exact component={HomePage} path="/" />
                         <Route exact component={ResultPage} path="/result" />
-                        <Route exact component={UserPage} path="/user/(info|password|address|save-for-later)" />
+                        <Route exact component={UserPage} path="/user/(info|password|address|order|save-for-later|cart|payment)" />
                         <Route exact component={UserPage} path="/user/address/(|create)" />
+                        <Route exact component={UserPage} path="/user/order/:orderId" />
                     </Switch>
                 </div>
             </Fragment>

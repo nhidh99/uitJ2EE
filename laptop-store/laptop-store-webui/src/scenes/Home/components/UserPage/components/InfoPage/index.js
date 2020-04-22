@@ -17,7 +17,7 @@ class InfoPage extends Component {
                         <Form className={styles.form}>
                             <FormGroup row>
                                 <Label for="fullName" sm="2">Họ và tên:</Label>
-                                <Input type="text" name="fullName" id="fullName" placeholder="Nhập họ và tên" className="col-sm-8" />
+                                <Input type="text" name="fullName" id="fullName" placeholder="Nhập họ và tên" className="col-sm-8"/>
                             </FormGroup>
                             <FormGroup row>
                                 <Label for="telephone" sm="2">Điện thoại:</Label>
