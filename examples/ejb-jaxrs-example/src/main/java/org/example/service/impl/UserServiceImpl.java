@@ -1,6 +1,5 @@
 package org.example.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dao.api.UserDAO;
 import org.example.model.User;
 import org.example.service.api.UserService;
@@ -19,8 +18,6 @@ public class UserServiceImpl implements UserService {
     @EJB(mappedName = "UserDAOImpl")
     private UserDAO userDAO;
 
-    private final ObjectMapper om = new ObjectMapper();
-
     @Override
     @GET
     @Path("/")
@@ -28,8 +25,7 @@ public class UserServiceImpl implements UserService {
     public Response findAllUser()  {
         try {
             List<User> users = userDAO.findAll();
-            String usersJSON = om.writeValueAsString(users);
-            return Response.ok(usersJSON).build();
+            return Response.ok(users).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }

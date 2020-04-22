@@ -15,21 +15,26 @@
 }
 
 .nameCol {
-    width: 48%;
+    width: 40%;
 }
 
 td.nameCol {
     text-align: left;
 }
 
-.priceCol {
-    width: 12%;
+.quantityCol {
+    width: 15%;
 }
 
-.quantityCol {
-    width: 10%;
+.priceCol {
+    width: 15%;
 }
 
 .actionCol {
     width: 15%;
+}
+
+.modal {
+    min-width: 1000px !important;
+    max-width: 1000px !important;
 }

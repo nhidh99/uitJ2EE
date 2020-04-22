@@ -10,11 +10,10 @@ import {
 } from "reactstrap";
 import { FaSearch } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import ProductAdd from "../ProductAdd";
 
-const ProductList = () => (
+const OrderFilter = () => (
     <Row className={styles.row}>
-        <Col sm="8" className={styles.searchCol}>
+        <Col sm="10" className={styles.searchCol}>
             <InputGroup>
                 <InputGroupAddon addonType="prepend">
                     <InputGroupText>
@@ -31,11 +30,7 @@ const ProductList = () => (
                 &nbsp;&nbsp;Tìm kiếm
             </Button>
         </Col>
-
-        <Col sm="2" className={styles.buttonCol}>
-            <ProductAdd />
-        </Col>
     </Row>
 );
 
-export default ProductList;
+export default OrderFilter;

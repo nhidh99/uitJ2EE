@@ -15,19 +15,23 @@
 }
 
 .nameCol {
-    width: 48%;
+    width: 15%;
 }
 
-td.nameCol {
-    text-align: left;
+.phoneCol {
+    width: 15%;
 }
 
 .priceCol {
+    width: 15%;
+}
+
+.dateCol {
     width: 12%;
 }
 
-.quantityCol {
-    width: 10%;
+.statusCol {
+    width: 13%;
 }
 
 .actionCol {

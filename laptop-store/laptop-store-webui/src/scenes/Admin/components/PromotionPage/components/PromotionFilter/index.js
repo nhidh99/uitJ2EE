@@ -10,9 +10,9 @@ import {
 } from "reactstrap";
 import { FaSearch } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import ProductAdd from "../ProductAdd";
+import PromotionAdd from "../PromotionAdd";
 
-const ProductList = () => (
+const PromotionFilter = () => (
     <Row className={styles.row}>
         <Col sm="8" className={styles.searchCol}>
             <InputGroup>
@@ -33,9 +33,9 @@ const ProductList = () => (
         </Col>
 
         <Col sm="2" className={styles.buttonCol}>
-            <ProductAdd />
+            <PromotionAdd />
         </Col>
     </Row>
 );
 
-export default ProductList;
+export default PromotionFilter;
