@@ -194,7 +194,7 @@ class ProductForm extends Component {
                     <tr>
                         <td className={styles.labelCol}>Khuyến mãi:</td>
                         <td>
-                            <div className={styles.promotions}>
+                            <div className={styles.checkboxes}>
                                 <input
                                     type="checkbox"
                                     name="promotions"
@@ -238,6 +238,48 @@ class ProductForm extends Component {
                                     />
                                     &nbsp;1552858 - Office 365 Education
                                 </label>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td className={styles.labelCol}>Loại sản phẩm:</td>
+                        <td>
+                            <div className={styles.checkboxes}>
+                                <input
+                                    type="checkbox"
+                                    name="tags"
+                                    value="1422052"
+                                />
+                                &nbsp;Học tập - văn phòng
+                                <br />
+                                <input
+                                    type="checkbox"
+                                    name="tags"
+                                    value="1521032"
+                                />
+                                &nbsp;Đồ họa - Kĩ thuật
+                                <br />
+                                <input
+                                    type="checkbox"
+                                    name="tags"
+                                    value="1521032"
+                                />
+                                &nbsp;Laptop Gaming
+                                <br />
+                                <input
+                                    type="checkbox"
+                                    name="tags"
+                                    value="1552854"
+                                />
+                                &nbsp;Cao cấp sang trọng
+                                <br />
+                                <input
+                                    type="checkbox"
+                                    name="promotions"
+                                    value="1552854"
+                                />
+                                &nbsp;Mỏng nhẹ
                             </div>
                         </td>
                     </tr>

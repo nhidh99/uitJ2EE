@@ -1,7 +1,7 @@
 .table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0em 7px;
+    border-spacing: 0 7px;
     td,
     th {
         vertical-align: middle;
@@ -12,7 +12,7 @@
     width: 100px;
 }
 
-.promotions {
+.checkboxes {
     border: 1px solid lightgray;
     height: 105px;
     border-radius: 3px;

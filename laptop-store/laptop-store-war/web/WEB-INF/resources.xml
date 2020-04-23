@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomee>
+    <Resource id="jdbc/laptop-store" type="javax.sql.DataSource">
+        JdbcDriver com.mysql.jdbc.Driver
+        JdbcUrl jdbc:mysql://localhost:3306/laptop_store?autoReconnect=true&amp;useSSL=false
+        UserName root
+        Password root
+        JtaManaged true
+    </Resource>
+</tomee>

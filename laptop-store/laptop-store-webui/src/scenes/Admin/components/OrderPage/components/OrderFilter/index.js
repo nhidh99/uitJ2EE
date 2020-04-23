@@ -13,7 +13,7 @@ import styles from "./styles.module.scss";
 
 const OrderFilter = () => (
     <Row className={styles.row}>
-        <Col sm="10" className={styles.searchCol}>
+        <Col sm="8" className={styles.searchCol}>
             <InputGroup>
                 <InputGroupAddon addonType="prepend">
                     <InputGroupText>
@@ -29,6 +29,17 @@ const OrderFilter = () => (
                 <FaSearch />
                 &nbsp;&nbsp;Tìm kiếm
             </Button>
+        </Col>
+
+        <Col sm="2" className={styles.buttonCol}>
+            <Input type="select" className={styles.select}>
+                <option>Tất cả đơn</option>
+                <option>Chờ xử lí</option>
+                <option>Đang đóng gói</option>
+                <option>Đang vận chuyển</option>
+                <option>Đã nhận hàng</option>
+                <option>Bị hủy</option>
+            </Input>
         </Col>
     </Row>
 );
