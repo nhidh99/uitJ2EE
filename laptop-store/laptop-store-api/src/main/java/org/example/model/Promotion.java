@@ -2,10 +2,7 @@ package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -17,7 +14,7 @@ import javax.persistence.*;
 @Table(name = "promotion")
 public class Promotion {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @JsonProperty("id")
     private Integer id;
@@ -34,11 +31,18 @@ public class Promotion {
     @JsonProperty("quantity")
     private Integer quantity;
 
-    @Column(name = "image_link")
-    @JsonProperty("image_link")
-    private String imageLink;
+    @Column(name = "alt")
+    @JsonProperty("alt")
+    private String alt;
+
+    @Lob
+    @Column(name = "image")
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private byte[] image;
 
     @Column(name = "record_status")
+    @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
 }

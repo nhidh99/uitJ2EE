@@ -25,3 +25,17 @@
     height: 100px;
     display: none;
 }
+
+.err {
+    display: block;
+    font-weight: bold;
+    color: red;
+    font-size: 13px;
+}
+
+.buttons {
+    float: right;
+    > button:not(:last-of-type) {
+        margin-right: 10px;
+    }
+}

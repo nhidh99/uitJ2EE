@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Table, ButtonGroup } from "reactstrap";
 import styles from "./styles.module.scss";
 import PromotionDelete from "../PromotionDelete";
-import PromotionUpdate from "../PromotionUpdate";
+import PromotionEdit from "../PromotionEdit";
 
 class PromotionList extends Component {
     render() {
@@ -28,7 +28,7 @@ class PromotionList extends Component {
                                         promotionId={5112843}
                                         promotionName="Balo Laptop Acer"
                                     />
-                                    <PromotionUpdate promotionId={5112843} />
+                                    <PromotionEdit promotionId={5112843} />
                                 </ButtonGroup>
                             </ButtonGroup>
                         </td>
@@ -44,7 +44,7 @@ class PromotionList extends Component {
                                     promotionId={5112845}
                                     promotionName="Balo Laptop Dell"
                                 />
-                                <PromotionUpdate promotionId={5112845} />
+                                <PromotionEdit promotionId={5112845} />
                             </ButtonGroup>
                         </td>
                     </tr>
@@ -59,7 +59,7 @@ class PromotionList extends Component {
                                     promotionId={3112841}
                                     promotionName="Chuột không dây"
                                 />
-                                <PromotionUpdate promotionId={3112841} />
+                                <PromotionEdit promotionId={3112841} />
                             </ButtonGroup>
                         </td>
                     </tr>
@@ -76,7 +76,7 @@ class PromotionList extends Component {
                                     promotionId={5112846}
                                     promotionName="Bộ Microsoft Office Professional"
                                 />
-                                <PromotionUpdate promotionId={5112846} />
+                                <PromotionEdit promotionId={5112846} />
                             </ButtonGroup>
                         </td>
                     </tr>
@@ -93,7 +93,7 @@ class PromotionList extends Component {
                                     promotionId={5112847}
                                     promotionName="Bộ Microsoft Office Enterprise"
                                 />
-                                <PromotionUpdate promotionId={5112847} />
+                                <PromotionEdit promotionId={5112847} />
                             </ButtonGroup>
                         </td>
                     </tr>

@@ -1,0 +1,2 @@
+export const MAXIMUM_QUANTITY = 1_000;
+export const MAXIMUM_UNIT_PRICE = 100_000_000;

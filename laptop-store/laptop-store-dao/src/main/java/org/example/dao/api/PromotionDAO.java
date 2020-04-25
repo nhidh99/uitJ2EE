@@ -8,4 +8,6 @@ import java.util.List;
 @Local
 public interface PromotionDAO {
     List<Promotion> findByPages(Integer page);
+    Promotion save(Promotion promotion);
+    byte[] findImageByIdAndAlt(Integer id, String alt);
 }

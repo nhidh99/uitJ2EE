@@ -11,7 +11,7 @@ class OverviewBlock extends Component {
             <Fragment>
                 <Col xs="4" className={styles.blockLeft}>
                     <img
-                        src={require('../../../../../../images/laptops/dell-vostro-5490-i5-10210u-8gb-256gb-win10-v4i510-1-600x600.jpg')}
+                        src="/api/promotions/image"
                         width="300" height="300" alt="laptop"
                     />
                 </Col>

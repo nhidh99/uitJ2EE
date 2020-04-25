@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import { FaSearch } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import PromotionAdd from "../PromotionAdd";
+import PromotionEdit from "../PromotionEdit";
 
 const PromotionFilter = () => (
     <Row className={styles.row}>
@@ -33,7 +33,7 @@ const PromotionFilter = () => (
         </Col>
 
         <Col sm="2" className={styles.buttonCol}>
-            <PromotionAdd />
+            <PromotionEdit />
         </Col>
     </Row>
 );
