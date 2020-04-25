@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Stateless
 @LocalBean
@@ -32,18 +33,28 @@ public class PromotionDAOImpl implements PromotionDAO {
 
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public Promotion save(Promotion promotion) {
+    public void save(Promotion promotion) {
+        if (promotion.getImage() == null && promotion.isRecordStatus()) {
+            Promotion oldPromotion = em.find(Promotion.class, promotion.getId());
+            promotion.setImage(oldPromotion.getImage());
+        }
         em.merge(promotion);
-        return promotion;
     }
 
+    @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public byte[] findImageByIdAndAlt(Integer id, String alt) {
-        String query = "SELECT p.image FROM Promotion p WHERE p.id = :id AND p.alt = :alt";
+    public Optional<Promotion> findById(Integer id) {
+        Promotion promotion = em.find(Promotion.class, id);
+        return Optional.ofNullable(promotion);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public byte[] findImageById(Integer id) {
+        String query = "SELECT p.image FROM Promotion p WHERE p.id = :id and p.recordStatus = true";
         try {
             return em.createQuery(query, byte[].class)
                     .setParameter("id", id)
-                    .setParameter("alt", alt)
                     .getSingleResult();
         } catch (NoResultException e) {
             return null;

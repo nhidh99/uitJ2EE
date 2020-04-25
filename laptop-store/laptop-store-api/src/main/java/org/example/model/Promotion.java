@@ -41,8 +41,8 @@ public class Promotion {
     @JsonIgnore
     private byte[] image;
 
-    @Column(name = "record_status")
     @Basic(fetch = FetchType.LAZY)
+    @Column(name = "record_status")
     @JsonIgnore
     private boolean recordStatus;
 }

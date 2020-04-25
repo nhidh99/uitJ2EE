@@ -1,25 +1,44 @@
 import React, { Component, Fragment } from "react";
-import {
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    Button,
-} from "reactstrap";
+import { Input, InputGroup, InputGroupAddon, InputGroupText, Button } from "reactstrap";
 import styles from "./styles.module.scss";
 import NumberFormat from "react-number-format";
 import {
     MAXIMUM_UNIT_PRICE,
     MAXIMUM_QUANTITY,
+    MINIMUM_PROMOTION_IMAGE_WIDTH,
+    MINIMUM_PROMOTION_IMAGE_HEIGHT,
 } from "../../../../../../constants";
 
 class PromotionForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: this.props?.promotionId ?? false,
+            promotion: null,
             errors: [],
         };
     }
+
+    componentDidMount() {
+        if (this.props.promotionId) {
+            this.loadPromotion();
+        }
+    }
+
+    loadPromotion = async () => {
+        const promotionId = this.props.promotionId;
+        const response = await fetch(`/api/promotions/${promotionId}`, {
+            method: "GET",
+        });
+        if (response.ok) {
+            const promotion = await response.json();
+            this.setState({ promotion: promotion, loading: false }, () => {
+                const preview = document.getElementById("image-preview");
+                preview.style.display = "inline-block";
+                preview.src = `/api/images/promotions/${promotion["id"]}/${promotion["alt"]}`;
+            });
+        }
+    };
 
     validateInputs = () => {
         const errors = getInputErrors();
@@ -27,31 +46,26 @@ class PromotionForm extends Component {
         return errors.length === 0;
     };
 
-    submit = () => {
+    submit = async () => {
         if (this.validateInputs() === false) return;
-        const url = "/api/promotions";
-        const data = buildFormData();
-        for (const d of data.values()) {
-            console.log(d);
-        }
-
-        fetch(url, {
-            method: "POST",
+        const response = await fetch(`/api/promotions/${this.props?.promotionId ?? ""}`, {
+            method: this.props.promotionId ? "PUT" : "POST",
             headers: {
                 "Content-Type": "multipart/form-data; charset=utf-8",
             },
-            body: data,
+            body: buildFormData(),
         });
+        if (response.ok) {
+            window.location.reload();
+        }
     };
 
     render() {
-        const { errors } = this.state;
-        return (
+        const { loading, promotion, errors } = this.state;
+        return loading ? null : (
             <Fragment>
                 {errors.length !== 0
-                    ? errors.map((err) => (
-                          <label className={styles.err}>- {err}</label>
-                      ))
+                    ? errors.map((err) => <label className={styles.err}>- {err}</label>)
                     : null}
 
                 <table borderless className={styles.table}>
@@ -64,6 +78,7 @@ class PromotionForm extends Component {
                                     id="name"
                                     placeholder="Tên khuyến mãi"
                                     maxLength={80}
+                                    defaultValue={promotion?.name ?? null}
                                 />
                             </td>
                         </tr>
@@ -79,15 +94,12 @@ class PromotionForm extends Component {
                                     id="quantity"
                                     placeholder="Số lượng (để trống nếu không cần lưu số lượng tồn)"
                                     isAllowed={(values) => {
-                                        const {
-                                            formattedValue,
-                                            floatValue,
-                                        } = values;
+                                        const { formattedValue, floatValue } = values;
                                         return (
-                                            formattedValue === "" ||
-                                            floatValue <= MAXIMUM_QUANTITY
+                                            formattedValue === "" || floatValue <= MAXIMUM_QUANTITY
                                         );
                                     }}
+                                    defaultValue={promotion?.quantity ?? null}
                                 />
                             </td>
                         </tr>
@@ -101,18 +113,16 @@ class PromotionForm extends Component {
                                         decimalSeparator={false}
                                         allowNegative={false}
                                         allowLeadingZeros={false}
-                                        id="unit-price"
+                                        id="price"
                                         placeholder="Trị giá"
                                         isAllowed={(values) => {
-                                            const {
-                                                formattedValue,
-                                                floatValue,
-                                            } = values;
+                                            const { formattedValue, floatValue } = values;
                                             return (
                                                 formattedValue === "" ||
                                                 floatValue <= MAXIMUM_UNIT_PRICE
                                             );
                                         }}
+                                        defaultValue={promotion?.price ?? null}
                                     />
                                     <InputGroupAddon addonType="append">
                                         <InputGroupText>đ</InputGroupText>
@@ -128,7 +138,7 @@ class PromotionForm extends Component {
                                     accept="image/*"
                                     id="image"
                                     placeholder="Chọn hình ảnh"
-                                    onChange={previewImage}
+                                    onChange={() => previewImage(promotion)}
                                 />
                             </td>
                         </tr>
@@ -146,19 +156,11 @@ class PromotionForm extends Component {
                 </table>
 
                 <div className={styles.buttons}>
-                    <Button
-                        color="success"
-                        onClick={this.submit}
-                        className={styles.button}
-                    >
+                    <Button color="success" onClick={this.submit} className={styles.button}>
                         Xác nhận
                     </Button>
 
-                    <Button
-                        color="secondary"
-                        onClick={this.props.toggle}
-                        className={styles.button}
-                    >
+                    <Button color="secondary" onClick={this.props.toggle} className={styles.button}>
                         Đóng
                     </Button>
                 </div>
@@ -169,11 +171,10 @@ class PromotionForm extends Component {
 
 const getInputErrors = () => {
     const errors = [];
-
     const inputs = {
         name: document.getElementById("name"),
         quantity: document.getElementById("quantity"),
-        price: document.getElementById("unit-price"),
+        price: document.getElementById("price"),
         image: document.getElementById("image"),
     };
 
@@ -189,57 +190,66 @@ const getInputErrors = () => {
 
     validate(
         "Tên khuyến mãi từ 6 - 80 kí tự",
-        () =>
-            inputs["name"].value.length >= 6 &&
-            inputs["name"].value.length <= 80
+        () => inputs["name"].value.length >= 6 && inputs["name"].value.length <= 80
     );
 
     validate(
-        "Số lượng phải để trống hoặc là số",
+        "Số lượng phải để trống hoặc là một số",
         () =>
             inputs["quantity"].value.length === 0 ||
-            !isNaN(parseInt(inputs["quantity"].value))
+            !isNaN(parseInt(inputs["quantity"].value.replace(",", "")))
     );
 
     validate(
-        "Trị giá khuyến mãi phải là số",
-        () => !isNaN(parseInt(inputs["price"].value))
+        "Trị giá khuyến mãi phải là một số",
+        () => !isNaN(parseInt(inputs["price"].value.replace(",", "")))
     );
 
-    validate(
-        "Hình ảnh khuyến mãi là file hình ảnh tối thiểu 30KB",
-        () => {
-            const file = inputs["image"].files[0];
-            return (
-                file.name.match(/\.(jpe?g|png|gif|bmp)$/i) &&
-                file.size / 1024 >= 30
-            );
-        }
-    );
+    validate("Hình ảnh khuyến mãi có kích thước tối thiểu 400x400", () => {
+        const preview = document.getElementById("image-preview");
+        const files = inputs["image"].files;
+        return (
+            (files.length === 0 && preview.getAttribute("src")) ||
+            (files.length > 0 &&
+                files[0].name.match(/\.(jpe?g|png|gif|bmp)$/i) &&
+                preview.naturalWidth >= MINIMUM_PROMOTION_IMAGE_WIDTH &&
+                preview.naturalHeight >= MINIMUM_PROMOTION_IMAGE_HEIGHT)
+        );
+    });
     return errors;
 };
 
 const buildFormData = () => {
+    const name = document.getElementById("name").value;
+    const files = document.getElementById("image").files;
+    const quantityStr = document.getElementById("quantity").value;
+    const priceStr = document.getElementById("price").value;
+
     const data = {
-        name: document.getElementById("name").value,
-        quantity: parseInt(document.getElementById("quantity").value),
-        price: parseInt(document.getElementById("unit-price").value),
-        image: document.getElementById("image").files[0],
+        name: name,
+        image: files.length !== 0 ? files[0] : null,
+        quantity: quantityStr ? parseInt(quantityStr.replace(",", "")) : -1,
+        price: parseInt(priceStr.replace(",", "")),
     };
     const output = new FormData();
     Object.keys(data).forEach((key) => output.append(key, data[key]));
     return output;
 };
 
-const previewImage = () => {
+const previewImage = (promotion) => {
     const input = document.getElementById("image");
     const preview = document.getElementById("image-preview");
+    const initSrc = promotion
+        ? `/api/images/promotions/${promotion["id"]}/${promotion["alt"]}`
+        : null;
 
     if (input.files.length > 0) {
         preview.src = window.URL.createObjectURL(input.files[0]);
-        preview.style.display = "block";
+        preview.style.display = "inline-block";
+    } else if (initSrc) {
+        preview.src = initSrc;
     } else {
-        preview.src = null;
+        preview.removeAttribute("src");
         preview.style.display = "none";
     }
 };

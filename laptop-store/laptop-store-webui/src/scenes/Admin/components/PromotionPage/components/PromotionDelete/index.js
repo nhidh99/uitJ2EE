@@ -7,6 +7,15 @@ const PromotionDelete = ({ promotionId, promotionName }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
+    const submit = async () => {
+        const response = await fetch(`/api/promotions/${promotionId}`, {
+            method: "DELETE",
+        });
+        if (response.ok) {
+            window.location.reload();
+        }
+    };
+
     return (
         <Fragment>
             <Button color="danger" onClick={toggle}>
@@ -27,7 +36,9 @@ const PromotionDelete = ({ promotionId, promotionName }) => {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button color="danger">Xác nhận</Button>
+                    <Button color="danger" onClick={submit}>
+                        Xác nhận
+                    </Button>
                     <Button color="secondary" onClick={toggle}>
                         Đóng
                     </Button>

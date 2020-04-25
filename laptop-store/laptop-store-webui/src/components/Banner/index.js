@@ -9,14 +9,7 @@ import {
     FaInfoCircle,
     FaEdit,
 } from "react-icons/fa";
-import {
-    Label,
-    Input,
-    InputGroupText,
-    InputGroupAddon,
-    InputGroup,
-    Badge,
-} from "reactstrap";
+import { Label, Input, InputGroupText, InputGroupAddon, InputGroup, Badge } from "reactstrap";
 import styles from "./styles.module.scss";
 
 class Banner extends Component {
@@ -57,23 +50,11 @@ const BannerRight = () => (
         <table cellspacing="10">
             <tbody>
                 <tr>
-                    <BannerCategory
-                        href="/"
-                        icon={<FaInfoCircle />}
-                        title="Thông tin"
-                    />
+                    <BannerCategory href="/" icon={<FaInfoCircle />} title="Thông tin" />
 
-                    <BannerCategory
-                        href="/admin/orders"
-                        icon={<FaEdit />}
-                        title="Quản lí"
-                    />
+                    <BannerCategory href="/admin/orders" icon={<FaEdit />} title="Quản lí" />
 
-                    <BannerCategory
-                        href="/"
-                        icon={<FaBoxes />}
-                        title="Đơn hàng"
-                    />
+                    <BannerCategory href="/" icon={<FaBoxes />} title="Đơn hàng" />
 
                     <BannerCategory
                         href="/"
@@ -89,11 +70,7 @@ const BannerRight = () => (
                         title="Giỏ hàng"
                     />
 
-                    <BannerCategory
-                        href="/"
-                        icon={<FaUser />}
-                        title="Đăng nhập"
-                    />
+                    <BannerCategory href="/" icon={<FaUser />} title="Đăng nhập" />
                 </tr>
             </tbody>
         </table>

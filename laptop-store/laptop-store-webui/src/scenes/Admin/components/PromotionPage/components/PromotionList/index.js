@@ -5,6 +5,25 @@ import PromotionDelete from "../PromotionDelete";
 import PromotionEdit from "../PromotionEdit";
 
 class PromotionList extends Component {
+    state = {
+        promotions: [],
+    };
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    fetchData = async () => {
+        const response = await fetch("/api/promotions", {
+            method: "GET",
+        });
+
+        if (response.ok) {
+            const promotions = await response.json();
+            this.setState({ promotions: promotions });
+        }
+    };
+
     render() {
         return (
             <Table className={styles.table} bordered>
@@ -16,87 +35,29 @@ class PromotionList extends Component {
                         <th className={styles.priceCol}>Trị giá</th>
                         <th className={styles.actionCol}>Thao tác</th>
                     </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112843</td>
-                        <td className={styles.nameCol}>Balo Laptop Acer</td>
-                        <td>20</td>
-                        <td className={styles.priceCol}>250,000đ</td>
-                        <td>
-                            <ButtonGroup>
+                    {this.state.promotions.map((promotion) => (
+                        <tr>
+                            <td className={styles.idCol}>{promotion["id"]}</td>
+                            <td className={styles.nameCol}>{promotion["name"]}</td>
+                            <td className={styles.quantityCol}>
+                                {promotion["quantity"] ? promotion["quantity"] : "-"}
+                            </td>
+                            <td className={styles.priceCol}>
+                                {Number(promotion["price"]).toLocaleString()}
+                            </td>
+                            <td className={styles.actionCol}>
                                 <ButtonGroup>
-                                    <PromotionDelete
-                                        promotionId={5112843}
-                                        promotionName="Balo Laptop Acer"
-                                    />
-                                    <PromotionEdit promotionId={5112843} />
+                                    <ButtonGroup>
+                                        <PromotionDelete
+                                            promotionId={promotion["id"]}
+                                            promotionName={promotion["name"]}
+                                        />
+                                        <PromotionEdit promotionId={promotion["id"]} />
+                                    </ButtonGroup>
                                 </ButtonGroup>
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112845</td>
-                        <td className={styles.nameCol}>Balo Laptop Dell</td>
-                        <td>20</td>
-                        <td className={styles.priceCol}>200,000đ</td>
-                        <td>
-                            <ButtonGroup>
-                                <PromotionDelete
-                                    promotionId={5112845}
-                                    promotionName="Balo Laptop Dell"
-                                />
-                                <PromotionEdit promotionId={5112845} />
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.idCol}>3112841</td>
-                        <td className={styles.nameCol}>Chuột không dây</td>
-                        <td>12</td>
-                        <td className={styles.priceCol}>180,000đ</td>
-                        <td>
-                            <ButtonGroup>
-                                <PromotionDelete
-                                    promotionId={3112841}
-                                    promotionName="Chuột không dây"
-                                />
-                                <PromotionEdit promotionId={3112841} />
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112846</td>
-                        <td className={styles.nameCol}>
-                            Bộ Microsoft Office Professional
-                        </td>
-                        <td>-</td>
-                        <td className={styles.priceCol}>600,000đ</td>
-                        <td>
-                            <ButtonGroup>
-                                <PromotionDelete
-                                    promotionId={5112846}
-                                    promotionName="Bộ Microsoft Office Professional"
-                                />
-                                <PromotionEdit promotionId={5112846} />
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112847</td>
-                        <td className={styles.nameCol}>
-                            Bộ Microsoft Office Enterprise
-                        </td>
-                        <td>-</td>
-                        <td className={styles.priceCol}>800,000đ</td>
-                        <td>
-                            <ButtonGroup>
-                                <PromotionDelete
-                                    promotionId={5112847}
-                                    promotionName="Bộ Microsoft Office Enterprise"
-                                />
-                                <PromotionEdit promotionId={5112847} />
-                            </ButtonGroup>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
         );
