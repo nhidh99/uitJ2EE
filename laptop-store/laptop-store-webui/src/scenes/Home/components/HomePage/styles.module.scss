@@ -1,0 +1,40 @@
+
+.top {
+    position: relative;
+    display: flex;
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 1000px;
+    margin: 0 auto;
+}
+
+.leftside {
+    margin-top: 5px;
+    position: relative;
+    background-color: white;
+    width: 200px;
+}
+
+.rightside {
+    left: 200px;
+    width: 800px;
+}
+
+.block {
+    margin-top: 20px;
+}
+
+.title {
+    font-size: 18px;
+    padding-left: 10px;
+}
+
+.component {
+    background-color: white;
+}

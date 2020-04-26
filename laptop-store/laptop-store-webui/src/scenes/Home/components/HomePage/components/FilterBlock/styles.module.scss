@@ -1,0 +1,25 @@
+.filterblock {
+    position: relative;
+    background-color: white;
+    margin-top: 20px;
+    padding-left: 5px;
+}
+.title {
+    width: 100%;
+    background-color: #efefef;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.filtertype {
+    width: 100%;
+    text-align: left;
+    border: none;
+    font-size: 14px;
+    background-color: white;
+    &:focus {
+        border: none;
+        outline: none;
+        color: darkred;
+    }
+}

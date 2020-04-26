@@ -6,14 +6,12 @@ import Auth from './scenes/Auth';
 
 function App() {
 	return (
-		<div>
-			<BrowserRouter>
-				<Switch>
-					<Route exact component={Home} path="/(|detail|result|user)"/>
-					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>        
-				</Switch>
-			</BrowserRouter>
-		</div>
+		<BrowserRouter>
+			<Switch>
+				<Route exact component={Home} path="/(|detail|result|user)"/>
+				<Route exact component={Auth} path="/auth/(forgot|login|register)"/>        
+			</Switch>
+		</BrowserRouter>
 	);
 }
 

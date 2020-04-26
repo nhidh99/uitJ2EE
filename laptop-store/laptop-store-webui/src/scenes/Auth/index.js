@@ -3,6 +3,7 @@ import { Route, Switch, Link } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import ForgotPage from "./components/ForgotPage";
+import styles from "./styles.module.scss";
 
 class Auth extends Component {
     render() {
@@ -12,7 +13,6 @@ class Auth extends Component {
                 <Link to="/auth/login">Login Page|</Link>
                 <Link to="/auth/forgot">Forgot Page|</Link>
                 <Link to="/auth/register">Register Page</Link>
-
                 <Switch>
                     <Route exact component={LoginPage} path="/auth/login" />
                     <Route exact component={ForgotPage} path="/auth/forgot" />
