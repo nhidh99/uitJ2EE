@@ -226,10 +226,10 @@ const buildFormData = () => {
     const priceStr = document.getElementById("price").value;
 
     const data = {
-        name: name,
+        name: name.trim().replace(/  +/g, " "),
         image: files.length !== 0 ? files[0] : null,
-        quantity: quantityStr ? parseInt(quantityStr.replace(",", "")) : -1,
-        price: parseInt(priceStr.replace(",", "")),
+        quantity: quantityStr ? parseInt(quantityStr.replace(/,/g, "")) : -1,
+        price: parseInt(priceStr.replace(/,/g, "")),
     };
     const output = new FormData();
     Object.keys(data).forEach((key) => output.append(key, data[key]));

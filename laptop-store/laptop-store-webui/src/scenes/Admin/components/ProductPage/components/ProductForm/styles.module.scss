@@ -25,3 +25,17 @@
     height: 200px;
     display: none;
 }
+
+.inputsCol {
+    width: 100%;
+    display: flex;
+
+    > span:not(:last-of-type) {
+        margin-right: 5px;
+    }
+
+    > span:last-of-type {
+        flex-grow: 1;
+        width: fit-content;
+    }
+}

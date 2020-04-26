@@ -27,7 +27,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             Promotion promotion = promotionDAO.findById(id).orElseThrow(Exception::new);
             byte[] image = promotionDAO.findImageById(id);
-            boolean isValidPath = image != null && promotion.getAlt().equals(alt);
+            boolean isValidPath = (image != null) && promotion.getAlt().equals(alt);
             if (isValidPath) {
                 return Response.ok(image).header(HttpHeaders.CONTENT_TYPE, "image/jpeg").build();
             }

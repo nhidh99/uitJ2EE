@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Local
 public interface PromotionDAO {
-    List<Promotion> findByPages(Integer page);
+    List<Promotion> findAll();
     Optional<Promotion> findById(Integer id);
     void save(Promotion promotion);
     byte[] findImageById(Integer id);

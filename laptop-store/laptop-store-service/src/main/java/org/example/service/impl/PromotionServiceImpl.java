@@ -1,7 +1,6 @@
 package org.example.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.PromotionDAO;
 import org.example.model.ImageType;
@@ -33,9 +32,9 @@ public class PromotionServiceImpl implements PromotionService {
     @Path("/")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findPromotionsByPage(@QueryParam("page") @DefaultValue("1") Integer page) {
+    public Response findAllPromotions() {
         try {
-            List<Promotion> promotions = promotionDAO.findByPages(page);
+            List<Promotion> promotions = promotionDAO.findAll();
             ObjectMapper om = new ObjectMapper();
             String promotionsJSON = om.writeValueAsString(promotions);
             return Response.ok(promotionsJSON).build();
@@ -99,17 +98,14 @@ public class PromotionServiceImpl implements PromotionService {
         String name = body.getAttachmentObject("name", String.class);
         Integer quantity = body.getAttachmentObject("quantity", Integer.class);
         Long price = body.getAttachmentObject("price", Long.class);
-        String alt = imageUtils.buildSEOImageName(name) + ".jpg";
+        InputStream is = body.getAttachmentObject("image", InputStream.class);
 
-        Attachment attachment = body.getAttachment("image");
-        BufferedImage bufferedImage = ImageIO.read(attachment.getObject(InputStream.class));
-        byte[] image = null;
-        if (bufferedImage != null) {
-            image = imageUtils.buildBinaryImage(bufferedImage, ImageType.PROMOTION_IMAGE);
-        }
+        String alt = imageUtils.buildSEOImageName(name) + ".jpg";
+        BufferedImage image = ImageIO.read(is);
+        byte[] imageBlob = (image != null) ? imageUtils.buildBinaryImage(image, ImageType.PROMOTION_IMAGE) : null;
 
         return Promotion.builder()
-                .name(name).price(price).image(image)
+                .name(name).price(price).image(imageBlob)
                 .quantity(quantity >= 0 ? quantity : null)
                 .alt(alt).recordStatus(true).build();
     }

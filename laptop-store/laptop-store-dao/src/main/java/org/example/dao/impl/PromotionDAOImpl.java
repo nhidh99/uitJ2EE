@@ -21,14 +21,21 @@ public class PromotionDAOImpl implements PromotionDAO {
 
     private static final Integer ELEMENT_PER_BLOCK = 20;
 
+//    @Override
+//    @Transactional(Transactional.TxType.SUPPORTS)
+//    public List<Promotion> findByPages(Integer page) {
+//        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
+//        return em.createQuery(query, Promotion.class)
+//                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+//                .setMaxResults(ELEMENT_PER_BLOCK)
+//                .getResultList();
+//    }
+
+
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
-    public List<Promotion> findByPages(Integer page) {
+    public List<Promotion> findAll() {
         String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
-        return em.createQuery(query, Promotion.class)
-                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
-                .getResultList();
+        return em.createQuery(query, Promotion.class).getResultList();
     }
 
     @Override
