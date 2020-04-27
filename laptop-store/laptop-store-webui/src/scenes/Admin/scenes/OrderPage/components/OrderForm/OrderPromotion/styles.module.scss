@@ -1,0 +1,31 @@
+.table {
+    td:not(:first-of-type),
+    th:not(:first-of-type) {
+        text-align: center;
+    }
+
+    td,
+    th {
+        vertical-align: middle;
+    }
+}
+
+.promotionCol {
+    width: 42%;
+}
+
+.inStockCol {
+    width: 12%;
+}
+
+.unitPriceCol {
+    width: 16%;
+}
+
+.quantityCol {
+    width: 12%;
+}
+
+.totalPriceCol {
+    width: 23%;
+}
