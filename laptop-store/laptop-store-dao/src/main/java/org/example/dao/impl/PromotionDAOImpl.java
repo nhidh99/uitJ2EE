@@ -1,5 +1,6 @@
 package org.example.dao.impl;
 
+import lombok.Getter;
 import org.example.dao.api.PromotionDAO;
 import org.example.model.Promotion;
 
@@ -19,8 +20,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    private static final Integer ELEMENT_PER_BLOCK = 20;
-
+//    private static final Integer ELEMENT_PER_BLOCK = 20;
 //    @Override
 //    @Transactional(Transactional.TxType.SUPPORTS)
 //    public List<Promotion> findByPages(Integer page) {
@@ -31,7 +31,6 @@ public class PromotionDAOImpl implements PromotionDAO {
 //                .getResultList();
 //    }
 
-
     @Override
     public List<Promotion> findAll() {
         String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
@@ -41,10 +40,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void save(Promotion promotion) {
-        if (promotion.getImage() == null && promotion.isRecordStatus()) {
-            Promotion oldPromotion = em.find(Promotion.class, promotion.getId());
-            promotion.setImage(oldPromotion.getImage());
-        }
         em.merge(promotion);
     }
 
@@ -58,7 +53,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public byte[] findImageById(Integer id) {
-        String query = "SELECT p.image FROM Promotion p WHERE p.id = :id and p.recordStatus = true";
+        String query = "SELECT p.image FROM Promotion p WHERE p.id = :id AND p.recordStatus = true";
         try {
             return em.createQuery(query, byte[].class)
                     .setParameter("id", id)

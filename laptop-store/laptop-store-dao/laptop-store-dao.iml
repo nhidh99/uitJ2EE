@@ -5,7 +5,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
-          <factory-entry name="user-store" value="c29f8c4f-ef69-41ee-9afc-424184dc2acb" />
+          <factory-entry name="user-store" value="da0a931b-4a03-4169-96d2-60b768082c55" />
         </datasource-mapping>
         <naming-strategy-map />
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />

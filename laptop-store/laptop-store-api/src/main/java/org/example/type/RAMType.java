@@ -1,4 +1,6 @@
 package org.example.type;
 
-public class RAMType {
+public enum RAMType {
+    DDR4,
+    DDR3
 }

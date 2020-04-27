@@ -8,7 +8,7 @@ import {
     MINIMUM_PROMOTION_IMAGE_WIDTH,
     MINIMUM_PROMOTION_IMAGE_HEIGHT,
 } from "../../../../../../constants";
-import ImageInput from "../../../ImageInput";
+import ImageInput from "../../../../components/ImageInput";
 
 class PromotionForm extends Component {
     state = {

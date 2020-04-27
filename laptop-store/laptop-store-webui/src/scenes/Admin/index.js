@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from "react";
 import { Switch, Route } from "react-router-dom";
 import AdminNavBar from "./components/AdminNavBar";
-import ProductPage from "./components/ProductPage";
-import PromotionPage from "./components/PromotionPage";
-import OrderPage from "./components/OrderPage";
+import PromotionPage from "./scenes/PromotionPage";
+import OrderPage from "./scenes/OrderPage";
+import ProductPage from "./scenes/ProductPage";
 
 class Admin extends Component {
     render() {

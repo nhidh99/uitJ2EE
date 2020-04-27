@@ -1,4 +1,8 @@
 package org.example.service.api;
 
-public class LaptopService {
+
+import javax.ws.rs.core.Response;
+
+public interface LaptopService {
+    Response findLaptopsByPage(Integer page);
 }

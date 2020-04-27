@@ -1,4 +1,6 @@
 package org.example.type;
 
-public class HardDriveType {
+public enum  HardDriveType {
+    HDD,
+    SSD
 }

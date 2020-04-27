@@ -1,6 +1,6 @@
 package org.example.util.api;
 
-import org.example.model.ImageType;
+import org.example.type.ImageType;
 
 import javax.ejb.Local;
 import java.awt.image.BufferedImage;

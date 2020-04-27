@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.type;
 
 public enum ImageType {
     LAPTOP_IMAGE,

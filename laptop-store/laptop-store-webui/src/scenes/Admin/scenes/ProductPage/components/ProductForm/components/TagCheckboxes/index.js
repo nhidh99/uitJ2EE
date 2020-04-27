@@ -35,7 +35,7 @@ class TagCheckboxes extends Component {
                 {tags.map((tag) => (
                     <Fragment>
                         <input type="checkbox" name="tags" value={tag["id"]} />
-                        <span>&nbsp;{tag["name"]}</span>
+                        <label>&nbsp;{tag["name"]}</label>
                         <br />
                     </Fragment>
                 ))}

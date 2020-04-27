@@ -1,4 +1,11 @@
 package org.example.dao.api;
 
-public class LaptopDAO {
+import org.example.model.Laptop;
+
+import javax.ejb.Local;
+import java.util.List;
+
+@Local
+public interface LaptopDAO {
+    List<Laptop> findByPage(Integer page);
 }

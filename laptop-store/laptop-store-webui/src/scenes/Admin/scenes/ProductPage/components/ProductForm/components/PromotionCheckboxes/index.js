@@ -29,15 +29,19 @@ class PromotionCheckboxes extends Component {
     loadProductPromotions = async () => {};
 
     render() {
-        const { loading, promotions, checkedValues } = this.state;
+        const { loading, promotions, checked } = this.state;
         return loading ? null : (
             <Fragment>
                 {promotions.map((promotion) => (
                     <Fragment>
-                        <input type="checkbox" name="promotions" value={promotion["id"]} />
-                        <span>
+                        <input
+                            type="checkbox"
+                            name="promotions"
+                            value={promotion["id"]}
+                        />
+                        <label>
                             &nbsp;{promotion["id"]} - {promotion["name"]}
-                        </span>
+                        </label>
                         <br />
                     </Fragment>
                 ))}

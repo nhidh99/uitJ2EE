@@ -23,7 +23,7 @@
     display: flex;
 
     > span:not(:last-of-type) {
-        margin-right: 5px;
+        margin-right: 8px;
     }
 
     > span:last-of-type {
@@ -32,9 +32,17 @@
     }
 }
 
+.cpuSpeed {
+    width: 100px !important;
+}
+
+.resolutionSize {
+    text-align: center;
+}
+
 .checkboxes {
     border: 1px solid lightgray;
-    height: 105px;
+    height: 135px !important;
     border-radius: 3px;
     overflow-y: scroll;
     padding: 6px 8px;

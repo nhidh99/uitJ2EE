@@ -1,6 +1,6 @@
 package org.example.util.impl;
 
-import org.example.model.ImageType;
+import org.example.type.ImageType;
 import org.example.util.api.ImageUtils;
 
 import javax.ejb.LocalBean;

@@ -1,4 +1,7 @@
 package org.example.service.api;
 
-public class TagService {
+import javax.ws.rs.core.Response;
+
+public interface TagService {
+    Response findAllTags();
 }

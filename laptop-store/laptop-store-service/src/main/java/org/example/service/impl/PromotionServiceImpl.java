@@ -3,7 +3,7 @@ package org.example.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.PromotionDAO;
-import org.example.model.ImageType;
+import org.example.type.ImageType;
 import org.example.model.Promotion;
 import org.example.service.api.PromotionService;
 import org.example.util.api.ImageUtils;
@@ -17,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 
 @Path("/api/promotions")
 public class PromotionServiceImpl implements PromotionService {
@@ -81,15 +80,18 @@ public class PromotionServiceImpl implements PromotionService {
     public Response updatePromotion(@PathParam("id") Integer id, MultipartBody body) {
         try {
             Promotion promotion = buildPromotionFromRequestBody(body);
-            Optional<Promotion> optPromotion = promotionDAO.findById(id);
-            if (optPromotion.isPresent()) {
-                promotion.setId(id);
-                promotionDAO.save(promotion);
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).build();
+            promotionDAO.findById(id).orElseThrow(BadRequestException::new);
+            if (promotion.getImage() == null) {
+                byte[] imageBlob = promotionDAO.findImageById(id);
+                promotion.setImage(imageBlob);
             }
+            promotion.setId(id);
+            promotionDAO.save(promotion);
             return Response.noContent().build();
-        } catch (Exception e) {
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        catch (Exception e) {
             return Response.serverError().build();
         }
     }
@@ -103,11 +105,11 @@ public class PromotionServiceImpl implements PromotionService {
         String alt = imageUtils.buildSEOImageName(name) + ".jpg";
         BufferedImage image = ImageIO.read(is);
         byte[] imageBlob = (image != null) ? imageUtils.buildBinaryImage(image, ImageType.PROMOTION_IMAGE) : null;
-
         return Promotion.builder()
-                .name(name).price(price).image(imageBlob)
-                .quantity(quantity >= 0 ? quantity : null)
-                .alt(alt).recordStatus(true).build();
+                .name(name).price(price)
+                .image(imageBlob)
+                .quantity(quantity).alt(alt)
+                .recordStatus(true).build();
     }
 
     @Override
