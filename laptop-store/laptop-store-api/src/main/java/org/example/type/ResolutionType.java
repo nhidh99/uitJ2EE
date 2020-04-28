@@ -5,6 +5,7 @@ public enum ResolutionType {
     HD,             // HD
     WXGA,           // WXGA
     WXGA_PLUS,      // WXGA+
+    HD_PLUS,        // HD+
     FULL_HD,        // FULL HD
     QHD,            // 2K
     QHD_PLUS,       // 3K
@@ -15,6 +16,10 @@ public enum ResolutionType {
         switch (this) {
             case WXGA_PLUS:
                 return "WXGA+";
+            case HD_PLUS:
+                return "HD+";
+            case FULL_HD:
+                return "Full HD";
             case QHD:
                 return "2K";
             case QHD_PLUS:

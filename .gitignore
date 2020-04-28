@@ -1,3 +1,5 @@
 target/
 .idea/
 out/
+resources.xml
+laptop-store/laptop-store-war/web/WEB-INF/resources.xml

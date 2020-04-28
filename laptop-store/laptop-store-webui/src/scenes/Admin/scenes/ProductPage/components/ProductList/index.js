@@ -5,8 +5,31 @@ import ProductDelete from "../ProductDelete";
 import ProductUpdate from "../ProductUpdate";
 
 class ProductList extends Component {
+    state = {
+        loading: true,
+        laptops: [],
+    };
+
+    componentDidMount() {
+        this.loadData();
+    }
+
+    loadData = async () => {
+        const response = await fetch("/api/laptops", {
+            method: "GET",
+        });
+        if (response.ok) {
+            const laptops = await response.json();
+            this.setState({
+                loading: false,
+                laptops: laptops,
+            });
+        }
+    };
+
     render() {
-        return (
+        const { loading, laptops } = this.state;
+        return loading ? null : (
             <Table className={styles.table} bordered>
                 <tbody>
                     <tr>
@@ -16,46 +39,28 @@ class ProductList extends Component {
                         <th className={styles.quantityCol}>Số lượng</th>
                         <th className={styles.actionCol}>Thao tác</th>
                     </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112843</td>
-                        <td className={styles.nameCol}>
-                            Laptop Dell Vostro 5490 V4I5106W (Core 5-10210U/ 8GB
-                            DDR4 2666MHz/ 256GB M.2 PCIe NVMe/ 14 FHD/ Win10)
-                        </td>
-                        <td className={styles.priceCol}>16,900,000đ</td>
-                        <td className={styles.quantityCol}>20</td>
-                        <td>
-                            <ButtonGroup>
+                    {laptops.map((laptop) => (
+                        <tr>
+                            <td>{laptop["id"]}</td>
+                            <td className={styles.nameCol}>{laptop["name"]}</td>
+                            <td>
+                                {(laptop["unit_price"] - laptop["discount_price"]).toLocaleString()}
+                                đ
+                            </td>
+                            <td>{laptop["quantity"]}</td>
+                            <td>
                                 <ButtonGroup>
-                                    <ProductDelete
-                                        productId={5112843}
-                                        productName="Laptop Dell Vostro 5490 V4I5106W (Core 5-10210U/ 8GB
-                                        DDR4 2666MHz/ 256GB M.2 PCIe NVMe/ 14 FHD/ Win10)"
-                                    />
-                                    <ProductUpdate productId={5112843} />
+                                    <ButtonGroup>
+                                        <ProductDelete
+                                            productId={laptop["id"]}
+                                            productName={laptop["name"]}
+                                        />
+                                        <ProductUpdate productId={laptop["id"]} />
+                                    </ButtonGroup>
                                 </ButtonGroup>
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.idCol}>5112845</td>
-                        <td className={styles.nameCol}>
-                            Laptop Dell Vostro 5490 V4I5106W (Core 5-10210U/ 8GB
-                            DDR4 2666MHz/ 256GB M.2 PCIe NVMe/ 14 FHD/ Win10)
-                        </td>
-                        <td className={styles.priceCol}>14,900,000đ</td>
-                        <td className={styles.quantityCol}>12</td>
-                        <td>
-                            <ButtonGroup>
-                                <ProductDelete
-                                    productId={5112845}
-                                    productName="Laptop Dell Vostro 5490 V4I5106W (Core 5-10210U/ 8GB
-                                        DDR4 2666MHz/ 256GB M.2 PCIe NVMe/ 14 FHD/ Win10)"
-                                />
-                                <ProductUpdate productId={5112845} />
-                            </ButtonGroup>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
         );

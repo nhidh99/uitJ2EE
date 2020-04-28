@@ -32,9 +32,19 @@ public class PromotionDAOImpl implements PromotionDAO {
 //    }
 
     @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findAll() {
         String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
         return em.createQuery(query, Promotion.class).getResultList();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Promotion> findByIds(List<Integer> ids) {
+        String query = "SELECT p FROM Promotion p WHERE p.id IN :ids AND p.recordStatus = true";
+        return em.createQuery(query, Promotion.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 
     @Override

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import styles from "./styles.module.scss";
 
 class TagCheckboxes extends Component {
     state = {
@@ -31,7 +32,7 @@ class TagCheckboxes extends Component {
     render() {
         const { loading, tags, checked } = this.state;
         return loading ? null : (
-            <Fragment>
+            <div className={styles.checkboxes}>
                 {tags.map((tag) => (
                     <Fragment>
                         <input type="checkbox" name="tags" value={tag["id"]} />
@@ -39,7 +40,7 @@ class TagCheckboxes extends Component {
                         <br />
                     </Fragment>
                 ))}
-            </Fragment>
+            </div>
         );
     }
 }

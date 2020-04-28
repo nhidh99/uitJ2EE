@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import styles from "./styles.module.scss";
 
 class PromotionCheckboxes extends Component {
     state = {
@@ -31,7 +32,7 @@ class PromotionCheckboxes extends Component {
     render() {
         const { loading, promotions, checked } = this.state;
         return loading ? null : (
-            <Fragment>
+            <div className={styles.checkboxes}>
                 {promotions.map((promotion) => (
                     <Fragment>
                         <input
@@ -45,7 +46,7 @@ class PromotionCheckboxes extends Component {
                         <br />
                     </Fragment>
                 ))}
-            </Fragment>
+            </div>
         );
     }
 }

@@ -7,5 +7,6 @@ import java.util.List;
 
 @Local
 public interface LaptopDAO {
+    void save(Laptop laptop);
     List<Laptop> findByPage(Integer page);
 }

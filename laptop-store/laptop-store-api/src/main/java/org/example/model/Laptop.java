@@ -7,6 +7,7 @@ import lombok.*;
 import org.example.type.BrandType;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -42,6 +43,10 @@ public class Laptop {
     @JsonProperty("quantity")
     private Integer quantity;
 
+    @Column(name = "alt")
+    @JsonProperty("alt")
+    private String alt;
+
     @Column(name = "avg_rating")
     @JsonProperty("avg_rating")
     private Float avgRating;
@@ -69,7 +74,6 @@ public class Laptop {
     @Column(name = "weight")
     @JsonProperty("weight")
     private Float weight;
-
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cpu_id")
@@ -107,4 +111,18 @@ public class Laptop {
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "laptop_tag",
+            joinColumns = @JoinColumn(name = "laptop_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @JsonIgnore
+    private List<Tag> tags;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "laptop_promotion",
+            joinColumns = @JoinColumn(name = "laptop_id"),
+            inverseJoinColumns = @JoinColumn(name = "promotion_id"))
+    @JsonIgnore
+    private List<Promotion> promotions;
 }

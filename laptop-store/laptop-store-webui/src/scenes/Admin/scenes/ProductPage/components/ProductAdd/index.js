@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { FaBox } from "react-icons/fa";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Button, Modal, ModalHeader, ModalBody } from "reactstrap";
 import styles from "./styles.module.scss";
 import ProductForm from "../ProductForm";
 
@@ -22,15 +22,8 @@ const ProductAdd = () => {
                 </ModalHeader>
 
                 <ModalBody>
-                    <ProductForm />
+                    <ProductForm toggle={toggle} />
                 </ModalBody>
-
-                <ModalFooter>
-                    <Button color="success">Xác nhận</Button>
-                    <Button color="secondary" onClick={toggle}>
-                        Đóng
-                    </Button>
-                </ModalFooter>
             </Modal>
         </Fragment>
     );

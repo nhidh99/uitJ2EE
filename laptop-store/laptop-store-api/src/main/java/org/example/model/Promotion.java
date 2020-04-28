@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -44,4 +45,11 @@ public class Promotion {
     @Column(name = "record_status")
     @JsonIgnore
     private boolean recordStatus;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "laptop_promotion",
+            joinColumns = @JoinColumn(name = "promotion_id"),
+            inverseJoinColumns = @JoinColumn(name = "laptop_id"))
+    @JsonIgnore
+    private List<Laptop> laptops;
 }

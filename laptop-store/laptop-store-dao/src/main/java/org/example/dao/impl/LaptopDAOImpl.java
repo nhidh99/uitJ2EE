@@ -18,6 +18,11 @@ public class LaptopDAOImpl implements LaptopDAO {
     private EntityManager em;
 
     @Override
+    public void save(Laptop laptop) {
+        em.merge(laptop);
+    }
+
+    @Override
     public List<Laptop> findByPage(Integer page) {
         String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true";
         return em.createQuery(query, Laptop.class)

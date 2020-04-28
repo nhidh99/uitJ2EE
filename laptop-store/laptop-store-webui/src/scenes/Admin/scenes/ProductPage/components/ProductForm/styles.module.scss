@@ -12,13 +12,17 @@
     width: 100px;
 }
 
+.imgLabel {
+    vertical-align: top !important;
+}
+
 .imgPreview {
     width: 200px;
     height: 200px;
     display: none;
 }
 
-.inputsCol {
+.inputCol {
     width: 100%;
     display: flex;
 
@@ -32,18 +36,13 @@
     }
 }
 
-.cpuSpeed {
-    width: 100px !important;
-}
-
 .resolutionSize {
     text-align: center;
 }
 
-.checkboxes {
-    border: 1px solid lightgray;
-    height: 135px !important;
-    border-radius: 3px;
-    overflow-y: scroll;
-    padding: 6px 8px;
+.buttons {
+    float: right;
+    > button:not(:last-of-type) {
+        margin-right: 10px;
+    }
 }
