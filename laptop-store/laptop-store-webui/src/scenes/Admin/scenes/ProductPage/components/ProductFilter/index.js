@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import { FaSearch } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import ProductAdd from "../ProductAdd";
+import ProductEdit from "../ProductEdit";
 
 const ProductList = () => (
     <Row className={styles.row}>
@@ -33,7 +33,7 @@ const ProductList = () => (
         </Col>
 
         <Col sm="2" className={styles.buttonCol}>
-            <ProductAdd />
+            <ProductEdit />
         </Col>
     </Row>
 );

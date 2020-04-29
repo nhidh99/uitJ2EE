@@ -3,9 +3,20 @@ import { FaTrash } from "react-icons/fa";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import styles from "./styles.module.scss";
 
-const ProductDelete = ({ productId, productName }) => {
+const ProductDelete = ({ product }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
+
+    const submit = async (e) => {
+        const input = e.target;
+        input.disabled = true;
+        const response = await fetch(`/api/laptops/${product['id']}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            window.location.reload();
+        }
+    }
 
     return (
         <Fragment>
@@ -22,12 +33,12 @@ const ProductDelete = ({ productId, productName }) => {
                 <ModalBody>
                     Xác nhận xóa sản phẩm{" "}
                     <b>
-                        {productId} - {productName}?
+                        {product["id"]} - {product["name"]}?
                     </b>
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button color="danger">Xác nhận</Button>
+                    <Button color="danger" onClick={submit}>Xác nhận</Button>
                     <Button color="secondary" onClick={toggle}>
                         Đóng
                     </Button>

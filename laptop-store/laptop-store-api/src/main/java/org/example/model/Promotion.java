@@ -46,10 +46,11 @@ public class Promotion {
     @JsonIgnore
     private boolean recordStatus;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_promotion",
             joinColumns = @JoinColumn(name = "promotion_id"),
             inverseJoinColumns = @JoinColumn(name = "laptop_id"))
+    @ToString.Exclude
     @JsonIgnore
     private List<Laptop> laptops;
 }

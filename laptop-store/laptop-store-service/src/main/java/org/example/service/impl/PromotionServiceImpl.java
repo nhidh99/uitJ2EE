@@ -80,11 +80,6 @@ public class PromotionServiceImpl implements PromotionService {
     public Response updatePromotion(@PathParam("id") Integer id, MultipartBody body) {
         try {
             Promotion promotion = buildPromotionFromRequestBody(body);
-            promotionDAO.findById(id).orElseThrow(BadRequestException::new);
-            if (promotion.getImage() == null) {
-                byte[] imageBlob = promotionDAO.findImageById(id);
-                promotion.setImage(imageBlob);
-            }
             promotion.setId(id);
             promotionDAO.save(promotion);
             return Response.noContent().build();
@@ -102,7 +97,7 @@ public class PromotionServiceImpl implements PromotionService {
         Long price = body.getAttachmentObject("price", Long.class);
         InputStream is = body.getAttachmentObject("image", InputStream.class);
 
-        String alt = imageUtils.buildSEOImageName(name) + ".jpg";
+        String alt = imageUtils.buildSEOImageName(name);
         BufferedImage image = ImageIO.read(is);
         byte[] imageBlob = (image != null) ? imageUtils.buildBinaryImage(image, ImageType.PROMOTION_IMAGE) : null;
         return Promotion.builder()
@@ -117,9 +112,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Path("/{id}")
     public Response deletePromotionById(@PathParam("id") Integer id) {
         try {
-            Promotion promotion = promotionDAO.findById(id).orElseThrow(BadRequestException::new);
-            promotion.setRecordStatus(false);
-            promotionDAO.save(promotion);
+            promotionDAO.delete(id);
             return Response.noContent().build();
         } catch (BadRequestException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

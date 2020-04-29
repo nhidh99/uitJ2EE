@@ -112,17 +112,19 @@ public class Laptop {
     @JsonIgnore
     private boolean recordStatus;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_tag",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ToString.Exclude
     @JsonIgnore
     private List<Tag> tags;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_promotion",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "promotion_id"))
+    @ToString.Exclude
     @JsonIgnore
     private List<Promotion> promotions;
 }

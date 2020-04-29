@@ -39,8 +39,4 @@ public class Monitor {
     @Column(name = "resolution_height")
     @JsonProperty("resolution_height")
     private Integer resolutionHeight;
-
-//    @OneToOne(mappedBy = "monitor", fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    private Laptop laptop;
 }

@@ -27,7 +27,17 @@ class PromotionCheckboxes extends Component {
         }
     };
 
-    loadProductPromotions = async () => {};
+    loadProductPromotions = async () => {
+        const { product } = this.props;
+        if (!product) {
+            return;
+        }
+        const response = await fetch(`/api/laptops/${product["id"]}/promotions`);
+        if (response.ok) {
+            const promotions = await response.json();
+            this.setState({ checked: promotions });
+        }
+    };
 
     render() {
         const { loading, promotions, checked } = this.state;
@@ -36,11 +46,13 @@ class PromotionCheckboxes extends Component {
                 {promotions.map((promotion) => (
                     <Fragment>
                         <input
+                            id={`promotion-${promotion["id"]}`}
                             type="checkbox"
                             name="promotions"
                             value={promotion["id"]}
+                            defaultChecked={checked.map((c) => c["id"]).includes(promotion["id"])}
                         />
-                        <label>
+                        <label onClick={() => selectPromotion(promotion["id"])}>
                             &nbsp;{promotion["id"]} - {promotion["name"]}
                         </label>
                         <br />
@@ -50,5 +62,10 @@ class PromotionCheckboxes extends Component {
         );
     }
 }
+
+const selectPromotion = (id) => {
+    const input = document.getElementById("promotion-" + id);
+    input.checked = !input.checked;
+};
 
 export default PromotionCheckboxes;

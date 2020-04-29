@@ -12,31 +12,21 @@ import ImageInput from "../../../../components/ImageInput";
 
 class PromotionForm extends Component {
     state = {
-        loading: this.props?.promotionId ?? false,
-        promotion: null,
         errors: [],
         submitted: false,
     };
 
     componentDidMount() {
-        if (this.props.promotionId) {
+        if (this.props.promotion) {
             this.loadPromotion();
         }
     }
 
-    loadPromotion = async () => {
-        const promotionId = this.props.promotionId;
-        const response = await fetch(`/api/promotions/${promotionId}`, {
-            method: "GET",
-        });
-        if (response.ok) {
-            const promotion = await response.json();
-            this.setState({ promotion: promotion, loading: false }, () => {
-                const preview = document.getElementById("image-preview");
-                preview.style.display = "inline-block";
-                preview.src = `/api/images/promotions/${promotion["id"]}/${promotion["alt"]}`;
-            });
-        }
+    loadPromotion = () => {
+        const promotion = this.props.promotion;
+        const preview = document.getElementById("image-preview");
+        preview.style.display = "inline-block";
+        preview.src = `/api/images/200/promotions/${promotion["id"]}/${promotion["alt"]}.jpg`;
     };
 
     validateInputs = () => {
@@ -53,8 +43,8 @@ class PromotionForm extends Component {
     };
 
     postPromotion = async () => {
-        const response = await fetch(`/api/promotions/${this.props?.promotionId ?? ""}`, {
-            method: this.props.promotionId ? "PUT" : "POST",
+        const response = await fetch(`/api/promotions/${this.props.promotion?.id ?? ""}`, {
+            method: this.props.promotion ? "PUT" : "POST",
             headers: { "Content-Type": "multipart/form-data; charset=utf-8" },
             body: buildFormData(),
         });
@@ -65,8 +55,10 @@ class PromotionForm extends Component {
     };
 
     render() {
-        const { loading, promotion, errors, submitted } = this.state;
-        return loading ? null : (
+        const { errors, submitted } = this.state;
+        const { promotion } = this.props;
+
+        return (
             <Fragment>
                 {errors.length !== 0
                     ? errors.map((err) => <label className={styles.err}>- {err}</label>)
@@ -142,7 +134,7 @@ class PromotionForm extends Component {
                                     imgHeight={100}
                                     defaultSrc={
                                         promotion
-                                            ? `/api/images/promotions/${promotion["id"]}/${promotion["alt"]}`
+                                            ? `/api/images/200/promotions/${promotion["id"]}/${promotion["alt"]}.jpg`
                                             : null
                                     }
                                 />

@@ -6,7 +6,10 @@ import javax.ws.rs.core.Response;
 
 public interface PromotionService {
     Response findAllPromotions();
+
     Response findPromotionsById(Integer id);
+
     Response createPromotion(MultipartBody body);
+
     Response deletePromotionById(Integer id);
 }

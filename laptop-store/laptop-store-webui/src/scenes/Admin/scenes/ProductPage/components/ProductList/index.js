@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { Table, ButtonGroup } from "reactstrap";
 import styles from "./styles.module.scss";
 import ProductDelete from "../ProductDelete";
-import ProductUpdate from "../ProductUpdate";
+import ProductEdit from "../ProductEdit";
 
 class ProductList extends Component {
     state = {
         loading: true,
-        laptops: [],
+        products: [],
     };
 
     componentDidMount() {
@@ -19,16 +19,16 @@ class ProductList extends Component {
             method: "GET",
         });
         if (response.ok) {
-            const laptops = await response.json();
+            const products = await response.json();
             this.setState({
                 loading: false,
-                laptops: laptops,
+                products: products,
             });
         }
     };
 
     render() {
-        const { loading, laptops } = this.state;
+        const { loading, products } = this.state;
         return loading ? null : (
             <Table className={styles.table} bordered>
                 <tbody>
@@ -39,23 +39,20 @@ class ProductList extends Component {
                         <th className={styles.quantityCol}>Số lượng</th>
                         <th className={styles.actionCol}>Thao tác</th>
                     </tr>
-                    {laptops.map((laptop) => (
+                    {products.map((product) => (
                         <tr>
-                            <td>{laptop["id"]}</td>
-                            <td className={styles.nameCol}>{laptop["name"]}</td>
+                            <td>{product["id"]}</td>
+                            <td className={styles.nameCol}>{product["name"]}</td>
                             <td>
-                                {(laptop["unit_price"] - laptop["discount_price"]).toLocaleString()}
+                                {(product["unit_price"] - product["discount_price"]).toLocaleString()}
                                 đ
                             </td>
-                            <td>{laptop["quantity"]}</td>
+                            <td>{product["quantity"]}</td>
                             <td>
                                 <ButtonGroup>
                                     <ButtonGroup>
-                                        <ProductDelete
-                                            productId={laptop["id"]}
-                                            productName={laptop["name"]}
-                                        />
-                                        <ProductUpdate productId={laptop["id"]} />
+                                        <ProductDelete product={product} />
+                                        <ProductEdit product={product} />
                                     </ButtonGroup>
                                 </ButtonGroup>
                             </td>

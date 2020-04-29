@@ -39,9 +39,5 @@ public class CPU {
     @Column(name = "max_speed")
     @JsonProperty("max_speed")
     private Float maxSpeed;
-
-//    @OneToOne(mappedBy = "cpu", fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    private Laptop laptop;
 }
 

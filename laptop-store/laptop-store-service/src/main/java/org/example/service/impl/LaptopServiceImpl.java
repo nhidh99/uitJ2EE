@@ -58,9 +58,23 @@ public class LaptopServiceImpl implements LaptopService {
     public Response createLaptop(MultipartBody body) {
         try {
             Laptop laptop = buildLaptopFromRequestBody(body);
-            laptop.setAvgRating(5.0f);
             laptopDAO.save(laptop);
-            return Response.ok().build();
+            return Response.status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @Path("/{id}")
+    @PUT
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response updateLaptop(@PathParam("id") Integer id, MultipartBody body) {
+        try {
+            Laptop laptop = buildLaptopFromRequestBody(body);
+            laptop.setId(id);
+            laptopDAO.save(laptop);
+            return Response.noContent().build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
@@ -94,7 +108,7 @@ public class LaptopServiceImpl implements LaptopService {
         List<Promotion> promotions = promotionDAO.findByIds(Arrays.asList(promotionIds));
         List<Tag> tags = tagDAO.findByIds(Arrays.asList(tagIds));
 
-        String alt = imageUtils.buildSEOImageName(name) + ".jpg";
+        String alt = imageUtils.buildSEOImageName(name);
         InputStream is = body.getAttachmentObject("image", InputStream.class);
         byte[] imageBlob = null, thumbnailBlob = null;
         BufferedImage image = ImageIO.read(is);
@@ -144,5 +158,53 @@ public class LaptopServiceImpl implements LaptopService {
                 .resolutionType(type)
                 .resolutionWidth(resolutionWidth)
                 .resolutionHeight(resolutionHeight).build();
+    }
+
+    @Override
+    @DELETE
+    @Path("/{id}")
+    public Response deleteLaptop(@PathParam("id") Integer id) {
+        try {
+            laptopDAO.delete(id);
+            return Response.noContent().build();
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/{id}/promotions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findPromotionsById(@PathParam("id") Integer id) {
+        try {
+            List<Promotion> promotions = promotionDAO.findByLaptopId(id);
+            ObjectMapper om = new ObjectMapper();
+            String promotionsJSON = om.writeValueAsString(promotions);
+            return promotions == null
+                    ? Response.status(Response.Status.BAD_REQUEST).build()
+                    : Response.ok(promotionsJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/{id}/tags")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findTagsById(@PathParam("id") Integer id) {
+        try {
+            List<Tag> tags = tagDAO.findByLaptopId(id);
+            ObjectMapper om = new ObjectMapper();
+            String tagsJSON = om.writeValueAsString(tags);
+            return tags == null
+                    ? Response.status(Response.Status.BAD_REQUEST).build()
+                    : Response.ok(tagsJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 }

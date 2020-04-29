@@ -4,11 +4,11 @@ import { Button, Modal, ModalHeader, ModalBody } from "reactstrap";
 import styles from "./styles.module.scss";
 import PromotionForm from "../PromotionForm";
 
-const PromotionEdit = ({ promotionId }) => {
+const PromotionEdit = ({ promotion }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
-    return promotionId ? (
+    return promotion ? (
         <Fragment>
             <Button className={styles.button} color="primary" onClick={toggle}>
                 <FaPen />
@@ -17,12 +17,11 @@ const PromotionEdit = ({ promotionId }) => {
             <Modal isOpen={modal} toggle={toggle} className={styles.modal}>
                 <ModalHeader toggle={toggle}>
                     <FaGifts />
-                    &nbsp;&nbsp;Cập nhật khuyến mãi (Mã khuyến mãi:{" "}
-                    {promotionId})
+                    &nbsp;&nbsp;Cập nhật khuyến mãi (Mã khuyến mãi: {promotion["id"]})
                 </ModalHeader>
 
                 <ModalBody>
-                    <PromotionForm promotionId={promotionId} toggle={toggle} />
+                    <PromotionForm promotion={promotion} toggle={toggle} />
                 </ModalBody>
             </Modal>
         </Fragment>

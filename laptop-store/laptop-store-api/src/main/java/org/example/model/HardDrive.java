@@ -35,8 +35,4 @@ public class HardDrive {
     @Column(name = "detail")
     @JsonProperty("detail")
     private String detail;
-
-//    @OneToOne(mappedBy = "hardDrive", fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    private Laptop laptop;
 }

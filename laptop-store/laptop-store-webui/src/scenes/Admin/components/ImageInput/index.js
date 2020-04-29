@@ -15,6 +15,7 @@ const ImageInput = (props) => {
             <img
                 id="image-preview"
                 alt="Xem trước ảnh khuyến mãi"
+                src={defaultSrc === null ? "" : defaultSrc}
                 width={imgWidth}
                 height={imgHeight}
                 className={styles.imgPreview}

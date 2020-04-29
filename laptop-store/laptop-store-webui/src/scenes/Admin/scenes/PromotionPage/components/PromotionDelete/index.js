@@ -3,12 +3,12 @@ import { FaTrash } from "react-icons/fa";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import styles from "./styles.module.scss";
 
-const PromotionDelete = ({ promotionId, promotionName }) => {
+const PromotionDelete = ({ promotion }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
     const submit = async () => {
-        const response = await fetch(`/api/promotions/${promotionId}`, {
+        const response = await fetch(`/api/promotions/${promotion["id"]}`, {
             method: "DELETE",
         });
         if (response.ok) {
@@ -31,7 +31,7 @@ const PromotionDelete = ({ promotionId, promotionName }) => {
                 <ModalBody>
                     Xác nhận xóa khuyến mãi{" "}
                     <b>
-                        {promotionId} - {promotionName}?
+                        {promotion["id"]} - {promotion["name"]}?
                     </b>
                 </ModalBody>
 

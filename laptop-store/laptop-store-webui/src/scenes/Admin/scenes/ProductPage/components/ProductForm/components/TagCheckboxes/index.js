@@ -27,7 +27,17 @@ class TagCheckboxes extends Component {
         }
     };
 
-    loadProductTags = async () => {};
+    loadProductTags = async () => {
+        const { product } = this.props;
+        if (!product) {
+            return;
+        }
+        const response = await fetch(`/api/laptops/${product["id"]}/tags`);
+        if (response.ok) {
+            const tags = await response.json();
+            this.setState({ checked: tags });
+        }
+    };
 
     render() {
         const { loading, tags, checked } = this.state;
@@ -35,8 +45,14 @@ class TagCheckboxes extends Component {
             <div className={styles.checkboxes}>
                 {tags.map((tag) => (
                     <Fragment>
-                        <input type="checkbox" name="tags" value={tag["id"]} />
-                        <label>&nbsp;{tag["name"]}</label>
+                        <input
+                            id={`tag-${tag["id"]}`}
+                            type="checkbox"
+                            name="tags"
+                            value={tag["id"]}
+                            defaultChecked={checked.map((c) => c["id"]).includes(tag["id"])}
+                        />
+                        <label onClick={() => checkTag(tag["id"])}>&nbsp;{tag["name"]}</label>
                         <br />
                     </Fragment>
                 ))}
@@ -44,5 +60,10 @@ class TagCheckboxes extends Component {
         );
     }
 }
+
+const checkTag = (id) => {
+    const input = document.getElementById("tag-" + id);
+    input.checked = !input.checked;
+};
 
 export default TagCheckboxes;

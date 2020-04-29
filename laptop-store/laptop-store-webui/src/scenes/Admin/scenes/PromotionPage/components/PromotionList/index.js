@@ -53,11 +53,8 @@ class PromotionList extends Component {
                             <td className={styles.actionCol}>
                                 <ButtonGroup>
                                     <ButtonGroup>
-                                        <PromotionDelete
-                                            promotionId={promotion["id"]}
-                                            promotionName={promotion["name"]}
-                                        />
-                                        <PromotionEdit promotionId={promotion["id"]} />
+                                        <PromotionDelete promotion={promotion} />
+                                        <PromotionEdit promotion={promotion} />
                                     </ButtonGroup>
                                 </ButtonGroup>
                             </td>
