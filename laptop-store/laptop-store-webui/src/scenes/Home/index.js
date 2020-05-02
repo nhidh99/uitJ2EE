@@ -9,7 +9,7 @@ class Home extends Component {
     render() {
         return (
             <Switch>
-                <Route exact component={DetailPage} path="/detail" />
+                <Route exact path={["/product/:id", "/product/:alt/:id"]} component={DetailPage} />
                 <Route exact component={HomePage} path="/" />
                 <Route exact component={ResultPage} path="/result" />
                 <Route exact component={UserPage} path="/user" />

@@ -1,55 +1,76 @@
 import React, { Component } from "react";
 import { Table } from "reactstrap";
-import styles from './styles.module.scss';
+import styles from "./styles.module.scss";
+import {
+    convertCPUType,
+    convertResolutionType,
+    convertBrandType,
+} from "../../../../../../services/helper";
 
 class DetailBlock extends Component {
     render() {
+        const { product } = this.props;
+        const { cpu, ram, hard_drive, monitor } = product;
         return (
             <Table bordered className={styles.table}>
                 <tbody>
                     <tr>
                         <th>Thương hiệu</th>
-                        <td>Dell</td>
+                        <td>{convertBrandType(product["brand"])}</td>
                     </tr>
                     <tr>
                         <th>CPU</th>
-                        <td>Intel Core i5 Comet Lake, 10210U, 1.60 GHz</td>
+                        <td>{`${convertCPUType(cpu["type"])} ${cpu["detail"]}, ${
+                            cpu["speed"]
+                        } GHz`}</td>
                     </tr>
                     <tr>
                         <th>RAM</th>
-                        <td>8 GB, DDR4 (On board +1 khe), 2666 MHz</td>
+                        <td>{`${ram["size"]} GB ${ram["type"]} ${ram["bus"]} MHz (${
+                            ram["extra_slot"] === 0
+                                ? "Không hỗ trợ nâng cấp"
+                                : "On board +1 khe RAM"
+                        })`}</td>
                     </tr>
                     <tr>
                         <th>Ổ cứng</th>
-                        <td>SSD 256GB NVMe PCIe, Hỗ trợ khe cắm HDD SATA</td>
+                        <td>
+                            {`${hard_drive["type"]} 
+                            ${hard_drive["size"] === 1024 ? "1 TB" : `${hard_drive["size"]} GB`} 
+                            ${hard_drive["detail"]}`}
+                        </td>
                     </tr>
                     <tr>
                         <th>Màn hình</th>
-                        <td>14 inch, Full HD (1920 x 1080)</td>
+                        <td>
+                            {`${monitor["size"]} inch,
+                            ${convertResolutionType(monitor["resolution_type"])} 
+                            (${monitor["resolution_width"]} x ${monitor["resolution_height"]})`}
+                        </td>
                     </tr>
                     <tr>
                         <th>Card màn hình</th>
-                        <td>Card đồ họa tích hợp, Intel UHD Graphics</td>
+                        <td>{product["graphics_card"]}</td>
                     </tr>
                     <tr>
                         <th>Cổng kết nối</th>
-                        <td>2 x USB 3.1, HDMI, LAN (RJ45), USB 2.0, USB Type-C</td>
-                    </tr>
-                    <tr>
-                        <th>Đặc biệt</th>
-                        <td>Có đèn bàn phím</td>
+                        <td>{product["ports"]}</td>
                     </tr>
                     <tr>
                         <th>Hệ điều hành</th>
-                        <td>Windows 10 Home SL</td>
+                        <td>{product["os"]}</td>
+                    </tr>
+                    <tr>
+                        <th>Thiết kế</th>
+                        <td>{product["design"]}</td>
                     </tr>
                     <tr>
                         <th>Kích thước</th>
-                        <td>Dày 18.3 mm, 1.49 kg</td>
+                        <td>{`Dày ${product["thickness"]} mm, ${product["weight"]} kg`}</td>
                     </tr>
                 </tbody>
             </Table>
-        )
+        );
     }
 }
 

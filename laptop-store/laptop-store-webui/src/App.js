@@ -15,18 +15,10 @@ function App() {
                     <Route
                         exact
                         component={Home}
-                        path="/(|detail|result|user)"
+                        path={["/", "/search", "/user", "/product/:id", "/product/:alt/:id"]}
                     />
-                    <Route
-                        exact
-                        component={Admin}
-                        path="/admin/(|products|orders|promotions)"
-                    />
-                    <Route
-                        exact
-                        component={Auth}
-                        path="/auth/(forgot|login|register)"
-                    />
+                    <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
+                    <Route exact component={Auth} path="/auth/(forgot|login|register)" />
                 </Switch>
             </div>
         </BrowserRouter>

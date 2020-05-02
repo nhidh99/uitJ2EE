@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/api/laptops")
 public class LaptopServiceImpl implements LaptopService {
@@ -46,6 +47,24 @@ public class LaptopServiceImpl implements LaptopService {
             ObjectMapper om = new ObjectMapper();
             String laptopsJSON = om.writeValueAsString(laptops);
             return Response.ok(laptopsJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findLaptopById(@PathParam("id") Integer id) {
+        try {
+            Optional<Laptop> optLaptop = laptopDAO.findById(id);
+            if (optLaptop.isPresent() && optLaptop.get().isRecordStatus()) {
+                ObjectMapper om = new ObjectMapper();
+                String laptopJSON = om.writeValueAsString(optLaptop.get());
+                return Response.ok(laptopJSON).build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }

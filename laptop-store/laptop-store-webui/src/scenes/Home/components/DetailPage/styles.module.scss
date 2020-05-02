@@ -1,5 +1,5 @@
 .title {
-    background-color: rgb(239, 239, 239);;
+    background-color: rgb(239, 239, 239);
     margin-bottom: 10px !important;
     font-size: 16px;
 }
@@ -10,4 +10,12 @@
 
 .section {
     margin-bottom: 30px;
+}
+
+.productRedirect {
+    color: #007bff !important;
+}
+
+.productRedirect:hover {
+    text-decoration: underline !important;
 }
