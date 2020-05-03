@@ -1,9 +1,10 @@
-.inputRadio {
-    display: flex !important;
+.inputCheckBox {
+    display: flex;
     margin-right: 15px;
     margin-bottom: 0px;
     align-items: center;
 }
+
 
 input[type="submit"] {
     border-radius: 4px;
@@ -27,5 +28,10 @@ input[type="submit"] {
     padding-bottom: 9px;
     margin: 40px 0 20px;
     border-bottom: 1px solid #eee;
+    padding-left: 20px;
+}
 
+.textArea{
+    display: flex;
+    align-items: center;
 }

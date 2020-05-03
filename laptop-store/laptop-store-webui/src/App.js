@@ -19,6 +19,10 @@ function App() {
                     />
                     <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
                     <Route exact component={Auth} path="/auth/(forgot|login|register)" />
+					<Route exact component={Home} path="/user/(info|password|address|save-for-later|order|cart|payment)"/>
+					<Route exact component={Home} path="/user/address/(|create)"/>
+					<Route exact component={Home} path="/user/order/:orderId"/>
+					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>
                 </Switch>
             </div>
         </BrowserRouter>
