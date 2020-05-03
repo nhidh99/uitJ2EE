@@ -1,0 +1,41 @@
+.header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 0 !important;
+}
+
+.title {
+    margin-bottom: 20px;
+}
+
+.pageHeader {
+    padding-bottom: 9px;
+    margin: 40px 0 20px;
+}
+.orderTable {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.idCol {
+    width: 17%;
+    text-align: center;
+}
+
+.dateCol {
+    width: 10%;
+    text-align: center;
+}
+
+.productsCol {
+    width: 40%;
+}
+
+.priceCol {
+    width: 18%;
+    text-align: center;
+}
+
+.statusCol {
+    width: 15%;
+    text-align: right;
+}

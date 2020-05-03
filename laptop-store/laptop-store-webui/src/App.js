@@ -15,14 +15,19 @@ function App() {
                     <Route
                         exact
                         component={Home}
-                        path={["/", "/search", "/user", "/product/:id", "/product/:alt/:id"]}
+                        path={[
+                            "/",
+                            "/search",
+                            "/user",
+                            "/product/:id",
+                            "/product/:alt/:id",
+                            "/user/(info|password|address|cart|order|cart|payment)",
+                            "/user/address/create",
+                            "/user/order/:orderId"
+                        ]}
                     />
                     <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
                     <Route exact component={Auth} path="/auth/(forgot|login|register)" />
-					<Route exact component={Home} path="/user/(info|password|address|save-for-later|order|cart|payment)"/>
-					<Route exact component={Home} path="/user/address/(|create)"/>
-					<Route exact component={Home} path="/user/order/:orderId"/>
-					<Route exact component={Auth} path="/auth/(forgot|login|register)"/>
                 </Switch>
             </div>
         </BrowserRouter>

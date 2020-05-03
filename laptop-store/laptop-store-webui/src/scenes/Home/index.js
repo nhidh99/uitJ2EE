@@ -12,10 +12,16 @@ class Home extends Component {
                 <Route exact path={["/product/:id", "/product/:alt/:id"]} component={DetailPage} />
                 <Route exact component={HomePage} path="/" />
                 <Route exact component={ResultPage} path="/result" />
-                <Route exact component={ResultPage} path="/result" />
-                <Route exact component={UserPage} path="/user/(info|password|address|order|save-for-later|cart|payment)" />
-                <Route exact component={UserPage} path="/user/address/(|create)" />
-                <Route exact component={UserPage} path="/user/order/:orderId" />
+                <Route
+                    exact
+                    component={UserPage}
+                    path="/user/(info|password|address|order|cart|payment)"
+                />
+                <Route
+                    exact
+                    component={UserPage}
+                    path={["/user/address/(|create)", "/user/order/:orderId"]}
+                />
             </Switch>
         );
     }
