@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Table } from "reactstrap";
 import styles from "./styles.module.scss";
 import {
+    convertBrandType,
     convertCPUType,
     convertResolutionType,
-    convertBrandType,
-} from "../../../../../../services/helper";
+} from "../../../../../../services/helper/converter";
 
 class DetailBlock extends Component {
     render() {

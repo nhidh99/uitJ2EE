@@ -55,7 +55,7 @@ class SideBar extends Component {
                         Đơn hàng
                     </ListGroupItem>
 
-                    <ListGroupItem tag="a" href="/user/cart">
+                    <ListGroupItem tag="a" href="/cart">
                         <FaShoppingCart className={styles.icon} />
                         Giỏ hàng
                     </ListGroupItem>

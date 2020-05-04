@@ -5,12 +5,12 @@ import AddressPage from "./scenes/AddressPage";
 import EditAddressPage from "./scenes/EditAddressPage";
 import PasswordPage from "./scenes/PasswordPage";
 import OrderPage from "./scenes/OrderPage";
-import CartPage from "./scenes/CartPage";
 import PaymentPage from "./scenes/PaymentPage";
 import SideBar from "./components/SideBar";
 import styles from "./styles.module.scss";
 import { Col, Row } from "reactstrap";
 import OrderDetail from "./scenes/OrderDetail";
+import CartPage from "../CartPage";
 
 class UserPage extends Component {
     render() {

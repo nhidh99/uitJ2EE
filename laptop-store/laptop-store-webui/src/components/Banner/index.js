@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import { Label, Input, InputGroupText, InputGroupAddon, InputGroup, Badge } from "reactstrap";
 import styles from "./styles.module.scss";
+import { getCart } from "../../services/helper/cart";
 
 class Banner extends Component {
     render() {
@@ -57,13 +58,13 @@ const BannerRight = () => (
                     <BannerCategory href="/" icon={<FaBoxes />} title="Đơn hàng" />
 
                     <BannerCategory
-                        href="/"
+                        href="/cart"
                         icon={
                             <Fragment>
                                 <FaShoppingCart />
                                 &nbsp;
-                                <Badge pill className={styles.cartCount}>
-                                    0
+                                <Badge pill id="cart-quantity" className={styles.cartCount}>
+                                    {Object.values(getCart()).reduce((a, b) => a + b, 0)}
                                 </Badge>
                             </Fragment>
                         }

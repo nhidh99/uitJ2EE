@@ -3,7 +3,8 @@ import { Col, Label, Button, Input, Row } from "reactstrap";
 import styles from "./styles.module.scss";
 import Rating from "react-rating";
 import { FaStar, FaShoppingCart } from "react-icons/fa";
-import { convertCPUType, convertResolutionType } from "../../../../../../services/helper";
+import { convertCPUType, convertResolutionType } from "../../../../../../services/helper/converter";
+import { addToCart } from "../../../../../../services/helper/cart";
 
 class OverviewBlock extends Component {
     state = {
@@ -50,7 +51,7 @@ class OverviewBlock extends Component {
                         </Fragment>
                     ) : null}
 
-                    <ProductActions />
+                    <ProductActions product={product} />
                 </Col>
             </Fragment>
         );
@@ -150,21 +151,28 @@ const ProductPromotions = ({ promotions }) => (
     </div>
 );
 
-const ProductActions = () => (
+const ProductActions = ({ product }) => (
     <div className={styles.blockChild}>
         <Row>
             <Col xs="4" className={styles.quantityCol}>
                 <Label className={styles.quantityLabel}>Số lượng:</Label>
                 <Input
+                    id="quantity"
                     type="number"
                     min={1}
                     max={100}
-                    placeholder={1}
+                    defaultValue={1}
                     className={styles.quantityInput}
                 />
             </Col>
             <Col xs="4" className={styles.quantityCol}>
-                <Button color="success">
+                <Button
+                    color="success"
+                    onClick={() => {
+                        const quantity = parseInt(document.getElementById("quantity").value);
+                        addToCart(product["id"], quantity);
+                    }}
+                >
                     <FaShoppingCart />
                     &nbsp;&nbsp;Thêm vào giỏ hàng
                 </Button>

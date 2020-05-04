@@ -19,11 +19,12 @@ function App() {
                             "/",
                             "/search",
                             "/user",
+                            "/cart",
                             "/product/:id",
                             "/product/:alt/:id",
-                            "/user/(info|password|address|cart|order|cart|payment)",
+                            "/user/(info|password|address|order|payment)",
                             "/user/address/create",
-                            "/user/order/:orderId"
+                            "/user/order/:orderId",
                         ]}
                     />
                     <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />

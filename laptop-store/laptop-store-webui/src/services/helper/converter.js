@@ -5,7 +5,7 @@ export const convertCPUType = (type) => {
         case "INTEL_CORE_I7":
             return type.replace("INTEL_CORE_I", "Intel Core i");
         case "INTEL_CELERON":
-            return "Intel Celereon";
+            return "Intel Celeron";
         case "INTEL_PENTIUM":
             return "Intel Pentium";
         case "AMD":

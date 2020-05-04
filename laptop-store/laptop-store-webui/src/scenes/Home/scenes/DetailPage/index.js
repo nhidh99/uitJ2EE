@@ -7,7 +7,7 @@ import CommentBlock from "./components/CommentBlock";
 import { Row, Label } from "reactstrap";
 import styles from "./styles.module.scss";
 import { FaCaretRight } from "react-icons/fa";
-import { convertBrandType } from "../../../../services/helper";
+import { convertBrandType } from "../../../../services/helper/converter";
 
 class DetailPage extends Component {
     state = {
