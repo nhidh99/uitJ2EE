@@ -9,6 +9,9 @@
 
 .name {
     font-size: 15px;
+    margin-bottom: 2px !important;
+    color:#0000FF;
+    font-weight: 500;
 }
 
 .name:hover {
@@ -31,5 +34,10 @@
 
 .quantity {
     text-align-last: center;
-    max-width: 100px;
+    max-width: 50px;
+}
+
+.updateQuantity {
+    background-color: whitesmoke !important;
+    max-width: 30px !important;
 }

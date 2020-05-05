@@ -23,10 +23,26 @@
     background-color: white;
     font-size: 16px;
     text-align: end;
-    margin-right: 40px;
+    border-bottom: 1.5px solid #eee;
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+
+    b {
+        color: #454545;
+    }
 }
 
 .price {
     color: red;
     font-weight: bold;
+}
+
+.emptyCart {
+    text-align: center;
+    padding: 20px 0;
+
+    h4 {
+        margin-bottom: 10px;
+    }
 }

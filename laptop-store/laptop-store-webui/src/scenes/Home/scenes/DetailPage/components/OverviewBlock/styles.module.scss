@@ -112,3 +112,13 @@ $background-color: rgb(239, 239, 239);
 .quantityInput {
     text-align: center;
 }
+
+.quantityError {
+    font-weight: 600;
+    margin-left: 15px;
+    margin-bottom: 0;
+    margin-top: 15px;
+    color: red;
+    font-size: 14px;
+    display: none;
+}

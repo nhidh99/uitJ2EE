@@ -5,6 +5,7 @@ import Rating from "react-rating";
 import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { convertCPUType, convertResolutionType } from "../../../../../../services/helper/converter";
 import { addToCart } from "../../../../../../services/helper/cart";
+import { MAXIMUM_QUANTITY_PER_PRODUCT } from "../../../../../../constants";
 
 class OverviewBlock extends Component {
     state = {
@@ -165,20 +166,28 @@ const ProductActions = ({ product }) => (
                     className={styles.quantityInput}
                 />
             </Col>
-            <Col xs="4" className={styles.quantityCol}>
-                <Button
-                    color="success"
-                    onClick={() => {
-                        const quantity = parseInt(document.getElementById("quantity").value);
-                        addToCart(product["id"], quantity);
-                    }}
-                >
+            <Col xs="8" className={styles.quantityCol}>
+                <Button color="success" onClick={() => addQuantityToCart(product["id"])}>
                     <FaShoppingCart />
                     &nbsp;&nbsp;Thêm vào giỏ hàng
                 </Button>
             </Col>
         </Row>
+        <Label className={styles.quantityError} id="quantity-error">
+            Tối đa {MAXIMUM_QUANTITY_PER_PRODUCT} sản phẩm {product["name"]} trong giỏ hàng
+        </Label>
     </div>
 );
+
+const addQuantityToCart = (productId) => {
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const success = addToCart(productId, quantity);
+    const quantityError = document.getElementById("quantity-error");
+    if (!success) {
+        quantityError.style.display = "inline-block";
+    } else {
+        quantityError.style.display = "none";
+    }
+};
 
 export default OverviewBlock;
