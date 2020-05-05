@@ -1,0 +1,28 @@
+.brandfilter {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin: 5px;
+    padding: 10px;
+    button {
+        outline: none;
+        &:focus {
+            outline: none;
+            border: none;
+        }
+    }
+}
+
+.brand {
+    background-color: gray;
+    border: none;
+    margin-left: 10px;
+    margin-right: 10px;
+    min-width: 60px;
+    min-height: 60px;
+    border-radius: 50%;
+    text-align: center;
+    &:hover {
+        background-color: slategray;
+    }
+}
