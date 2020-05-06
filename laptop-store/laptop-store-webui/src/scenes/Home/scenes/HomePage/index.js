@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import BrandFilter from "./components/BrandFilter/BrandFilter";
 import styles from "./styles.module.scss";
 import SlideShow from "./components/SlideShow/SlideShow";
@@ -38,13 +38,13 @@ class HomePage extends Component {
                 </div>
                 <div className={styles.container}>
                     <div className={styles.leftside}>
-                        <DemandFilterBlock/>
-                        <BrandFilterBlock/>
-                        <PriceFilterBlock/>
-                        <CPUFilterBlock/>
-                        <RamFilterBlock/>
-                        <HardDriveFilterBlock/>
-                        <ScreenFilterBlock/>
+                        <DemandFilterBlock />
+                        <BrandFilterBlock />
+                        <PriceFilterBlock />
+                        <CPUFilterBlock />
+                        <RamFilterBlock />
+                        <HardDriveFilterBlock />
+                        <ScreenFilterBlock />
                     </div>
 
                     <div className={styles.rightside}>

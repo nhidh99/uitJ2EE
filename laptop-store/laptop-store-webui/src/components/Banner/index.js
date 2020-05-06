@@ -71,7 +71,7 @@ const BannerRight = () => (
                         title="Giỏ hàng"
                     />
 
-                    <BannerCategory href="/" icon={<FaUser />} title="Đăng nhập" />
+                    <BannerCategory href="/auth/login" icon={<FaUser />} title="Đăng nhập" />
                 </tr>
             </tbody>
         </table>
