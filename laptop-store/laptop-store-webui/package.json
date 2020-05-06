@@ -11,8 +11,11 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.9.0",
+    "react-number-format": "^4.4.1",
+    "react-rating": "^2.0.5",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "react-star-ratings": "^2.3.0",
     "reactstrap": "^8.4.1"
   },
   "scripts": {
@@ -21,6 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:8081/",
   "eslintConfig": {
     "extends": "react-app"
   },

@@ -1,0 +1,47 @@
+.radioInput {
+    margin: 0 15px;
+    align-items: center;
+    width: fit-content;
+    font-size: 16px;
+
+    input {
+        margin-top: 6px;
+    }
+}
+
+.labelCol {
+    width: 90px;
+}
+
+.title {
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-spacing: 10px;    
+    border-collapse: separate;
+    padding: 15px 10px;
+    border: 1.5px dashed darkgray;
+}
+
+.header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 0 !important;
+}
+
+.label {
+    font-size: 16px !important;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    font-size: 16px !important;
+}
+
+.submit {
+    float: right;
+    width: 100px;
+}

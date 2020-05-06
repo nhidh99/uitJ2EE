@@ -1,0 +1,23 @@
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0em 7px;
+    td,
+    th {
+        vertical-align: middle;
+    }
+}
+
+.labelCol {
+    width: 100px;
+}
+
+.statusBtnGroup {
+    width: 100%;
+}
+
+.statusSelect {
+    width: 85% !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
