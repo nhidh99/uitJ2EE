@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.example.dao.api.UserDAO;
+import org.example.model.User;
 import org.example.type.Role;
 
 import javax.annotation.Priority;
@@ -17,10 +18,12 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +59,37 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey("mykey").parseClaimsJws(token);
             this.id = Integer.parseInt(claimsJws.getBody().getSubject());
+
+            requestContext.setSecurityContext(new SecurityContext() {
+
+                @Override
+                public Principal getUserPrincipal() {
+
+                    return new Principal() {
+
+                        @Override
+                        public String getName() {
+                            User user = userDAO.findById(id).get();
+                            return user.getUsername();
+                        }
+                    };
+                }
+
+                @Override
+                public boolean isUserInRole(String role) {
+                    return true;
+                }
+
+                @Override
+                public boolean isSecure() {
+                    return false;
+                }
+
+                @Override
+                public String getAuthenticationScheme() {
+                    return null;
+                }
+            });
         }catch (Exception e) {
             e.printStackTrace();
         }

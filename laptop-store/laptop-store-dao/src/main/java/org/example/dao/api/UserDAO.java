@@ -13,5 +13,5 @@ public interface UserDAO {
     void register(User user);
     User findByUsername(String username);
     Optional<User> findById(Integer id);
-    boolean checkUsername(String username);
+    boolean checkRegister(String username, String email);
 }

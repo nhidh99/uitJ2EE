@@ -13,12 +13,12 @@ class RegisterPage extends Component {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const email = document.getElementById('email').value;
-        const name = document.getElementById('name').value
-
-        this.processRegister(username, password, email, name);
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        this.processRegister(username, password, email, name, phone);
     }
 
-    processRegister = async (username, password, email, name) => {
+    processRegister = async (username, password, email, name, phone) => {
         const url = "/api/auth/register";
         const response = await fetch(url, {
             method: 'POST',
@@ -29,7 +29,8 @@ class RegisterPage extends Component {
                 username: username,
                 password: password,
                 email: email,
-                name: name
+                name: name, 
+                phone: phone
             })
         });
 
@@ -64,7 +65,11 @@ class RegisterPage extends Component {
                                 </div>
                                 <div className={styles.phone_number}>
                                     <section><FaPhone></FaPhone></section>
-                                    <input type="text" name="phonenumbber" id="name" placeholder="Phone Number"></input>
+                                    <input type="text" name="phonenumbber" id="name" placeholder="Name"></input>
+                                </div>
+                                <div className={styles.phone_number}>
+                                    <section><FaPhone></FaPhone></section>
+                                    <input type="text" name="phonenumbber" id="phone" placeholder="Phone Number"></input>
                                 </div>
                                 <div className={styles.password}>
                                     <section><FaLock></FaLock></section>

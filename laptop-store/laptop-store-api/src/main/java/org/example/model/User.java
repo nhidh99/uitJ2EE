@@ -36,6 +36,10 @@ public class User {
     @JsonProperty("name")
     private String name;
 
+    @Column(name="phone")
+    @JsonProperty("phone")
+    private String phone;
+
     @Column(name="role")
     @JsonIgnore
     @Enumerated(EnumType.STRING)

@@ -72,7 +72,9 @@ public class UserDAOImpl implements UserDAO {
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 
-    public boolean checkUsername(String username) {
-        return findByUsername(username) != null ? false : true;
+    public boolean checkRegister(String username, String email) {
+        String query = "SELECT u FROM User u WHERE u.email = :email";
+        boolean isEmailExist = em.createQuery(query, User.class).setParameter("email", email).getResultList().isEmpty() ? false : true;
+        return ((findByUsername(username) != null) || isEmailExist) ? false : true;
     }
 }

@@ -17,4 +17,7 @@ public class RegisterInput {
 
     @FormParam("email")
     private String email;
+
+    @FormParam("phone")
+    private String phone;
 }
