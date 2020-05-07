@@ -1,23 +1,28 @@
 package org.example.input;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
-import javax.ws.rs.FormParam;
 
 @Data
 public class RegisterInput {
-    @FormParam("username")
+    @JsonProperty("username")
     private String username;
 
-    @FormParam("password")
+    @JsonProperty("password")
     private String password;
 
-    @FormParam("name")
+    @JsonProperty("name")
     private String name;
 
-    @FormParam("email")
+    @JsonProperty("email")
     private String email;
 
-    @FormParam("phone")
+    @JsonProperty("phone")
     private String phone;
+
+    @JsonProperty("gender")
+    private String gender;
+
+    @JsonProperty("birthday")
+    private Long birthday;
 }

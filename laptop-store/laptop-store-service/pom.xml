@@ -33,13 +33,6 @@
         </dependency>
 
         <dependency>
-            <groupId>groupId</groupId>
-            <artifactId>laptop-store-ejb</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-bundle-jaxrs</artifactId>
             <version>2.7.18</version>
@@ -47,6 +40,18 @@
         <dependency>
             <groupId>groupId</groupId>
             <artifactId>laptop-store-util</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>groupId</groupId>
+            <artifactId>laptop-store-dao</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>groupId</groupId>
+            <artifactId>laptop-store-security</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

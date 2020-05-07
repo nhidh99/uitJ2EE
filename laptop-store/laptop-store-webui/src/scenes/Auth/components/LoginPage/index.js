@@ -9,6 +9,23 @@ class LoginPage extends Component {
         error: null,
     };
 
+    login = async () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        });
+        if (response.ok) {
+            const token = await response.text();
+            alert(token);
+        }
+    };
+
     render() {
         const { error } = this.state;
 
@@ -23,6 +40,7 @@ class LoginPage extends Component {
                     </InputGroupAddon>
                     <Input
                         autoFocus
+                        id="username"
                         type="text"
                         placeholder="Tài khoản"
                         className={styles.borderInputRight}
@@ -36,13 +54,14 @@ class LoginPage extends Component {
                         </InputGroupText>
                     </InputGroupAddon>
                     <Input
+                        id="password"
                         type="password"
                         placeholder="Mật khẩu"
                         className={styles.borderInputRight}
                     />
                 </InputGroup>
 
-                <Button color="secondary" className={styles.button}>
+                <Button color="secondary" className={styles.button} onClick={this.login}>
                     Đăng nhập
                 </Button>
 

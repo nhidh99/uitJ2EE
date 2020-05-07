@@ -16,6 +16,7 @@ class RegisterPage extends Component {
         const email = document.getElementById("email").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
+        const gender = document.getElementById("gender").value;
         const birthday = document.getElementById("birthday").value;
 
         return {
@@ -24,8 +25,9 @@ class RegisterPage extends Component {
             confirm: confirm,
             email: email.trim(),
             name: name.trim().replace(/ +g/, " "),
+            gender: gender,
             phone: phone,
-            birthday: birthday,
+            birthday: new Date(birthday).getTime(),
         };
     };
 
@@ -43,7 +45,7 @@ class RegisterPage extends Component {
         validate("Email phải là địa chỉ hợp lệ", () => register["email"].match(/\S+@\S+\.\S+/));
         validate("Số điện thoại từ 6 - 12 chữ số", () => register["phone"].match(/^\d{6,12}$/));
         validate("Họ tên không được để trống", () => register["name"].length > 0);
-        validate("Ngày không được để trống", () => register["name"].length > 0);
+        validate("Ngày sinh không được để trống", () => !isNaN(register["birthday"]));
         return errors;
     };
 
@@ -60,9 +62,9 @@ class RegisterPage extends Component {
         const response = await fetch(url, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
             },
-            body: body,
+            body: JSON.stringify(body),
         });
 
         if (response.ok) {
