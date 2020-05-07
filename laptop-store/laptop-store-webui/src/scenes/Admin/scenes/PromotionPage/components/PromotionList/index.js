@@ -3,6 +3,7 @@ import { Table, ButtonGroup } from "reactstrap";
 import styles from "./styles.module.scss";
 import PromotionDelete from "../PromotionDelete";
 import PromotionEdit from "../PromotionEdit";
+import { getCookie } from "../../../../../../services/helper/cookie";
 
 class PromotionList extends Component {
     state = {
@@ -17,6 +18,10 @@ class PromotionList extends Component {
     fetchData = async () => {
         const response = await fetch("/api/promotions", {
             method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            }
         });
 
         if (response.ok) {

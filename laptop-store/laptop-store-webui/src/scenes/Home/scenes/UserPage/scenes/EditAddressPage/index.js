@@ -9,7 +9,6 @@ class EditAddressPage extends Component {
         return (
             <Container id="content">
                 <Row>
-                    <SideBar />
                     <Col md="9" className={styles.inner}>
                         <Row className={styles.pageHeader}>
                             <h3>

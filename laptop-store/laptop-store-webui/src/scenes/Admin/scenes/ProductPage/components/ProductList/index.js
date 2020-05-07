@@ -3,6 +3,7 @@ import { Table, ButtonGroup } from "reactstrap";
 import styles from "./styles.module.scss";
 import ProductDelete from "../ProductDelete";
 import ProductEdit from "../ProductEdit";
+import { getCookie } from "../../../../../../services/helper/cookie";
 
 class ProductList extends Component {
     state = {
@@ -17,6 +18,9 @@ class ProductList extends Component {
     loadData = async () => {
         const response = await fetch("/api/laptops", {
             method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            }
         });
         if (response.ok) {
             const products = await response.json();
