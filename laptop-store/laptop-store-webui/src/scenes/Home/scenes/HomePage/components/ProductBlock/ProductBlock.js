@@ -15,7 +15,8 @@ class ProductBlock extends Component {
                 id: 1,
                 name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
                 CPU: "CPU",
-                ram:"ram",
+                ram:"16 GB",
+                harddrive: "500GB",
                 price: 15000000,
                 rating: 4,
                 src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
@@ -24,7 +25,8 @@ class ProductBlock extends Component {
                 id: 2,
                 name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
                 CPU: "CPU",
-                ram:"ram",
+                ram:"8 GB",
+                harddrive: "500GB",
                 price: 15000000,
                 rating: 4.5,
                 src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
@@ -33,7 +35,8 @@ class ProductBlock extends Component {
                 id: 3,
                 name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
                 CPU: "CPU",
-                ram:"ram",
+                ram:"32Gb",
+                harddrive: "500GB",
                 price: 15000000,
                 rating: 3.2,
                 src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
@@ -42,7 +45,8 @@ class ProductBlock extends Component {
                 id: 4,
                 name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
                 CPU: "CPU",
-                ram:"ram",
+                ram:"8 GB",
+                harddrive: "500GB",
                 price: 15000000,
                 rating: 5,
                 src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
@@ -51,7 +55,8 @@ class ProductBlock extends Component {
                 id: 5,
                 name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
                 CPU: "CPU",
-                ram:"ram",
+                ram:"16 GB",
+                harddrive: "500GB",
                 price: 15000000,
                 rating: 3,
                 src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
@@ -83,7 +88,10 @@ class ProductBlock extends Component {
                                 <td>RAM: {product.ram}</td>
                             </tr>
                             <tr>
-                                <td className={styles.price}>Giá: {product.price}</td>
+                                <td>Ổ cứng: {product.harddrive}</td>
+                            </tr>
+                            <tr>
+                                <td className={styles.price}>Giá: {product.price.toLocaleString()}</td>
                             </tr>
                             <tr>
                                 <Rating
@@ -105,7 +113,7 @@ class ProductBlock extends Component {
                 <div className={styles.products}>
                     {products}
                 </div>
-                <Button className={styles.readmore} onClick={this.handleReadmoreClicked}>Read More...</Button>
+                <Button className={styles.readmore} onClick={this.handleReadmoreClicked}>Xem thêm...</Button>
             </div>
         )
     }
