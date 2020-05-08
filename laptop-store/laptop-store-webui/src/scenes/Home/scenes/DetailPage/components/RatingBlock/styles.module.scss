@@ -1,0 +1,63 @@
+.table {
+    display: inline-block;
+    margin: 0 !important;
+    width: fit-content !important;
+
+    td,
+    th {
+        display: flex;
+        align-items: center;
+        width: fit-content;
+
+        > * {
+            margin-right: 10px;
+        }
+    }
+}
+
+.blockLeft, .blockRight {
+    padding: 20px 0 10px 0;
+}
+
+.blockLeft {
+    text-align: center;
+}
+
+.blockRight {
+    border-left: 1px solid lightgray;
+}
+
+.startLabel {
+    display: flex;
+    vertical-align: middle;
+}
+
+.ratingLabel {
+    font-weight: bold;
+    display: block;
+    margin: 0;
+}
+
+.ratingPoint {
+    font-size: 28px;
+    font-weight: bold;
+    color: red;
+    display: block;
+    margin: 0;
+}
+
+.commentCount {
+    color: dodgerblue;
+    font-size: 13px;
+    display: block;
+    margin: 0;
+}
+
+.ratingIcon {
+    font-size: 24px;
+    margin-right: 3px;
+}
+
+.submitButton {
+    float: right;
+}

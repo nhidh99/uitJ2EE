@@ -1,0 +1,7 @@
+.imgPreview {
+    margin-top: 15px;
+}
+
+img[src=""].imgPreview {
+    display: none;
+}

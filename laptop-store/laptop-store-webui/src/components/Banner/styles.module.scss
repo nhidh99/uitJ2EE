@@ -1,0 +1,65 @@
+.container {
+    background-color: #454545;
+    padding: 4px 15px;
+    margin-bottom: 20px;
+}
+
+.banner {
+    width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bannerLeft {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 150px;
+    margin-right: 15px;
+}
+
+.name {
+    margin-left: 10px;
+    margin-bottom: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+}
+
+.name:hover {
+    cursor: pointer;
+}
+
+.searchBar {
+    width: 300px;
+    display: inline-block;
+}
+
+
+.category {
+    text-align: center;
+    padding: 0 10px;
+}
+
+.cartCount {
+    font-size: 10px !important;
+}
+
+.label {
+    color: white;
+    margin-bottom: 0 !important;
+}
+
+.label:hover {
+    cursor: pointer;
+}
+
+.icon {
+    color: white;
+    font-size: 18px;
+}

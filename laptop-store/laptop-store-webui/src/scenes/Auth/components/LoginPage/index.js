@@ -1,62 +1,84 @@
 import React, { Component } from "react";
-import styles from './styles.module.scss';
-import logo from '../../resources/logo.jpg';
-import { FaLock } from "react-icons/fa";
-import { IoMdMail } from "react-icons/io";
+import styles from "./styles.module.scss";
+import { Input, InputGroup, InputGroupAddon, InputGroupText, Button } from "reactstrap";
+import { FaUser, FaLock } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 class LoginPage extends Component {
+    state = {
+        error: null,
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            isError: true
+    login = async () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        });
+        if (response.ok) {
+            const token = await response.text();
+            alert(token);
         }
-    }
-    
+    };
+
     render() {
-
-        const {isError} = this.state;
-        let status = ""
-        if(isError) {
-            status = "Your email or password is incorrect."
-            console.log(status);
-        }
+        const { error } = this.state;
 
         return (
-            <div className={styles.login}>
-                <div className={styles.body}>
-                    <div className={styles.login_form}>
-                        <div className={styles.logo}>
-                            <a href="/">
-                                <img src={logo}></img>
-                            </a>
-                        </div>
-                        <form method="POST" className={styles.form}>
-                            <div className={styles.form_body}>
-                                <div className={styles.title}>
-                                    <p><b>Login with your Email or </b><a href="./register">Sign Up</a></p>
-                                </div>
-                                <div className={styles.username}>
-                                    <section><IoMdMail></IoMdMail></section>
-                                    <input type="text" name="email" placeholder="Email"></input>
-                                </div>
-                                <div className={styles.password}>
-                                    <section><FaLock></FaLock></section>
-                                    <input type="password" name="password" placeholder="Password"></input>
-                                </div>
-                                <div className={styles.status} name="status">{status}</div>
-                            </div>
-                            <div className={styles.form_bottom}>
-                                <div className={styles.form_submit}>
-                                    <a href="./forgot">Forgot your password?</a>
-                                    <button type="submit" name="submit">Login</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div className={styles.form}>
+                <header>ĐĂNG NHẬP</header>
+                <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                        <InputGroupText className={styles.borderInputLeft}>
+                            <FaUser />
+                        </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                        autoFocus
+                        id="username"
+                        type="text"
+                        placeholder="Tài khoản"
+                        className={styles.borderInputRight}
+                    />
+                </InputGroup>
+
+                <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                        <InputGroupText className={styles.borderInputLeft}>
+                            <FaLock />
+                        </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                        id="password"
+                        type="password"
+                        placeholder="Mật khẩu"
+                        className={styles.borderInputRight}
+                    />
+                </InputGroup>
+
+                <Button color="secondary" className={styles.button} onClick={this.login}>
+                    Đăng nhập
+                </Button>
+
+                <p>
+                    Chưa có tài khoản?&nbsp;
+                    <Link to="/auth/register">Đăng kí ngay</Link>
+                    &nbsp;|&nbsp;
+                    <Link to="/auth/forgot">Quên mật khẩu</Link>
+                </p>
+
+                {error ? (
+                    <p className={styles.error}>
+                        <b>{error}</b>
+                    </p>
+                ) : null}
             </div>
-        )
+        );
     }
 }
 

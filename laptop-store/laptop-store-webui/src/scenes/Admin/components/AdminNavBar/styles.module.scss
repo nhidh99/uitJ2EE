@@ -1,0 +1,36 @@
+.nav {
+    justify-content: space-between;
+    background-color: white;
+    border: 1px solid #ddd;
+    margin: 0 auto;
+    margin-bottom: 15px !important;
+}
+
+.link {
+    width: 100%;
+    display: block;
+    color: inherit;
+    padding: 10px 0;
+}
+
+.item {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    border-color: inherit;
+    color: #383838;
+}
+
+.item:not(:last-of-type) {
+    border-right: 1px solid;    
+    border-color: #ddd;
+}
+
+.item:hover {
+    background-color: lightgray;
+}
+
+.selected {
+    background-color: lightgray;
+}
