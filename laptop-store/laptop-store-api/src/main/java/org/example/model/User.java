@@ -18,12 +18,12 @@ import java.time.LocalDate;
 public class User {
     @Id
     @Column(name = "id")
-    @JsonProperty("id")
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "username")
-    @JsonProperty("username")
+    @JsonIgnore
     private String username;
 
     @Column(name = "password")
@@ -31,7 +31,7 @@ public class User {
     private String password;
 
     @Column(name = "email")
-    @JsonIgnore
+    @JsonProperty("email")
     private String email;
 
     @Column(name = "name")
@@ -43,7 +43,7 @@ public class User {
     private String phone;
 
     @Column(name = "role")
-    @JsonIgnore
+    @JsonProperty("role")
     @Enumerated(EnumType.STRING)
     private RoleType role;
 

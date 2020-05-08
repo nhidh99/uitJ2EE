@@ -12,14 +12,16 @@ import {
 import { Label, Input, InputGroupText, InputGroupAddon, InputGroup, Badge } from "reactstrap";
 import styles from "./styles.module.scss";
 import { getCart } from "../../services/helper/cart";
+import { ROLE_ADMIN, ROLE_GUEST } from "../../constants";
 
 class Banner extends Component {
     render() {
+        const { role } = this.props;
         return (
             <div className={styles.container}>
                 <div className={styles.banner}>
                     <BannerLeft />
-                    <BannerRight />
+                    <BannerRight role={role} />
                 </div>
             </div>
         );
@@ -46,45 +48,52 @@ const BannerLeft = () => (
     </div>
 );
 
-const BannerRight = () => (
+const BannerRight = ({ role }) => (
     <div className={styles.bannerRight}>
         <table cellspacing="10">
             <tbody>
                 <tr>
                     <BannerCategory href="/" icon={<FaInfoCircle />} title="Thông tin" />
 
-                    <BannerCategory href="/admin/orders" icon={<FaEdit />} title="Quản lí" />
+                    {role === ROLE_ADMIN ? (
+                        <BannerCategory href="/admin/orders" icon={<FaEdit />} title="Quản lí" />
+                    ) : null}
 
                     <BannerCategory href="/" icon={<FaBoxes />} title="Đơn hàng" />
 
-                    <BannerCategory
-                        href="/cart"
-                        icon={
-                            <Fragment>
-                                <FaShoppingCart />
-                                &nbsp;
-                                <Badge pill id="cart-quantity" className={styles.cartCount}>
-                                    {Object.values(getCart()).reduce((a, b) => a + b, 0)}
-                                </Badge>
-                            </Fragment>
-                        }
-                        title="Giỏ hàng"
-                    />
+                    <BannerCategory href="/cart" icon={<CartIcon />} title="Giỏ hàng" />
 
-                    <BannerCategory href="/auth/login" icon={<FaUser />} title="Đăng nhập" />
+                    {role === ROLE_GUEST ? (
+                        <BannerCategory href="/auth/login" icon={<FaUser />} title="Đăng nhập" />
+                    ) : (
+                        <BannerCategory href="/user/info" icon={<FaUser />} title="Tài khoản" />
+                    )}
                 </tr>
             </tbody>
         </table>
     </div>
 );
 
-const BannerCategory = ({ href, icon, title }) => (
-    <Link to={href}>
-        <td className={styles.category}>
-            <div className={styles.icon}>{icon}</div>
-            <Label className={styles.label}>{title}</Label>
-        </td>
-    </Link>
+const BannerCategory = (props) => {
+    const { href, icon, title } = props;
+    return (
+        <Link to={href}>
+            <td className={styles.category}>
+                <div className={styles.icon}>{icon}</div>
+                <Label className={styles.label}>{title}</Label>
+            </td>
+        </Link>
+    );
+};
+
+const CartIcon = () => (
+    <Fragment>
+        <FaShoppingCart />
+        &nbsp;
+        <Badge pill id="cart-quantity" className={styles.cartCount}>
+            {Object.values(getCart()).reduce((a, b) => a + b, 0)}
+        </Badge>
+    </Fragment>
 );
 
 export default Banner;

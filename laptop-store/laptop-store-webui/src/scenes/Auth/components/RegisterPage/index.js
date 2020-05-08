@@ -68,7 +68,6 @@ class RegisterPage extends Component {
         });
 
         if (response.ok) {
-            alert("Register successful");
             window.location.href = "/";
         }
     };

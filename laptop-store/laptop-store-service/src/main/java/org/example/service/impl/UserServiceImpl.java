@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dao.api.UserDAO;
 import org.example.model.User;
 import org.example.security.Secured;
@@ -17,7 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
-@Path("/api/user")
+@Path("/api/users")
 @Secured({RoleType.USER, RoleType.ADMIN})
 public class UserServiceImpl implements UserService {
 
@@ -26,12 +27,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @GET
-    @Path("/")
+    @Path("/me")
     @Produces(MediaType.APPLICATION_JSON)
     public Response fetchUserData(@Context SecurityContext securityContext) {
-        Principal principal = securityContext.getUserPrincipal();
-        String username = principal.getName();
-        User user = userDAO.findByUsername(username).orElseThrow(BadRequestException::new);
-        return Response.ok(user).build();
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            User user = userDAO.findById(userId).orElseThrow(Exception::new);
+            ObjectMapper om = new ObjectMapper();
+            String userJSON = om.writeValueAsString(user);
+            return Response.ok(userJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 }
