@@ -8,10 +8,8 @@ import org.example.service.api.UserService;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.persistence.NoResultException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,6 +35,23 @@ public class UserServiceImpl implements UserService {
             ObjectMapper om = new ObjectMapper();
             String userJSON = om.writeValueAsString(user);
             return Response.ok(userJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @POST
+    @Path("/me/carts")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response updateCart(String cartJSON, @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            userDAO.saveCart(userId, cartJSON);
+            return Response.noContent().build();
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }

@@ -5,4 +5,6 @@ import javax.ws.rs.core.SecurityContext;
 
 public interface UserService {
     Response fetchUserData(SecurityContext securityContext);
+
+    Response updateCart(String cartJSON, SecurityContext securityContext);
 }

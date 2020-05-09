@@ -72,4 +72,13 @@ public class UserDAOImpl implements UserDAO {
                 .setMaxResults(1).getResultList();
         return users.isEmpty();
     }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void saveCart(Integer userId, String cartJSON) {
+        User user = em.find(User.class, userId);
+        if (user == null) throw new NoResultException();
+        user.setCart(cartJSON);
+        em.merge(user);
+    }
 }
