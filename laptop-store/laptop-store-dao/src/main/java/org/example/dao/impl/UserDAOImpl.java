@@ -3,15 +3,17 @@ package org.example.dao.impl;
 import org.example.dao.api.UserDAO;
 import org.example.model.Laptop;
 import org.example.model.User;
-import org.example.type.Role;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
+import java.util.List;
 import java.util.Optional;
 
 @Stateless
@@ -21,22 +23,17 @@ public class UserDAOImpl implements UserDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    private static final int workload = 12;
+    private static final int WORKLOAD = 12;
 
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void delete(Integer id) {
-        User user = em.find(User.class, id);
-        if (user == null) throw new BadRequestException();
-        em.remove(user);
-    }
-
-    @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public boolean login(String username, String password) {
-        User user = findByUsername(username);
-        String storedPassword = user.getPassword();
-        return checkPassword(password, storedPassword);
+    public boolean login(String username, String plainPassword) {
+        Optional<User> optUser = findByUsername(username);
+        if (optUser.isPresent()) {
+            String hashedPassword = optUser.get().getPassword();
+            return BCrypt.checkpw(plainPassword, hashedPassword);
+        }
+        return false;
     }
 
     @Override
@@ -48,33 +45,44 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User findByUsername(String username) {
-        String query = "SELECT u FROM User u WHERE u.username = :username";
-        return em.createQuery(query, User.class).setParameter("username", username).getResultList().isEmpty() ?
-               null : em.createQuery(query, User.class).setParameter("username", username).getSingleResult();
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public String hashPassword(String plainPassword) {
+        String salt = BCrypt.gensalt(WORKLOAD);
+        return BCrypt.hashpw(plainPassword, salt);
     }
 
     @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Optional<User> findByUsername(String username) {
+        String query = "SELECT u FROM User u WHERE u.username = :username";
+        List<User> users = em.createQuery(query, User.class)
+                .setParameter("username", username)
+                .setMaxResults(1).getResultList();
+        return users.isEmpty() ? Optional.empty() : Optional.of(users.get(0));
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<User> findById(Integer id) {
         User user = em.find(User.class, id);
         return Optional.of(user);
     }
 
-    public String hashPassword(String plainPassword) {
-        String salt = BCrypt.gensalt(workload);
-        return BCrypt.hashpw(plainPassword, salt);
-    }
-
-    public boolean checkPassword(String plainPassword, String hashedPassword) {
-        if (null == hashedPassword || !hashedPassword.startsWith("$2a$")) {
-            throw new java.lang.IllegalArgumentException("Invalid hash provided for comparison");
-        }
-        return BCrypt.checkpw(plainPassword, hashedPassword);
-    }
-
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
     public boolean checkRegister(String username, String email) {
-        String query = "SELECT u FROM User u WHERE u.email = :email";
-        boolean isEmailExist = em.createQuery(query, User.class).setParameter("email", email).getResultList().isEmpty() ? false : true;
-        return ((findByUsername(username) != null) || isEmailExist) ? false : true;
+        String query = "SELECT u FROM User u WHERE u.email = :email OR u.username = :username";
+        List<User> users = em.createQuery(query, User.class)
+                .setParameter("email", email)
+                .setParameter("username", username)
+                .setMaxResults(1).getResultList();
+        return users.isEmpty();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED)
+    public void update(User user) {
+        //User oldLaptop = findById(user.getId()).orElseThrow(BadRequestException::new);
+        em.merge(user);
     }
 }

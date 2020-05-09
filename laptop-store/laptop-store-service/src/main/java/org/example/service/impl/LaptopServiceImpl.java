@@ -6,7 +6,6 @@ import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.PromotionDAO;
 import org.example.dao.api.TagDAO;
 import org.example.model.*;
-import org.example.security.Secured;
 import org.example.service.api.LaptopService;
 import org.example.type.*;
 import org.example.util.api.ImageUtils;

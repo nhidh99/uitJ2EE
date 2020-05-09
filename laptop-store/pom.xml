@@ -13,8 +13,8 @@
         <module>laptop-store-dao</module>
         <module>laptop-store-war</module>
         <module>laptop-store-service</module>
-        <module>laptop-store-util</module>
         <module>laptop-store-security</module>
+        <module>laptop-store-util</module>
     </modules>
 
     <dependencies>

@@ -3,11 +3,9 @@ package org.example.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.PromotionDAO;
-import org.example.security.Secured;
 import org.example.type.ImageType;
 import org.example.model.Promotion;
 import org.example.service.api.PromotionService;
-import org.example.type.Role;
 import org.example.util.api.ImageUtils;
 
 import javax.ejb.EJB;
@@ -31,7 +29,6 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     @Path("/")
-    @Secured({Role.ROLE_USER})
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllPromotions() {

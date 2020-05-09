@@ -8,51 +8,110 @@ class InfoPage extends Component {
 
     state = {
         loading: true,
-        user: []
+        user: [],
+        gender: '',
     };
+
 
     componentDidMount() {
         this.fetchData();
     }
 
     fetchData = async () => {
-        const response = await fetch("/api/user", {
+        const response = await fetch("/api/users/me", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + getCookie('access_token'),
             }
+            
         });
 
         if (response.ok) {
             const user = await response.json();
             console.log(user);
+            console.log(user['gender']);
             this.setState({
                 user: user,
+                gender: user['gender'] ,
                 loading: false,
             });
+
         }
         else {
             const status = parseInt(response.status);
-                switch (status) {
-                    case 403:
-                        this.setState({
-                            error: "Not permission",
-                            loading: false
-                        });
-                        break;
-                    case 401: 
-                        alert('You have to login to access this page.')
-                        window.location.href = "/auth/login";
-                        break;
-                    default:
-                        this.setState({
-                            error: "Server error",
-                            loading: false
-                        });
-                }
+            switch (status) {
+                case 403:
+                    this.setState({
+                        error: "Not permission",
+                        loading: false
+                    });
+                    break;
+                case 401:
+                    alert('You have to login to access this page.')
+                    window.location.href = "/auth/login";
+                    break;
+                default:
+                    this.setState({
+                        error: "Server error",
+                        loading: false
+                    });
+            }
         }
     };
+
+    updateUser = async () => {
+        const name = document.getElementById("fullName").value;
+        const telephone = document.getElementById("telephone").value;
+        const email = document.getElementById("email").value;
+        const gender = this.state.gender;
+        const birthday = document.getElementById("birthday").value;
+
+        const response = await fetch("/api/users/me", {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            },
+            body: JSON.stringify({
+                name: name,
+                phone: telephone,
+                email: email,
+                gender: gender,
+                birthday: new Date(birthday).getTime(),
+            }),
+        });
+
+        if (response.ok) {
+            alert('Đã lưu thông tin mới thành công')
+        }
+        else {
+            const status = parseInt(response.status);
+            switch (status) {
+                case 403:
+                    this.setState({
+                        error: "Not permission",
+                        loading: false
+                    });
+                    break;
+                case 401:
+                    alert('You have to login to access this page.')
+                    window.location.href = "/auth/login";
+                    break;
+                default:
+                    this.setState({
+                        error: "Server error",
+                        loading: false
+                    });
+            }
+        }
+    };
+
+    handleChangeGender = (changeEvent) => {
+        this.setState ({
+            gender: changeEvent.target.value
+        });
+    }
 
     render() {
         return (
@@ -62,7 +121,7 @@ class InfoPage extends Component {
                         <FaInfoCircle />
                         &nbsp;&nbsp;THÔNG TIN TÀI KHOẢN
                     </label>
-                    <Button type="submit" className={styles.submit} color="success">
+                    <Button type="submit" className={styles.submit} color="success" onClick={this.updateUser}>
                         Lưu
                     </Button>
                 </div>
@@ -79,8 +138,9 @@ class InfoPage extends Component {
                                 name="fullName"
                                 id="fullName"
                                 placeholder="Nhập họ và tên"
-                                value={this.state.user['name']}
+                                defaultValue={this.state.user['name']}
                                 className={styles.input}
+                                
                             />
                         </td>
                     </tr>
@@ -97,7 +157,7 @@ class InfoPage extends Component {
                                 name="telephone"
                                 id="telephone"
                                 placeholder="Nhập số điện thoại"
-                                value={this.state.user['phone']}
+                                defaultValue={this.state.user['phone']}
                                 className={styles.input}
                             />
                         </td>
@@ -115,7 +175,7 @@ class InfoPage extends Component {
                                 name="email"
                                 id="email"
                                 placeholder="Nhập email"
-                                value={this.state.user['email']}
+                                defaultValue={this.state.user['email']}
                                 className={styles.input}
                             />
                         </td>
@@ -127,11 +187,21 @@ class InfoPage extends Component {
                         </td>
                         <td>
                             <Label className={styles.radioInput}>
-                                <Input type="radio" name="gender" value="Nam" />
+                                <Input
+                                    type="radio" 
+                                    name="gender" 
+                                    value="MALE" 
+                                    checked={this.state.gender === "MALE"}
+                                    onChange={this.handleChangeGender}/>
                                 Nam
                             </Label>
                             <Label className={styles.radioInput}>
-                                <Input type="radio" name="gender" value="Nữ" />
+                                <Input  
+                                    type="radio" 
+                                    name="gender" 
+                                    value="FEMALE" 
+                                    checked={this.state.gender === "FEMALE"}
+                                    onChange={this.handleChangeGender}/>
                                 Nữ
                             </Label>
                         </td>
@@ -149,6 +219,7 @@ class InfoPage extends Component {
                                 name="birthday"
                                 id="birthday"
                                 placeholder="Nhập ngày sinh"
+                                defaultValue={this.state.user['birthday']}
                                 className={styles.input}
                             />
                         </td>
