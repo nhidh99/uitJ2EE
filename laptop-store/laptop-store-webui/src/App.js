@@ -1,38 +1,20 @@
-import React from "react";
-import "./App.scss";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Home from "./scenes/Home";
-import Auth from "./scenes/Auth";
-import Admin from "./scenes/Admin";
-import Banner from "./components/Banner";
+import React from 'react';
+import './App.scss';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import Home from './scenes/Home';
+import Auth from './scenes/Auth';
 
 function App() {
-    return (
-        <BrowserRouter>
-            <Banner />
-            <div className="container">
-                <Switch>
-                    <Route
-                        exact
-                        component={Home}
-                        path={[
-                            "/",
-                            "/search",
-                            "/user",
-                            "/cart",
-                            "/product/:id",
-                            "/product/:alt/:id",
-                            "/user/(info|password|address|order|payment)",
-                            "/user/address/create",
-                            "/user/order/:orderId",
-                        ]}
-                    />
-                    <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
-                    <Route exact component={Auth} path="/auth/(forgot|login|register)" />
-                </Switch>
-            </div>
-        </BrowserRouter>
-    );
+	return (
+		<BrowserRouter>
+			<Switch>
+				<Route exact component={Home} path="/(|detail|result|user)"/>
+				<Route exact component={Auth} path="/auth/(forgot|login|register)"/>        
+			</Switch>
+		</BrowserRouter>
+	);
 }
 
 export default App;
+
+// http:localhost:3000/
