@@ -11,7 +11,7 @@ class PasswordPage extends Component {
         const newPassword = document.getElementById("newPassword").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
 
-        if(confirmPassword != newPassword) {
+        if(confirmPassword !== newPassword) {
             alert("Vui lòng xác nhận lại mật khẩu");
             return;
         }
