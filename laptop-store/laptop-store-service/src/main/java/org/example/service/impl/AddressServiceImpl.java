@@ -77,6 +77,20 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    @Override
+    @DELETE
+    @Path("/{id}")
+    public Response deleteAddress(@PathParam("id") Integer id) {
+        try {
+            addressDAO.delete(id);
+            return Response.noContent().build();
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
     private Address buildAddressFromRequestBody(@Context SecurityContext securityContext, AddressInput addressInput) {
         Principal principal = securityContext.getUserPrincipal();
         String userId = principal.getName();

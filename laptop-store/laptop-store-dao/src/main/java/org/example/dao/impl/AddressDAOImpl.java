@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.ws.rs.BadRequestException;
 import java.util.List;
 
 @Stateless
@@ -32,6 +33,15 @@ public class AddressDAOImpl implements AddressDAO {
         } else {
             update(address);
         }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void delete(Integer id) {
+        Address address = em.find(Address.class, id);
+        if (address == null) throw new BadRequestException();
+        address.setRecordStatus(false);
+        em.merge(address);
     }
 
     @Transactional(Transactional.TxType.REQUIRED)

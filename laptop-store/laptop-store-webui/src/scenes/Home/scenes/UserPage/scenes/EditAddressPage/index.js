@@ -40,13 +40,13 @@ class EditAddressPage extends Component {
         });
         if(response.ok) {
             alert('success');
-            window.location.reload();
+            window.location.href='/user/address';
         }
         const status = parseInt(response.status);
         switch (status) {
             case 201:
                 alert('insert thành công');
-                window.location.href('/user/address');
+                window.location.href='/user/address';
                 break;
             case 403:
                 this.setState({

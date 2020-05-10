@@ -3,6 +3,7 @@ import { Button, ButtonGroup } from "reactstrap";
 import { FaTrash, FaPen } from "react-icons/fa";
 import {Link} from 'react-router-dom';
 import styles from './styles.module.scss';
+import AddressDelete from '../AddressDelete';
 class AddressBlock extends Component {
 
     render() {
@@ -10,9 +11,7 @@ class AddressBlock extends Component {
         return (
             <div className={styles.addressBlock}>
                 <ButtonGroup className={styles.actions}>
-                    <Button color="danger">
-                        <FaTrash />
-                    </Button>
+                    <AddressDelete address = {address} />
                     <Link to=
                         {{
                             pathname: '/user/address/edit/' + address['id'],

@@ -9,4 +9,5 @@ import java.util.List;
 public interface AddressDAO {
     List<Address> findByUserId(Integer userId);
     void save(Address address);
+    void delete(Integer id);
 }

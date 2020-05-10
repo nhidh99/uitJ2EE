@@ -9,4 +9,5 @@ public interface AddressService {
     Response findAddressByUser(SecurityContext securityContext);
     Response createAddress(SecurityContext securityContext, AddressInput addressInput);
     Response updateAddress(Integer id, SecurityContext securityContext, AddressInput addressInput);
+    Response deleteAddress(Integer id);
 }
