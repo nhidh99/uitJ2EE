@@ -24,6 +24,7 @@ function App() {
                             "/product/:alt/:id",
                             "/user/(info|password|address|order|payment)",
                             "/user/address/create",
+                            "/user/address/edit/:addressId",
                             "/user/order/:orderId",
                         ]}
                     />

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { Button } from "reactstrap";
 import { FaBook } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 import styles from "./styles.module.scss";
 import AddressBlock from "./components/AddressBlock";
 import { getCookie } from "../../../../../../services/helper/cookie";
@@ -16,7 +17,7 @@ class AddressPage extends Component {
     }
 
     fetchData = async () => {
-        const response = await fetch("/api/address/me", {
+        const response = await fetch("/api/addresses/me", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -59,30 +60,29 @@ class AddressPage extends Component {
                         <FaBook />
                         &nbsp;&nbsp;SỔ ĐỊA CHỈ
                     </label>
-                    <Button color="success" className={styles.submit}>
-                        Thêm địa chỉ
-                    </Button>
+                    <Link to=
+                        {{
+                            pathname: '/user/address/create',
+                            state: {
+                                address: null,
+                            }
+                        }}>
+                        <Button color="success" className={styles.submit}>
+                            Thêm địa chỉ
+                        </Button>
+                    </Link>
+
                 </div>
 
-                {this.state.addressList.map((address) => ( 
-                    
-                    <AddressBlock
-                    receiverName={address['receiver_name']}
-                    address={address['address_num'] + ' ' + address['street'] + ' ' + address['ward'] + ' ' + address['district'] + ' ' + address['city']}
-                    telephone={address['phone']} />
-                ))}
-                
-                <AddressBlock
-                    receiverName="ĐINH HOÀNG NHI"
-                    address="KTX Khu B ĐHQG Phường Đông Hòa Thị xã Dĩ An Bình Dương"
-                    telephone="0336251885" />
-                <AddressBlock
-                    receiverName="ĐINH HOÀNG NHI"
-                    address="KTX Khu B ĐHQG Phường Đông Hòa Thị xã Dĩ An Bình Dương"
-                    telephone="0336251885" />
+                {
+                    this.state.addressList.map((address) => (
+                        <AddressBlock address={address} />
+                    ))
+                }
 
 
-            </Fragment>
+
+            </Fragment >
         );
     }
 }

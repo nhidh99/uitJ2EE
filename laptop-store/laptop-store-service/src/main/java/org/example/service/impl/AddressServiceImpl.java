@@ -20,7 +20,7 @@ import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.List;
 
-@Path("/api/address")
+@Path("/api/addresses")
 @Secured({RoleType.ADMIN, RoleType.USER})
 public class AddressServiceImpl implements AddressService {
 
@@ -54,22 +54,41 @@ public class AddressServiceImpl implements AddressService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createAddress(@Context SecurityContext securityContext, AddressInput addressInput) {
         try {
-            Principal principal = securityContext.getUserPrincipal();
-            String id = principal.getName();
-            User user = userDAO.findById(Integer.parseInt(id)).orElseThrow(BadRequestException::new);
-            Address address = Address.builder()
-                    .receiverName(addressInput.getReceiverName())
-                    .phone(addressInput.getPhone())
-                    .addressNum(addressInput.getAddressNum())
-                    .street(addressInput.getStreet())
-                    .ward(addressInput.getWard())
-                    .district(addressInput.getDistrict())
-                    .city(addressInput.getCity())
-                    .user(user).recordStatus(true).build();
+            Address address = buildAddressFromRequestBody(securityContext, addressInput);
             addressDAO.save(address);
             return Response.status(Response.Status.CREATED).build();
         } catch (Exception ex) {
             return Response.serverError().build();
         }
+    }
+
+    @Override
+    @PUT
+    @Path("/edit/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateAddress(@PathParam("id") Integer id, @Context SecurityContext securityContext,AddressInput addressInput) {
+        try {
+            Address address = buildAddressFromRequestBody(securityContext, addressInput);
+            address.setId(id);
+            addressDAO.save(address);
+            return Response.ok().build();
+        } catch (Exception ex) {
+            return Response.serverError().build();
+        }
+    }
+
+    private Address buildAddressFromRequestBody(@Context SecurityContext securityContext, AddressInput addressInput) {
+        Principal principal = securityContext.getUserPrincipal();
+        String userId = principal.getName();
+        User user = userDAO.findById(Integer.parseInt(userId)).orElseThrow(BadRequestException::new);
+        return Address.builder()
+                .receiverName(addressInput.getReceiverName())
+                .phone(addressInput.getPhone())
+                .addressNum(addressInput.getAddressNum())
+                .street(addressInput.getStreet())
+                .ward(addressInput.getWard())
+                .district(addressInput.getDistrict())
+                .city(addressInput.getCity())
+                .user(user).recordStatus(true).build();
     }
 }

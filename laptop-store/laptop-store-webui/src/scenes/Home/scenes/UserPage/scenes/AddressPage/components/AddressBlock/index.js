@@ -1,37 +1,43 @@
 import React, { Component } from 'react';
 import { Button, ButtonGroup } from "reactstrap";
 import { FaTrash, FaPen } from "react-icons/fa";
+import {Link} from 'react-router-dom';
 import styles from './styles.module.scss';
 class AddressBlock extends Component {
-    state = {
-        receiverName: '',
-        address: '',
-        telephone: '',
-    };
 
     render() {
+        const address = this.props.address;
         return (
             <div className={styles.addressBlock}>
-                    <ButtonGroup className={styles.actions}>
-                        <Button color="danger">
-                            <FaTrash />
-                        </Button>
+                <ButtonGroup className={styles.actions}>
+                    <Button color="danger">
+                        <FaTrash />
+                    </Button>
+                    <Link to=
+                        {{
+                            pathname: '/user/address/edit/' + address['id'],
+                            state: {
+                                address: this.props.address,
+                            }
+                        }}>
                         <Button color="primary">
                             <FaPen />
                         </Button>
-                    </ButtonGroup>
+                    </Link>
 
-                    <b>Người nhận: </b>
-                    <label>{this.props.receiverName}</label>
-                    <br />
+                </ButtonGroup>
 
-                    <b>Địa chỉ: </b>
-                    <label>{this.props.address}</label>
-                    <br />
+                <b>Người nhận: </b>
+                <label>{address['receiver_name']}</label>
+                <br />
 
-                    <b>Điện thoại: </b>
-                    <label>{this.props.telephone}</label>
-                </div>
+                <b>Địa chỉ: </b>
+                <label>{address['address_num'] + ' ' + address['street'] + ' ' + address['ward'] + ' ' + address['district'] + ' ' + address['city']}</label>
+                <br />
+
+                <b>Điện thoại: </b>
+                <label>{address['phone']}</label>
+            </div>
         );
     }
 }

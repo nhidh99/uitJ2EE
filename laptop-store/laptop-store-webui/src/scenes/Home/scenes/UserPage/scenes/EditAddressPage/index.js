@@ -6,7 +6,7 @@ import { getCookie } from "../../../../../../services/helper/cookie";
 
 class EditAddressPage extends Component {
 
-    createAddress = async () => {
+    buildAddressBody = () => {
         const receiverName = document.getElementById("receiverName").value;
         const phone = document.getElementById("phone").value;
         const city = document.getElementById("city").value;
@@ -15,27 +15,38 @@ class EditAddressPage extends Component {
         const street = document.getElementById("street").value;
         const addressNum = document.getElementById("addressNum").value;
 
-        const response = await fetch("/api/address/create", {
-            method: 'POST',
+        return ({
+            receiverName: receiverName,
+            phone: phone,
+            city: city,
+            district: district,
+            ward: ward,
+            street: street,
+            addressNum: addressNum,
+        })
+    }
+
+    createAddress = async () => {
+        const url = "/api/addresses/" + (this.props.location.state.address != null ? ('edit/'+ this.props.location.state.address['id']) : 'create');
+   
+        const body = this.buildAddressBody();
+        const response = await fetch(url, {
+            method: this.props.location.state.address != null ? 'PUT' : 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + getCookie('access_token'),
             },
-            body: JSON.stringify({
-                receiverName: receiverName,
-                phone: phone,
-                city: city,
-                district: district,
-                ward: ward,
-                street: street,
-                addressNum: addressNum,
-            })
+            body: JSON.stringify(body)
         });
-
+        if(response.ok) {
+            alert('success');
+            window.location.reload();
+        }
         const status = parseInt(response.status);
         switch (status) {
             case 201:
                 alert('insert thành công');
+                window.location.href('/user/address');
                 break;
             case 403:
                 this.setState({
@@ -56,13 +67,14 @@ class EditAddressPage extends Component {
     }
 
     render() {
+        const address = this.props.location.state.address;
         return (
             <Container id="content">
                 <Row>
                     <Col md="9" className={styles.inner}>
                         <Row className={styles.pageHeader}>
                             <h3>
-                                <FaBook /> Tạo sổ địa chỉ
+                                <FaBook /> {address === null ? 'Tạo sổ địa chỉ' : 'Sửa địa chỉ'}
                             </h3>
                         </Row>
                         <Form className={styles.form}>
@@ -75,6 +87,7 @@ class EditAddressPage extends Component {
                                     name="receiverName"
                                     id="receiverName"
                                     placeholder="Nhập họ và tên"
+                                    defaultValue={address != null ? address['receiver_name'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -87,6 +100,7 @@ class EditAddressPage extends Component {
                                     name="phone"
                                     id="phone"
                                     placeholder="Nhập số điện thoại"
+                                    defaultValue={address != null ? address['phone'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -99,6 +113,7 @@ class EditAddressPage extends Component {
                                     name="city"
                                     id="city"
                                     placeholder="Nhập tỉnh/ thành phố"
+                                    defaultValue={address != null ? address['city'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -111,6 +126,7 @@ class EditAddressPage extends Component {
                                     name="district"
                                     id="district"
                                     placeholder="Nhập quận huyện"
+                                    defaultValue={address != null ? address['district'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -123,6 +139,7 @@ class EditAddressPage extends Component {
                                     name="ward"
                                     id="ward"
                                     placeholder="Nhập phường xã"
+                                    defaultValue={address != null ? address['ward'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -135,6 +152,7 @@ class EditAddressPage extends Component {
                                     name="street"
                                     id="street"
                                     placeholder="Nhập tên đường"
+                                    defaultValue={address != null ? address['street'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
@@ -148,6 +166,7 @@ class EditAddressPage extends Component {
                                     id="addressNum"
                                     rows="3"
                                     placeholder="Nhập địa chỉ (hẻm, số nhà)"
+                                    defaultValue={address != null ? address['address_num'] : null}
                                     className="col-sm-8"
                                 />
                             </FormGroup>
