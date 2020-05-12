@@ -13,10 +13,13 @@ public interface UserDAO {
 
     void register(User user);
 
+    void update(User user);
+
     void saveCart(Integer userId, String cartJSON);
 
     Optional<User> findByUsername(String username);
 
     Optional<User> findById(Integer id);
 
+    boolean updatePassword(Integer userId, String oldPassword, String newPassword);
 }

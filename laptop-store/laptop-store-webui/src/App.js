@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import "./App.scss";
-import { createHeart, killHeart } from 'heartbeats';
+import { createHeart, killHeart } from "heartbeats";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Home from "./scenes/Home";
 import Auth from "./scenes/Auth";
@@ -40,9 +40,9 @@ class App extends Component {
     };
 
     createRefreshTokenHeart = () => {
-        const heart = createHeart(REFRESH_TOKENS_TIMESPAN, 'refresh_token');
+        const heart = createHeart(REFRESH_TOKENS_TIMESPAN, "refresh_token");
         heart.createEvent(1, this.fetchToken);
-    }
+    };
 
     loadData = async () => {
         const token = await this.fetchToken();
@@ -60,7 +60,7 @@ class App extends Component {
             }
         } else {
             removeCookie("access_token");
-            killHeart('refresh_token');
+            killHeart("refresh_token");
             this.setState({ role: ROLE_GUEST });
         }
         this.setState({ loading: false });
@@ -103,8 +103,8 @@ class App extends Component {
                     "/product/:id",
                     "/product/:alt/:id",
                     "/user/(info|password|address|order|payment)",
-                    "/user/address/create",
-                    "/user/order/:orderId",
+                    "/user/address/(edit|create)",
+                    "/user/address/:id",
                 ]}
             />
         </Fragment>
@@ -123,7 +123,7 @@ class App extends Component {
                     "/product/:id",
                     "/product/:alt/:id",
                     "/user/(info|password|address|order|payment)",
-                    "/user/address/create",
+                    "/user/address/(edit|create)",
                     "/user/order/:orderId",
                 ]}
             />
