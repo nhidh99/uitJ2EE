@@ -8,9 +8,11 @@ import { createCookie } from "../../../../services/helper/cookie";
 class LoginPage extends Component {
     state = {
         error: null,
+        submitted: false,
     };
 
     login = async () => {
+        this.setState({ error: null, submitted: true });
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
         const response = await fetch("/api/auth/login", {
@@ -21,16 +23,27 @@ class LoginPage extends Component {
                 password: password,
             }),
         });
+
         if (response.ok) {
             const token = await response.text();
-            alert('Login successful');
-            createCookie('access_token', token);
-            window.location.href = "/user/info";
+            createCookie("access_token", token, 1);
+            window.location.href = "/";
+        } else {
+            let error = null;
+            switch (response.status) {
+                case 401:
+                    error = "Tài khoản hoặc mật khẩu không chính xác";
+                    break;
+                default:
+                    error = "Lỗi hệ thống";
+                    break;
+            }
+            this.setState({ error: error, submitted: false });
         }
     };
 
     render() {
-        const { error } = this.state;
+        const { error, submitted } = this.state;
 
         return (
             <div className={styles.form}>
@@ -64,7 +77,12 @@ class LoginPage extends Component {
                     />
                 </InputGroup>
 
-                <Button color="secondary" className={styles.button} onClick={this.login}>
+                <Button
+                    color="secondary"
+                    className={styles.button}
+                    onClick={this.login}
+                    disabled={submitted}
+                >
                     Đăng nhập
                 </Button>
 
@@ -75,11 +93,7 @@ class LoginPage extends Component {
                     <Link to="/auth/forgot">Quên mật khẩu</Link>
                 </p>
 
-                {error ? (
-                    <p className={styles.error}>
-                        <b>{error}</b>
-                    </p>
-                ) : null}
+                {error ? <p className={styles.error}>{error}</p> : null}
             </div>
         );
     }

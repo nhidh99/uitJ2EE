@@ -1,6 +1,5 @@
 package org.example.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dao.api.AddressDAO;
 import org.example.dao.api.UserDAO;
@@ -32,29 +31,28 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @GET
-    @Path("/me")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAddressByUser(@Context SecurityContext securityContext) {
         try {
             Principal principal = securityContext.getUserPrincipal();
-            String id = principal.getName();
-            List<Address> addressList = addressDAO.findByUserId(Integer.parseInt(id));
+            Integer userId = Integer.parseInt(principal.getName());
+            List<Address> addresses = addressDAO.findByUserId(userId);
             ObjectMapper om = new ObjectMapper();
-            String addressListJSON = om.writeValueAsString(addressList);
-            return Response.ok(addressListJSON).build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            String addressesJSON = om.writeValueAsString(addresses);
+            return Response.ok(addressesJSON).build();
+        } catch (Exception e) {
             return Response.serverError().build();
         }
     }
 
     @Override
     @POST
-    @Path("/create")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createAddress(@Context SecurityContext securityContext, AddressInput addressInput) {
+    public Response createAddress(AddressInput addressInput, @Context SecurityContext securityContext) {
         try {
-            Address address = buildAddressFromRequestBody(securityContext, addressInput);
+            Address address = buildAddressFromRequestBody(addressInput, securityContext);
             addressDAO.save(address);
             return Response.status(Response.Status.CREATED).build();
         } catch (Exception ex) {
@@ -64,17 +62,32 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @PUT
-    @Path("/edit/{id}")
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateAddress(@PathParam("id") Integer id, @Context SecurityContext securityContext,AddressInput addressInput) {
+    public Response updateAddress(@PathParam("id") Integer id, AddressInput addressInput, @Context SecurityContext securityContext) {
         try {
-            Address address = buildAddressFromRequestBody(securityContext, addressInput);
+            Address address = buildAddressFromRequestBody(addressInput, securityContext);
             address.setId(id);
             addressDAO.save(address);
-            return Response.ok().build();
-        } catch (Exception ex) {
+            return Response.noContent().build();
+        } catch (Exception e) {
             return Response.serverError().build();
         }
+    }
+
+    private Address buildAddressFromRequestBody(AddressInput addressInput, @Context SecurityContext securityContext) {
+        Principal principal = securityContext.getUserPrincipal();
+        Integer userId = Integer.parseInt(principal.getName());
+        User user = userDAO.findById(userId).orElseThrow(BadRequestException::new);
+        return Address.builder()
+                .receiverName(addressInput.getReceiverName())
+                .phone(addressInput.getPhone())
+                .addressNum(addressInput.getAddressNum())
+                .street(addressInput.getStreet())
+                .ward(addressInput.getWard())
+                .district(addressInput.getDistrict())
+                .city(addressInput.getCity())
+                .user(user).recordStatus(true).build();
     }
 
     @Override
@@ -89,20 +102,5 @@ public class AddressServiceImpl implements AddressService {
         } catch (Exception e) {
             return Response.serverError().build();
         }
-    }
-
-    private Address buildAddressFromRequestBody(@Context SecurityContext securityContext, AddressInput addressInput) {
-        Principal principal = securityContext.getUserPrincipal();
-        String userId = principal.getName();
-        User user = userDAO.findById(Integer.parseInt(userId)).orElseThrow(BadRequestException::new);
-        return Address.builder()
-                .receiverName(addressInput.getReceiverName())
-                .phone(addressInput.getPhone())
-                .addressNum(addressInput.getAddressNum())
-                .street(addressInput.getStreet())
-                .ward(addressInput.getWard())
-                .district(addressInput.getDistrict())
-                .city(addressInput.getCity())
-                .user(user).recordStatus(true).build();
     }
 }

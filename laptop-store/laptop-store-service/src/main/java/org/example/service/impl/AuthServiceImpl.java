@@ -4,6 +4,7 @@ import org.example.dao.api.UserDAO;
 import org.example.input.LoginInput;
 import org.example.input.RegisterInput;
 import org.example.model.User;
+import org.example.security.Secured;
 import org.example.service.api.AuthService;
 import org.example.type.GenderType;
 import org.example.type.RoleType;
@@ -12,8 +13,8 @@ import org.example.util.api.JwtUtils;
 import javax.ejb.EJB;
 import javax.persistence.NoResultException;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
+import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -73,6 +74,23 @@ public class AuthServiceImpl implements AuthService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/token")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Secured({RoleType.ADMIN, RoleType.USER})
+    public Response refreshToken(@Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            userDAO.findById(userId).orElseThrow(Exception::new);
+            String token = jwtUtils.issueToken(userId);
+            return Response.ok(token).build();
+        } catch (Exception e) {
             return Response.serverError().build();
         }
     }

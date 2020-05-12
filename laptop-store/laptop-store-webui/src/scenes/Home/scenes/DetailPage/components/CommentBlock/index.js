@@ -15,8 +15,113 @@ import { Link } from "react-router-dom";
 
 class CommentBlock extends Component {
     render() {
+        const ratings = this.props.ratings;
         return (
             <ListGroup>
+                {
+                    ratings.map((rating) => {
+                        const commentDate = rating ? new Date(
+                            rating["rating_date"]["year"],
+                            rating["rating_date"]["monthValue"] - 1,
+                            rating["rating_date"]["dayOfMonth"]
+                        )
+                            : null;
+                        console.log(rating);
+                        return <ListGroupItem>
+                            <Row>
+                                <Col sm="2" className={styles.blockLeft}>
+                                    <Label className={styles.commentRating}>
+                                        {rating['rating']}&nbsp;
+                                    <FaStar />
+                                    </Label>
+                                    <Label className={styles.commentAuthor}>
+                                        {rating['user']['name']}
+                                    </Label>
+                                    <br />
+                                    <Label>{commentDate.toLocaleDateString()}</Label>
+                                </Col>
+
+                                <Col sm="10" className={styles.blockRight}>
+                                    <Label className={styles.commentTitle}>
+                                        {rating['comment_title']}
+                                    </Label>
+                                    <p>
+                                        {rating['comment_detail']}
+                                    </p>
+
+                                    <Link
+                                        to="#toggler"
+                                        id="toggler"
+                                        style={{ marginBottom: "1rem" }}
+                                    >
+                                        Gửi trả lời
+                                </Link>
+                                    <br />
+                                    <br />
+                                    <UncontrolledCollapse toggler="#toggler">
+                                        <textarea
+                                            class={styles.replyInput}
+                                            rows="5"
+                                            maxlength="500"
+                                            placeholder="Gửi trả lời của bạn (tối đa 500 từ)"
+                                        ></textarea>
+                                        <br />
+                                        <Button
+                                            className={styles.submitButton}
+                                            color="primary"
+                                        >
+                                            <FaPaperPlane />
+                                        &nbsp; Gửi trả lời
+                                    </Button>
+                                        <br />
+                                        <br />
+                                    </UncontrolledCollapse>
+
+                                    <Table
+                                        hover
+                                        borderless
+                                        striped
+                                        className={styles.replyTable}
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <Label
+                                                        className={styles.replyAuthor}
+                                                    >
+                                                        Nguyễn Văn C
+                                                </Label>
+                                                    <Label className={styles.replyDate}>
+                                                        18/04/2020
+                                                </Label>
+                                                    <p className={styles.reply}>
+                                                        Mình cũng thích máy này
+                                                </p>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <Label
+                                                        className={styles.replyAuthor}
+                                                    >
+                                                        Nguyễn Văn D
+                                                </Label>
+                                                    <Label className={styles.replyDate}>
+                                                        16/04/2020
+                                                </Label>
+                                                    <p className={styles.reply}>
+                                                        Đồng ý kiến
+                                                </p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
+                                </Col>
+                            </Row>
+                        </ListGroupItem>
+                    })
+                }
                 <ListGroupItem>
                     <Row>
                         <Col sm="2" className={styles.blockLeft}>

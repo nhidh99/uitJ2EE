@@ -12,7 +12,7 @@ import java.util.Date;
 @LocalBean
 public class JwtUtilsImpl implements JwtUtils {
 
-    private static final Long JWT_EXPIRATION_TIME = 600000L;
+    private static final Long JWT_EXPIRATION_TIME = 900_000L;       // 15 minutes
     private static final String JWT_SECRET = "LAPTOP_STORE";
 
     @Override

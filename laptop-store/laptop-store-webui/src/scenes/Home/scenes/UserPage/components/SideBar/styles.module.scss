@@ -1,3 +1,14 @@
 .icon {
     margin-right: 8px;
 }
+
+
+.listGroup li {
+    border-radius: 0 !important;
+    border: unset !important;
+    border-top: 1px solid #eee !important;
+}
+
+.link li:hover {
+    font-weight: bold;
+}

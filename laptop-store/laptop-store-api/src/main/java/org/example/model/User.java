@@ -8,6 +8,7 @@ import org.example.type.RoleType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,12 +19,12 @@ import java.time.LocalDate;
 public class User {
     @Id
     @Column(name = "id")
-    @JsonProperty("id")
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "username")
-    @JsonProperty("username")
+    @JsonIgnore
     private String username;
 
     @Column(name = "password")
@@ -31,7 +32,7 @@ public class User {
     private String password;
 
     @Column(name = "email")
-    @JsonIgnore
+    @JsonProperty("email")
     private String email;
 
     @Column(name = "name")
@@ -43,7 +44,7 @@ public class User {
     private String phone;
 
     @Column(name = "role")
-    @JsonIgnore
+    @JsonProperty("role")
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
@@ -52,7 +53,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    @Column(name="birthday")
+    @Column(name = "birthday")
     @JsonProperty("birthday")
     private LocalDate birthday;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Rating> rating;
+
+    @Column(name = "cart")
+    @JsonProperty("cart")
+    private String cart;
 }

@@ -1,4 +1,5 @@
 import { MAXIMUM_QUANTITY_PER_PRODUCT } from "../../constants";
+import { getCookie } from "./cookie";
 
 export const getCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart"));
@@ -12,7 +13,7 @@ export const addToCart = (productId, quantity) => {
 
     if (quantity <= MAXIMUM_QUANTITY_PER_PRODUCT) {
         cart[productId] = quantity;
-        updateCartQuantity(cart);
+        updateCart(cart);
         return true;
     } else {
         return false;
@@ -23,8 +24,13 @@ export const removeFromCart = (productId) => {
     let cart = JSON.parse(localStorage.getItem("cart"));
     if (cart && productId in cart) {
         delete cart[productId];
-        updateCartQuantity(cart);
+        updateCart(cart);
     }
+};
+
+export const updateCart = (cart) => {
+    updateCartQuantity(cart);
+    updateCartDatabase(cart);
 };
 
 export const updateCartQuantity = (cart) => {
@@ -32,4 +38,15 @@ export const updateCartQuantity = (cart) => {
     const cartQuantity = document.getElementById("cart-quantity");
     const quantity = Object.values(cart).reduce((a, b) => a + b, 0);
     cartQuantity.innerText = quantity;
+};
+
+export const updateCartDatabase = (cart) => {
+    const token = getCookie("access_token");
+    if (!token) return;
+
+    fetch("/api/users/me/carts", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify(cart),
+    });
 };

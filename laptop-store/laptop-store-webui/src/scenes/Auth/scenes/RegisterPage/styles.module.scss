@@ -1,17 +1,13 @@
 .form {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -100%);
     background-color: white;
     width: 500px;
-    margin: 0 auto;
+    margin: calc(30px + 5vh) auto 0 auto;
     border-radius: 5px;
     padding: 30px 50px !important;
     text-align: center;
     font-size: 14px;
     color: #454545;
-    box-shadow: 0 0 20px 20px #cfcfcf;
+    box-shadow: 0 0 8px 8px #cfcfcf;
 
     > *:not(:first-child) {
         margin-top: 15px;
@@ -59,4 +55,7 @@
 
 .error {
     color: red;
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
 }

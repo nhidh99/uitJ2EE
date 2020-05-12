@@ -17,7 +17,7 @@ class AddressPage extends Component {
     }
 
     fetchData = async () => {
-        const response = await fetch("/api/addresses/me", {
+        const response = await fetch("/api/addresses", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',

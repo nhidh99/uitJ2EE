@@ -1,7 +1,8 @@
 .form {
     background-color: white;
+    margin: calc(30px + 5vh) auto 0 auto !important;
     width: 500px;
-    margin: calc(30px + 5vh) auto 0 auto;
+    margin: 0 auto;
     border-radius: 5px;
     padding: 30px 50px !important;
     text-align: center;
@@ -56,5 +57,6 @@
 .error {
     color: red;
     display: block;
-    font-size: 14px;
+    font-size: 15px !important;
+    font-weight: 600;
 }

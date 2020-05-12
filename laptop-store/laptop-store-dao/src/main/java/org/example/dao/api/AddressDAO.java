@@ -8,6 +8,8 @@ import java.util.List;
 @Local
 public interface AddressDAO {
     List<Address> findByUserId(Integer userId);
+
     void save(Address address);
+
     void delete(Integer id);
 }

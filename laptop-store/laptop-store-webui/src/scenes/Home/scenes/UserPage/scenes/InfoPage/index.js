@@ -5,13 +5,10 @@ import { FaInfoCircle } from "react-icons/fa";
 import { getCookie } from "../../../../../../services/helper/cookie";
 
 class InfoPage extends Component {
-
     state = {
         loading: true,
-        user: [],
-        gender: '',
+        user: null,
     };
-
 
     componentDidMount() {
         this.fetchData();
@@ -21,40 +18,33 @@ class InfoPage extends Component {
         const response = await fetch("/api/users/me", {
             method: "GET",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getCookie('access_token'),
-            }
-            
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + getCookie("access_token"),
+            },
         });
 
         if (response.ok) {
             const user = await response.json();
-            console.log(user);
-            console.log(user['gender']);
             this.setState({
                 user: user,
-                gender: user['gender'] ,
                 loading: false,
             });
-
-        }
-        else {
+        } else {
             const status = parseInt(response.status);
             switch (status) {
                 case 403:
                     this.setState({
                         error: "Not permission",
-                        loading: false
+                        loading: false,
                     });
                     break;
                 case 401:
-                    alert('You have to login to access this page.')
                     window.location.href = "/auth/login";
                     break;
                 default:
                     this.setState({
                         error: "Server error",
-                        loading: false
+                        loading: false,
                     });
             }
         }
@@ -64,14 +54,14 @@ class InfoPage extends Component {
         const name = document.getElementById("fullName").value;
         const telephone = document.getElementById("telephone").value;
         const email = document.getElementById("email").value;
-        const gender = this.state.gender;
+        const gender = document.getElementById("gender").value;
         const birthday = document.getElementById("birthday").value;
 
         const response = await fetch("/api/users/me", {
             method: "PUT",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getCookie('access_token'),
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + getCookie("access_token"),
             },
             body: JSON.stringify({
                 name: name,
@@ -83,45 +73,52 @@ class InfoPage extends Component {
         });
 
         if (response.ok) {
-            alert('Đã lưu thông tin mới thành công')
-        }
-        else {
+            alert("Đã lưu thông tin mới thành công");
+        } else {
             const status = parseInt(response.status);
             switch (status) {
                 case 403:
                     this.setState({
                         error: "Not permission",
-                        loading: false
+                        loading: false,
                     });
                     break;
                 case 401:
-                    alert('You have to login to access this page.')
+                    alert("You have to login to access this page.");
                     window.location.href = "/auth/login";
                     break;
                 default:
                     this.setState({
                         error: "Server error",
-                        loading: false
+                        loading: false,
                     });
             }
         }
     };
 
-    handleChangeGender = (changeEvent) => {
-        this.setState ({
-            gender: changeEvent.target.value
-        });
-    }
-
     render() {
-        return (
+        const { user, loading } = this.state;
+        const birthday = user
+            ? new Date(
+                  user["birthday"]["year"],
+                  user["birthday"]["monthValue"] - 1,
+                  user["birthday"]["dayOfMonth"] + 1
+              )
+            : null;
+
+        return loading ? null : (
             <Fragment>
                 <div className={styles.title}>
                     <label className={styles.header}>
                         <FaInfoCircle />
                         &nbsp;&nbsp;THÔNG TIN TÀI KHOẢN
                     </label>
-                    <Button type="submit" className={styles.submit} color="success" onClick={this.updateUser}>
+                    <Button
+                        type="submit"
+                        className={styles.submit}
+                        color="success"
+                        onClick={this.updateUser}
+                    >
                         Lưu
                     </Button>
                 </div>
@@ -138,9 +135,8 @@ class InfoPage extends Component {
                                 name="fullName"
                                 id="fullName"
                                 placeholder="Nhập họ và tên"
-                                defaultValue={this.state.user['name']}
+                                defaultValue={user?.["name"]}
                                 className={styles.input}
-                                
                             />
                         </td>
                     </tr>
@@ -157,7 +153,7 @@ class InfoPage extends Component {
                                 name="telephone"
                                 id="telephone"
                                 placeholder="Nhập số điện thoại"
-                                defaultValue={this.state.user['phone']}
+                                defaultValue={user?.["phone"]}
                                 className={styles.input}
                             />
                         </td>
@@ -175,7 +171,7 @@ class InfoPage extends Component {
                                 name="email"
                                 id="email"
                                 placeholder="Nhập email"
-                                defaultValue={this.state.user['email']}
+                                defaultValue={user?.["email"]}
                                 className={styles.input}
                             />
                         </td>
@@ -186,24 +182,16 @@ class InfoPage extends Component {
                             <Label className={styles.label}>Giới tính:</Label>
                         </td>
                         <td>
-                            <Label className={styles.radioInput}>
-                                <Input
-                                    type="radio" 
-                                    name="gender" 
-                                    value="MALE" 
-                                    checked={this.state.gender === "MALE"}
-                                    onChange={this.handleChangeGender}/>
-                                Nam
-                            </Label>
-                            <Label className={styles.radioInput}>
-                                <Input  
-                                    type="radio" 
-                                    name="gender" 
-                                    value="FEMALE" 
-                                    checked={this.state.gender === "FEMALE"}
-                                    onChange={this.handleChangeGender}/>
-                                Nữ
-                            </Label>
+                            <Input
+                                type="select"
+                                id="gender"
+                                defaultValue={user?.["gender"]}
+                                className={styles.input}
+                            >
+                                <option value="MALE">Nam</option>
+                                <option value="FEMALE">Nữ</option>
+                                <option value="OTHER">Khác</option>
+                            </Input>
                         </td>
                     </tr>
 
@@ -219,7 +207,7 @@ class InfoPage extends Component {
                                 name="birthday"
                                 id="birthday"
                                 placeholder="Nhập ngày sinh"
-                                defaultValue={this.state.user['birthday']}
+                                defaultValue={birthday.toISOString().substring(0, 10)}
                                 className={styles.input}
                             />
                         </td>

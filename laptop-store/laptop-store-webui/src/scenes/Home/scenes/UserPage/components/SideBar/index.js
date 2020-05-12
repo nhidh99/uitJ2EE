@@ -3,62 +3,83 @@ import { ListGroup, ListGroupItem } from "reactstrap";
 import {
     FaBook,
     FaMapMarkerAlt,
-    FaBell,
     FaUser,
     FaBoxes,
     FaShoppingCart,
     FaInfoCircle,
     FaLock,
+    FaDoorOpen,
 } from "react-icons/fa";
 import styles from "./styles.module.scss";
+import { Link } from "react-router-dom";
+import { removeCookie } from "../../../../../../services/helper/cookie";
+
 class SideBar extends Component {
+    logout = () => {
+        removeCookie("access_token");
+        localStorage.setItem("cart", null);
+        window.location.href = "/";
+    };
+
     render() {
         return (
             <Fragment>
-                <ListGroup>
+                <ListGroup className={styles.listGroup}>
                     <ListGroupItem color="secondary">
                         <FaUser className={styles.icon} />
                         <b>Tài khoản</b>
                     </ListGroupItem>
 
-                    <ListGroupItem tag="a" href="/user/info">
-                        <FaInfoCircle className={styles.icon} />
-                        Thông tin tài khoản
-                    </ListGroupItem>
+                    <Link to="/user/info" className={styles.link}>
+                        <ListGroupItem>
+                            <FaInfoCircle className={styles.icon} />
+                            Thông tin
+                        </ListGroupItem>
+                    </Link>
 
-                    <ListGroupItem tag="a" href="/user/notifications">
-                        <FaBell className={styles.icon} />
-                        Thông báo của tôi
-                    </ListGroupItem>
+                    <Link to="/user/address" className={styles.link}>
+                        <ListGroupItem>
+                            <FaMapMarkerAlt className={styles.icon} />
+                            Sổ địa chỉ
+                        </ListGroupItem>
+                    </Link>
 
-                    <ListGroupItem tag="a" href="/user/address">
-                        <FaMapMarkerAlt className={styles.icon} />
-                        Sổ địa chỉ
-                    </ListGroupItem>
+                    <Link to="/user/password" className={styles.link}>
+                        <ListGroupItem>
+                            <FaLock className={styles.icon} />
+                            Đổi mật khẩu
+                        </ListGroupItem>
+                    </Link>
 
-                    <ListGroupItem tag="a" href="/user/password">
-                        <FaLock className={styles.icon} />
-                        Đổi mật khẩu
-                    </ListGroupItem>
+                    <Link className={styles.link}>
+                        <ListGroupItem onClick={this.logout}>
+                            <FaDoorOpen className={styles.icon} />
+                            Đăng xuất
+                        </ListGroupItem>
+                    </Link>
                 </ListGroup>
 
                 <br />
 
-                <ListGroup>
+                <ListGroup className={styles.listGroup}>
                     <ListGroupItem color="secondary">
                         <FaBook className={styles.icon} />
                         <b>Danh mục</b>
                     </ListGroupItem>
 
-                    <ListGroupItem tag="a" href="/user/order">
-                        <FaBoxes className={styles.icon} />
-                        Đơn hàng
-                    </ListGroupItem>
+                    <Link to="/user/order" className={styles.link}>
+                        <ListGroupItem>
+                            <FaBoxes className={styles.icon} />
+                            Đơn hàng
+                        </ListGroupItem>
+                    </Link>
 
-                    <ListGroupItem tag="a" href="/cart">
-                        <FaShoppingCart className={styles.icon} />
-                        Giỏ hàng
-                    </ListGroupItem>
+                    <Link to="/cart" className={styles.link}>
+                        <ListGroupItem>
+                            <FaShoppingCart className={styles.icon} />
+                            Giỏ hàng
+                        </ListGroupItem>
+                    </Link>
                 </ListGroup>
             </Fragment>
         );
