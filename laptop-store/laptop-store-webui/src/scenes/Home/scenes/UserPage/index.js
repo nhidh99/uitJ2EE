@@ -25,6 +25,7 @@ class UserPage extends Component {
                         <Route exact component={InfoPage} path="/user/info" />
                         <Route exact component={AddressPage} path="/user/address" />
                         <Route exact component={EditAddressPage} path="/user/address/create" />
+                        <Route exact component={EditAddressPage} path="/user/address/edit/:addressId" />
                         <Route exact component={PasswordPage} path="/user/password" />
                         <Route exact component={OrderPage} path="/user/order" />
                         <Route exact component={OrderDetail} path="/user/order/:orderId" />

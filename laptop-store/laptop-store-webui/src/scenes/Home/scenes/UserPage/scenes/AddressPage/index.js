@@ -1,9 +1,57 @@
 import React, { Component, Fragment } from "react";
-import { Button, ButtonGroup } from "reactstrap";
-import { FaBook, FaTrash, FaPen } from "react-icons/fa";
+import { Button } from "reactstrap";
+import { FaBook } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 import styles from "./styles.module.scss";
+import AddressBlock from "./components/AddressBlock";
+import { getCookie } from "../../../../../../services/helper/cookie";
 
 class AddressPage extends Component {
+
+    state = {
+        addressList: [],
+    };
+
+    componentDidMount() {
+        this.fetchData();
+    }
+
+    fetchData = async () => {
+        const response = await fetch("/api/addresses/me", {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            }
+        });
+
+        if (response.ok) {
+            const addressList = await response.json();
+            this.setState({
+                addressList: addressList,
+            });
+        }
+        else {
+            const status = parseInt(response.status);
+            switch (status) {
+                case 403:
+                    this.setState({
+                        error: "Not permission",
+                        loading: false
+                    });
+                    break;
+                case 401:
+                    alert('You have to login to access this page.')
+                    window.location.href = "/auth/login";
+                    break;
+                default:
+                    this.setState({
+                        error: "Server error",
+                        loading: false
+                    });
+            }
+        }
+    };
     render() {
         return (
             <Fragment>
@@ -12,75 +60,29 @@ class AddressPage extends Component {
                         <FaBook />
                         &nbsp;&nbsp;SỔ ĐỊA CHỈ
                     </label>
-                    <Button color="success" className={styles.submit}>
-                        Thêm địa chỉ
-                    </Button>
+                    <Link to=
+                        {{
+                            pathname: '/user/address/create',
+                            state: {
+                                address: null,
+                            }
+                        }}>
+                        <Button color="success" className={styles.submit}>
+                            Thêm địa chỉ
+                        </Button>
+                    </Link>
+
                 </div>
 
-                <div className={styles.addressBlock}>
-                    <ButtonGroup className={styles.actions}>
-                        <Button color="danger">
-                            <FaTrash />
-                        </Button>
-                        <Button color="primary">
-                            <FaPen />
-                        </Button>
-                    </ButtonGroup>
+                {
+                    this.state.addressList.map((address) => (
+                        <AddressBlock address={address} />
+                    ))
+                }
 
-                    <b>Người nhận: </b>
-                    <label>ĐINH HOÀNG NHI</label>
-                    <br />
 
-                    <b>Địa chỉ: </b>
-                    <label>KTX Khu B ĐHQG Phường Đông Hòa Thị xã Dĩ An Bình Dương</label>
-                    <br />
 
-                    <b>Điện thoại: </b>
-                    <label>0336251885</label>
-                </div>
-
-                <div className={styles.addressBlock}>
-                    <ButtonGroup className={styles.actions}>
-                        <Button color="danger">
-                            <FaTrash />
-                        </Button>
-                        <Button color="primary">
-                            <FaPen />
-                        </Button>
-                    </ButtonGroup>
-                    <b>Người nhận: </b>
-                    <label>ĐINH HOÀNG NHI</label>
-                    <br />
-
-                    <b>Địa chỉ: </b>
-                    <label>KTX Khu B ĐHQG Phường Đông Hòa Thị xã Dĩ An Bình Dương</label>
-                    <br />
-
-                    <b>Điện thoại: </b>
-                    <label>0336251885</label>
-                </div>
-
-                <div className={styles.addressBlock}>
-                    <ButtonGroup className={styles.actions}>
-                        <Button color="danger">
-                            <FaTrash />
-                        </Button>
-                        <Button color="primary">
-                            <FaPen />
-                        </Button>
-                    </ButtonGroup>
-                    <b>Người nhận: </b>
-                    <label>ĐINH HOÀNG NHI</label>
-                    <br />
-
-                    <b>Địa chỉ: </b>
-                    <label>KTX Khu B ĐHQG Phường Đông Hòa Thị xã Dĩ An Bình Dương</label>
-                    <br />
-
-                    <b>Điện thoại: </b>
-                    <label>0336251885</label>
-                </div>
-            </Fragment>
+            </Fragment >
         );
     }
 }

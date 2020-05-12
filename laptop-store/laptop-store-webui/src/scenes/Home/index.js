@@ -19,6 +19,7 @@ class Home extends Component {
                     component={UserPage}
                     path={[
                         "/user/address/(|create)",
+                        "/user/address/edit/:addressId",
                         "/user/order/:orderId",
                         "/user/(info|password|address|order|payment)",
                     ]}

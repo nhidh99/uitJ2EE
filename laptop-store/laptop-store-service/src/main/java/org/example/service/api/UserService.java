@@ -7,4 +7,10 @@ public interface UserService {
     Response fetchUserData(SecurityContext securityContext);
 
     Response updateCart(String cartJSON, SecurityContext securityContext);
+
+    Response findUser(SecurityContext securityContext);
+
+    Response updateUser(SecurityContext securityContext, UserInput userInput);
+
+    Response updatePassword(SecurityContext securityContext, PasswordInput passwordInput);
 }

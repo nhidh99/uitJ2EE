@@ -1,6 +1,7 @@
 package org.example.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,10 +25,10 @@ public class Address {
 
     @Column(name = "address_num")
     @JsonProperty("address_num")
-    private String address_num;
+    private String addressNum;
 
     @Column(name="street")
-    @JsonProperty("address_num")
+    @JsonProperty("street")
     private String street;
 
     @Column(name="ward")
@@ -42,7 +43,23 @@ public class Address {
     @JsonProperty("city")
     private String city;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Column(name="receiver_name")
+    @JsonProperty("receiver_name")
+    private String receiverName;
+
+    @Column(name="phone")
+    @JsonProperty("phone")
+    private String phone;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonProperty("user")
     private User user;
+
+    @Column(name = "record_status")
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private boolean recordStatus;
+
+
 }

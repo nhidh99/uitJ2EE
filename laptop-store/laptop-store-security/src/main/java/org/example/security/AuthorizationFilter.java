@@ -61,8 +61,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
                 @Override
                 public Principal getUserPrincipal() {
                     return () -> {
-                        User user = userDAO.findById(userId).orElseThrow(NotFoundException::new);
-                        return user.getId().toString();
+                        return userId.toString();
                     };
                 }
 
