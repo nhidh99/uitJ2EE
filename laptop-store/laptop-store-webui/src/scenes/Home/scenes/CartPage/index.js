@@ -4,6 +4,7 @@ import ItemBlock from "./components/ItemBlock";
 import { FaShoppingCart, FaBoxOpen, FaGift, FaMoneyBillWave } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import { getCart, removeFromCart } from "../../../../services/helper/cart";
+import { withRouter } from "react-router-dom";
 
 class CartPage extends Component {
     state = {
@@ -62,6 +63,10 @@ class CartPage extends Component {
         });
     };
 
+    redirectToPayment = () => {
+        this.props.history.push("/payment");
+    };
+
     render() {
         const { products, totalPrice, totalDiscount, loading } = this.state;
         const cart = getCart();
@@ -70,7 +75,7 @@ class CartPage extends Component {
             <Fragment>
                 <div className={styles.title}>
                     <Label className={styles.pageTitle}>Giỏ hàng của tôi</Label>
-                    <Button tag="a" href="/user/payment" className={styles.btn} color="success">
+                    <Button onClick={this.redirectToPayment} className={styles.btn} color="success">
                         <FaShoppingCart className={styles.icon} /> Tiến hành đặt hàng
                     </Button>
                 </div>
@@ -126,4 +131,4 @@ class CartPage extends Component {
     }
 }
 
-export default CartPage;
+export default withRouter(CartPage);

@@ -5,6 +5,7 @@ import DetailPage from "./scenes/DetailPage";
 import UserPage from "./scenes/UserPage";
 import HomePage from "./scenes/HomePage";
 import ResultPage from "./scenes/ResultPage";
+import PaymentPage from "./scenes/PaymentPage";
 
 class Home extends Component {
     render() {
@@ -19,6 +20,7 @@ class Home extends Component {
                     <Route exact component={HomePage} path="/" />
                     <Route exact component={ResultPage} path="/result" />
                     <Route exact component={CartPage} path="/cart" />
+                    <Route exact component={PaymentPage} path="/payment" />
                     <Route
                         exact
                         component={UserPage}

@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import styles from './styles.module.scss';
-import { getCookie } from '../../../../../../../../services/helper/cookie';
+import styles from "./styles.module.scss";
+import { getCookie } from "../../../../../../../../services/helper/cookie";
 
 const AddressDelete = ({ address }) => {
     const [modal, setModal] = useState(false);
@@ -12,8 +12,8 @@ const AddressDelete = ({ address }) => {
         const response = await fetch(`/api/addresses/${address["id"]}`, {
             method: "DELETE",
             headers: {
-                'Authorization': 'Bearer ' + getCookie('access_token'),
-            }
+                Authorization: "Bearer " + getCookie("access_token"),
+            },
         });
         if (response.ok) {
             window.location.reload();
@@ -35,7 +35,14 @@ const AddressDelete = ({ address }) => {
                 <ModalBody>
                     Xác nhận xóa địa chỉ{" "}
                     <b>
-                        {address["id"]} - {address["receiver_name"]}?
+                        {[
+                            address["address_num"],
+                            address["street"],
+                            address["ward"],
+                            address["district"],
+                            address["city"],
+                        ].join(", ")}
+                        ?
                     </b>
                 </ModalBody>
 
