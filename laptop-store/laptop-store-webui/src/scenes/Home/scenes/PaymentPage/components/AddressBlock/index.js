@@ -3,41 +3,65 @@ import styles from "./styles.module.scss";
 import { Input } from "reactstrap";
 
 class AddressBlock extends Component {
+    componentDidMount() {
+        this.loadData();
+    }
+
+    loadData = async () => {
+        const addresses = this.props.addresses;
+        if (addresses.length > 0) {
+            const address = document.getElementById("address");
+            address.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+    };
+
+    loadReceiver = (e) => {
+        const addresses = this.props.addresses;
+        const index = e.target.selectedIndex;
+        const name = document.getElementById("receiver-name");
+        const phone = document.getElementById("receiver-phone");
+        name.value = addresses[index]["receiver_name"];
+        phone.value = addresses[index]["phone"];
+    };
+
     render() {
+        const { addresses } = this.props;
         return (
             <table className={styles.table}>
                 <tbody>
                     <tr>
                         <td className={styles.labelCol}>Chọn địa chỉ:</td>
                         <td className={styles.inputCol}>
-                            <Input type="select" name="address" id="address">
-                                <option>
-                                    Địa chỉ: Khu phố bình đức 1, Lái Thiêu, Thuận An, Bình Dương
-                                </option>
-                                <option>Địa chỉ 2: abcedf</option>
+                            <Input
+                                type="select"
+                                name="address"
+                                id="address"
+                                onChange={this.loadReceiver}
+                            >
+                                {addresses.map((address) => (
+                                    <option value={address["id"]}>
+                                        {[
+                                            address["address_num"],
+                                            address["street"],
+                                            address["ward"],
+                                            address["district"],
+                                            address["city"],
+                                        ].join(", ")}
+                                    </option>
+                                ))}
                             </Input>
                         </td>
                     </tr>
                     <tr>
                         <td className={styles.labelCol}>Người nhận:</td>
                         <td className={styles.inputCol}>
-                            <Input
-                                type="text"
-                                id="fullName"
-                                value="Vương Thịnh Đạt"
-                                readOnly="true"
-                            ></Input>
+                            <Input type="text" id="receiver-name" readOnly></Input>
                         </td>
                     </tr>
                     <tr>
                         <td className={styles.labelCol}>Điện thoại:</td>
                         <td className={styles.inputCol}>
-                            <Input
-                                type="text"
-                                id="telephone"
-                                value="0782369351"
-                                readOnly="true"
-                            ></Input>
+                            <Input type="text" id="receiver-phone" readOnly></Input>
                         </td>
                     </tr>
                 </tbody>

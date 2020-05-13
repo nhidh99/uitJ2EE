@@ -64,7 +64,9 @@ public class AddressServiceImpl implements AddressService {
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateAddress(@PathParam("id") Integer id, AddressInput addressInput, @Context SecurityContext securityContext) {
+    public Response updateAddress(@PathParam("id") Integer id,
+                                  AddressInput addressInput,
+                                  @Context SecurityContext securityContext) {
         try {
             Address address = buildAddressFromRequestBody(addressInput, securityContext);
             address.setId(id);
@@ -75,7 +77,8 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
-    private Address buildAddressFromRequestBody(AddressInput addressInput, @Context SecurityContext securityContext) {
+    private Address buildAddressFromRequestBody(AddressInput addressInput,
+                                                @Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         Integer userId = Integer.parseInt(principal.getName());
         User user = userDAO.findById(userId).orElseThrow(BadRequestException::new);

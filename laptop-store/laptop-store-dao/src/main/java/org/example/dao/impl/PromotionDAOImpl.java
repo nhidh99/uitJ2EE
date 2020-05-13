@@ -82,7 +82,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByLaptopId(Integer laptopId) {
         Laptop laptop = em.find(Laptop.class, laptopId);
-        if (laptop == null) return null;
+        if (laptop == null || !laptop.isRecordStatus()) return null;
         return laptop.getPromotions();
     }
 

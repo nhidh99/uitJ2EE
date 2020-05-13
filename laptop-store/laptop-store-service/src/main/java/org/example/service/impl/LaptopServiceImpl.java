@@ -5,6 +5,7 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.PromotionDAO;
 import org.example.dao.api.TagDAO;
+import org.example.filter.LaptopFilter;
 import org.example.model.*;
 import org.example.service.api.LaptopService;
 import org.example.type.*;
@@ -41,9 +42,11 @@ public class LaptopServiceImpl implements LaptopService {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findLaptopsByPage(@QueryParam("page") @DefaultValue("1") Integer page) {
+    public Response findLaptops(@BeanParam LaptopFilter laptopFilter) {
         try {
-            List<Laptop> laptops = laptopDAO.findByPage(page);
+            List<Laptop> laptops = laptopFilter.getIds().isEmpty()
+                    ? laptopDAO.findByPage(laptopFilter.getPage())
+                    : laptopDAO.findByIds(laptopFilter.getIds());
             ObjectMapper om = new ObjectMapper();
             String laptopsJSON = om.writeValueAsString(laptops);
             return Response.ok(laptopsJSON).build();
@@ -203,7 +206,7 @@ public class LaptopServiceImpl implements LaptopService {
             ObjectMapper om = new ObjectMapper();
             String promotionsJSON = om.writeValueAsString(promotions);
             return promotions == null
-                    ? Response.status(Response.Status.BAD_REQUEST).build()
+                    ? Response.status(Response.Status.NOT_FOUND).build()
                     : Response.ok(promotionsJSON).build();
         } catch (Exception e) {
             return Response.serverError().build();

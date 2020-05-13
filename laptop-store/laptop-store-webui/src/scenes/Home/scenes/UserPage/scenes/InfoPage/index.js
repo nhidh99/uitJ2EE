@@ -25,10 +25,15 @@ class InfoPage extends Component {
 
         if (response.ok) {
             const user = await response.json();
-            this.setState({
-                user: user,
-                loading: false,
-            });
+            this.setState({ user: user, loading: false });
+            const date = document.getElementById("birthday");
+            const birthday = user["birthday"];
+            date.valueAsDate = new Date(
+                birthday["year"],
+                birthday["monthValue"] - 1,
+                birthday["dayOfMonth"],
+                -new Date().getTimezoneOffset() / 60
+            );
         } else {
             const status = parseInt(response.status);
             switch (status) {
@@ -42,10 +47,7 @@ class InfoPage extends Component {
                     window.location.href = "/auth/login";
                     break;
                 default:
-                    this.setState({
-                        error: "Server error",
-                        loading: false,
-                    });
+                    break;
             }
         }
     };
@@ -98,13 +100,6 @@ class InfoPage extends Component {
 
     render() {
         const { user, loading } = this.state;
-        const birthday = user
-            ? new Date(
-                  user["birthday"]["year"],
-                  user["birthday"]["monthValue"] - 1,
-                  user["birthday"]["dayOfMonth"] + 1
-              )
-            : null;
 
         return loading ? null : (
             <Fragment>
@@ -207,7 +202,6 @@ class InfoPage extends Component {
                                 name="birthday"
                                 id="birthday"
                                 placeholder="Nhập ngày sinh"
-                                defaultValue={birthday.toISOString().substring(0, 10)}
                                 className={styles.input}
                             />
                         </td>

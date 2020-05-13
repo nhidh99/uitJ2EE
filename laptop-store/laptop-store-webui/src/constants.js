@@ -14,3 +14,6 @@ export const ROLE_USER = "USER";
 export const ROLE_ADMIN = "ADMIN";
 
 export const REFRESH_TOKENS_TIMESPAN = 10 * 60 * 1000;
+
+export const NUMBER_OF_DELIVERY_DAYS = 3;
+export const DELIVERY_FEE = 45_000;

@@ -2,6 +2,7 @@ package org.example.dao.impl;
 
 import org.example.dao.api.LaptopDAO;
 import org.example.model.Laptop;
+import org.example.model.Promotion;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -9,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,6 +73,16 @@ public class LaptopDAOImpl implements LaptopDAO {
     public Optional<Laptop> findById(Integer id) {
         Laptop laptop = em.find(Laptop.class, id);
         return Optional.of(laptop);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Laptop> findByIds(List<Integer> ids) {
+        if (ids.isEmpty()) return new ArrayList<>();
+        String query = "SELECT l FROM Laptop l WHERE l.id IN :ids AND l.recordStatus = true";
+        return em.createQuery(query, Laptop.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 
     @Override

@@ -2,6 +2,10 @@
     border-collapse: separate;
     border-spacing: 10px;
 
+    input, select {
+        font-size: 14px;
+    }
+
     input[readonly] {
         background-color: white !important;
     }
@@ -14,5 +18,4 @@
 
 .inputCol {
     width: 100%;
-    font-size: 14px;
 }
