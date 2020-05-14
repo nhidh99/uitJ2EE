@@ -7,5 +7,5 @@ import javax.ws.rs.core.SecurityContext;
 
 public interface RatingService {
     Response createRating(Integer productId, RatingInput rating, SecurityContext securityContext);
-    Response findByProductId(Integer productId, SecurityContext securityContext);
+    Response findByProductId(Integer productId);
 }

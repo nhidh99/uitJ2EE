@@ -59,7 +59,11 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Rating> rating;
+    private List<Rating> ratings;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<RatingReply> ratingReplies;
 
     @Column(name = "cart")
     @JsonProperty("cart")

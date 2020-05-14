@@ -72,11 +72,9 @@ public class RatingServiceImpl implements RatingService {
     @Override
     @GET
     @Path("/{id}")
-    public Response findByProductId(@PathParam("id") Integer productId, @Context SecurityContext securityContext) {
+    public Response findByProductId(@PathParam("id") Integer productId) {
         try {
-            Principal principal = securityContext.getUserPrincipal();
-            Integer userId = Integer.parseInt(principal.getName());
-            List<Rating> ratings = ratingDAO.findByProductId(userId, productId);
+            List<Rating> ratings = ratingDAO.findByProductId(productId);
             ObjectMapper om = new ObjectMapper();
             String ratingsJSON = om.writeValueAsString(ratings);
             return Response.ok(ratingsJSON).build();
