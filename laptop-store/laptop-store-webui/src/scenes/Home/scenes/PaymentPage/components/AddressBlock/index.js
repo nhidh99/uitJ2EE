@@ -21,7 +21,7 @@ class AddressBlock extends Component {
         const name = document.getElementById("receiver-name");
         const phone = document.getElementById("receiver-phone");
         name.value = addresses[index]["receiver_name"];
-        phone.value = addresses[index]["phone"];
+        phone.value = addresses[index]["receiver_phone"];
     };
 
     render() {

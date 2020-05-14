@@ -84,7 +84,7 @@ public class AddressServiceImpl implements AddressService {
         User user = userDAO.findById(userId).orElseThrow(BadRequestException::new);
         return Address.builder()
                 .receiverName(addressInput.getReceiverName())
-                .phone(addressInput.getPhone())
+                .receiverPhone(addressInput.getReceiverPhone())
                 .addressNum(addressInput.getAddressNum())
                 .street(addressInput.getStreet())
                 .ward(addressInput.getWard())

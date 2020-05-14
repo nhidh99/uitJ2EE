@@ -16,7 +16,7 @@ class EditAddressPage extends Component {
 
         return {
             receiverName: receiverName,
-            phone: phone,
+            receiverPhone: phone,
             city: city,
             district: district,
             ward: ward,
@@ -108,7 +108,9 @@ class EditAddressPage extends Component {
                                     name="phone"
                                     id="phone"
                                     placeholder="Nhập số điện thoại"
-                                    defaultValue={address != null ? address["phone"] : null}
+                                    defaultValue={
+                                        address != null ? address["receiver_phone"] : null
+                                    }
                                 />
                             </td>
                         </tr>

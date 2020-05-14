@@ -11,9 +11,7 @@ const AddressDelete = ({ address }) => {
     const submit = async () => {
         const response = await fetch(`/api/addresses/${address["id"]}`, {
             method: "DELETE",
-            headers: {
-                Authorization: "Bearer " + getCookie("access_token"),
-            },
+            headers: { Authorization: "Bearer " + getCookie("access_token") },
         });
         if (response.ok) {
             window.location.reload();

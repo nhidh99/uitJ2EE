@@ -3,7 +3,6 @@ import styles from "./styles.module.scss";
 import { Table } from "reactstrap";
 
 class PromotionsBlock extends Component {
-
     render() {
         const { quantities, promotions } = this.props;
         return (
@@ -20,9 +19,7 @@ class PromotionsBlock extends Component {
                         const quantity = quantities[promotion["id"]];
                         return (
                             <tr>
-                                <td className={styles.promotionCol}>
-                                    {`${promotion["id"]} - ${promotion["name"]}`}
-                                </td>
+                                <td className={styles.promotionCol}>{promotion["name"]}</td>
 
                                 <td className={styles.unitPriceCol}>
                                     {promotion["price"].toLocaleString()}

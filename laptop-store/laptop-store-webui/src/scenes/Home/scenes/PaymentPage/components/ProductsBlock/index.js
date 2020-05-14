@@ -4,7 +4,6 @@ import { Table } from "reactstrap";
 import { getCart } from "../../../../../../services/helper/cart";
 
 class ProductsBlock extends Component {
-
     render() {
         const { products } = this.props;
         const cart = getCart();
@@ -24,9 +23,7 @@ class ProductsBlock extends Component {
                         const quantity = cart[product["id"]];
                         return (
                             <tr>
-                                <td className={styles.productCol}>
-                                    {`${product["id"]} - ${product["name"]}`}
-                                </td>
+                                <td className={styles.productCol}>{product["name"]}</td>
                                 <td className={styles.unitPriceCol}>
                                     {price.toLocaleString()}
                                     <sup>đ</sup>

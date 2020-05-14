@@ -12,7 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@Table(name="delivery_address")
+@Table(name="address")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -47,9 +47,9 @@ public class Address {
     @JsonProperty("receiver_name")
     private String receiverName;
 
-    @Column(name="phone")
-    @JsonProperty("phone")
-    private String phone;
+    @Column(name="receiver_phone")
+    @JsonProperty("receiver_phone")
+    private String receiverPhone;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -60,6 +60,4 @@ public class Address {
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
-
-
 }

@@ -3,11 +3,34 @@ import styles from "./styles.module.scss";
 import { Table, Button } from "reactstrap";
 import { FaShoppingCart } from "react-icons/fa";
 import { NUMBER_OF_DELIVERY_DAYS, DELIVERY_FEE } from "../../../../../../constants";
+import { getCookie } from "../../../../../../services/helper/cookie";
+import { getCart } from "../../../../../../services/helper/cart";
 
 class SummaryBlock extends Component {
+    createOrder = async () => {
+        const addressId = parseInt(document.getElementById("address").value);
+        const cart = getCart();
+        console.log(
+            JSON.stringify({
+                addressId: addressId,
+                cartJSON: JSON.stringify(cart),
+            })
+        );
+        const response = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getCookie("access_token")}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                addressId: addressId,
+                cartJSON: JSON.stringify(cart),
+            }),
+        });
+    };
+
     render() {
         const { productsPrice } = this.props;
-
         return (
             <Fragment>
                 <header className={styles.caution}>
@@ -50,7 +73,11 @@ class SummaryBlock extends Component {
 
                         <tr>
                             <td colSpan={2}>
-                                <Button color="success" className={styles.btnOrder}>
+                                <Button
+                                    color="success"
+                                    className={styles.btnOrder}
+                                    onClick={this.createOrder}
+                                >
                                     <FaShoppingCart />
                                     &nbsp;&nbsp;ĐẶT MUA
                                 </Button>

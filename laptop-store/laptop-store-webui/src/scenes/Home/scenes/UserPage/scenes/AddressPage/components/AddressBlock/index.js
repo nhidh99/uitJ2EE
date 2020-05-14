@@ -9,9 +9,7 @@ class AddressBlock extends Component {
     redirectToEdit = (address) => {
         this.props.history.push({
             pathname: "/user/address/edit",
-            state: {
-                address: address,
-            },
+            state: { address: address },
         });
     };
 
@@ -35,7 +33,7 @@ class AddressBlock extends Component {
 
                 <label>
                     <b>Điện thoại: </b>
-                    {address["phone"]}
+                    {address["receiver_phone"]}
                 </label>
                 <br />
 
