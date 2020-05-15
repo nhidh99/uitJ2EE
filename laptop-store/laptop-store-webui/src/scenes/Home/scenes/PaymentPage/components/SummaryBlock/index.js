@@ -4,18 +4,13 @@ import { Table, Button } from "reactstrap";
 import { FaShoppingCart } from "react-icons/fa";
 import { NUMBER_OF_DELIVERY_DAYS, DELIVERY_FEE } from "../../../../../../constants";
 import { getCookie } from "../../../../../../services/helper/cookie";
-import { getCart } from "../../../../../../services/helper/cart";
+import { getCart, updateCartDatabase } from "../../../../../../services/helper/cart";
 
 class SummaryBlock extends Component {
     createOrder = async () => {
+        this.props.toggleSubmit();
         const addressId = parseInt(document.getElementById("address").value);
         const cart = getCart();
-        console.log(
-            JSON.stringify({
-                addressId: addressId,
-                cartJSON: JSON.stringify(cart),
-            })
-        );
         const response = await fetch("/api/orders", {
             method: "POST",
             headers: {
@@ -27,6 +22,12 @@ class SummaryBlock extends Component {
                 cartJSON: JSON.stringify(cart),
             }),
         });
+
+        if (response.ok) {
+            localStorage.setItem("cart", null);
+            await updateCartDatabase({});
+            window.location.href = "/user/order";
+        }
     };
 
     render() {

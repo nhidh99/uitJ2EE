@@ -22,8 +22,6 @@ class App extends Component {
 
     fetchToken = async () => {
         const token = getCookie("access_token");
-        if (token === null) return null;
-
         const response = await fetch("/api/auth/token", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -54,6 +52,11 @@ class App extends Component {
     };
 
     loadData = async () => {
+        if (getCookie("access_token") === null) {
+            this.setState({ role: ROLE_GUEST, loading: false });
+            return;
+        }
+
         const token = await this.fetchToken();
         if (token) {
             createCookie("access_token", token);

@@ -3,21 +3,16 @@ import styles from "./styles.module.scss";
 import { Input } from "reactstrap";
 
 class AddressBlock extends Component {
-    componentDidMount() {
-        this.loadData();
-    }
-
-    loadData = async () => {
+    componentWillReceiveProps() {
         const addresses = this.props.addresses;
         if (addresses.length > 0) {
-            const address = document.getElementById("address");
-            address.dispatchEvent(new Event("change", { bubbles: true }));
+            this.loadReceiver();
         }
-    };
+    }
 
-    loadReceiver = (e) => {
+    loadReceiver = () => {
         const addresses = this.props.addresses;
-        const index = e.target.selectedIndex;
+        const index = document.getElementById("address").selectedIndex;
         const name = document.getElementById("receiver-name");
         const phone = document.getElementById("receiver-phone");
         name.value = addresses[index]["receiver_name"];

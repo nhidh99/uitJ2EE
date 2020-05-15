@@ -3,18 +3,17 @@ package org.example.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.dao.api.LaptopDAO;
-import org.example.dao.api.PromotionDAO;
+import org.example.dao.api.*;
 import org.example.input.OrderInput;
-import org.example.model.Laptop;
-import org.example.model.OrderDetail;
-import org.example.model.Promotion;
+import org.example.model.*;
 import org.example.security.Secured;
 import org.example.service.api.OrderService;
+import org.example.type.OrderStatus;
 import org.example.type.ProductType;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,6 +21,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,18 @@ public class OrderServiceImpl implements OrderService {
     @EJB(mappedName = "PromotionDAOImpl")
     PromotionDAO promotionDAO;
 
+    @EJB(mappedName = "UserDAOImpl")
+    private UserDAO userDAO;
+
+    @EJB(mappedName = "AddressDAOImpl")
+    private AddressDAO addressDAO;
+
+    @EJB(mappedName = "OrderDAOImpl")
+    private OrderDAO orderDAO;
+
+    private static final Integer TRANSPORT_FEE = 45_000;
+    private static final Integer NUMBER_OF_DELIVERY_DAYS = 3;
+
     @Override
     @POST
     @Path("/")
@@ -41,25 +55,53 @@ public class OrderServiceImpl implements OrderService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createOrder(OrderInput orderInput, @Context SecurityContext securityContext) {
         try {
-            Map<String, Integer> cartMap = buildCartMapFromRequestBody(orderInput);
-            List<OrderDetail> orderLaptops = buildLaptopListFromCart(cartMap);
-            List<OrderDetail> orderPromotions = buildOrderPromotionsFromCart(cartMap);
-            // To Do: OrderDAO & Order Model to Persist
-            System.out.println(orderLaptops);
-            System.out.println(orderPromotions);
-            return Response.ok().build();
+            Order order = buildOrderFromRequestBody(orderInput, securityContext);
+            orderDAO.save(order);
+            return Response.status(Response.Status.CREATED).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
     }
 
-    private Map<String, Integer> buildCartMapFromRequestBody(OrderInput orderInput) throws JsonProcessingException {
-        ObjectMapper om = new ObjectMapper();
-        TypeReference<Map<String, Integer>> typeReference = new TypeReference<Map<String, Integer>>() {};
-        return om.readValue(orderInput.getCartJSON(), typeReference);
+    private Order buildOrderFromRequestBody(OrderInput orderInput, SecurityContext securityContext) throws JsonProcessingException {
+        Principal principal = securityContext.getUserPrincipal();
+        Integer userId = Integer.parseInt(principal.getName());
+        User user = userDAO.findById(userId).orElseThrow(BadRequestException::new);
+
+        Address address = addressDAO.findById(orderInput.getAddressId()).orElseThrow(BadRequestException::new);
+        Map<String, Integer> cartMap = buildCartMapFromRequestBody(orderInput.getCartJSON());
+        List<OrderDetail> orderDetails = buildOrderDetailsFromCart(cartMap);
+        LocalDate deliveryDate = buildDeliveryDate();
+        Long totalPrice = TRANSPORT_FEE + orderDetails.stream()
+                .filter(detail -> detail.getProductType() == ProductType.LAPTOP)
+                .mapToLong(OrderDetail::getTotalPrice).sum();
+
+        return Order.builder()
+                .addressNum(address.getAddressNum()).street(address.getStreet())
+                .ward(address.getWard()).district(address.getDistrict())
+                .city(address.getCity()).receiverName(address.getReceiverName())
+                .receiverPhone(address.getReceiverPhone()).transportFee(TRANSPORT_FEE)
+                .totalPrice(totalPrice).orderDetails(orderDetails).status(OrderStatus.PENDING)
+                .deliveryDate(deliveryDate).user(user).build();
     }
 
-    private List<OrderDetail> buildLaptopListFromCart(Map<String, Integer> cartMap)  {
+    private Map<String, Integer> buildCartMapFromRequestBody(String cartJSON) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        TypeReference<Map<String, Integer>> typeReference = new TypeReference<Map<String, Integer>>() {
+        };
+        return om.readValue(cartJSON, typeReference);
+    }
+
+    private List<OrderDetail> buildOrderDetailsFromCart(Map<String, Integer> cartMap) {
+        List<OrderDetail> orderLaptops = buildOrderLaptopsFromCart(cartMap);
+        List<OrderDetail> orderPromotions = buildOrderPromotionsFromCart(cartMap);
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        orderDetails.addAll(orderLaptops);
+        orderDetails.addAll(orderPromotions);
+        return orderDetails;
+    }
+
+    private List<OrderDetail> buildOrderLaptopsFromCart(Map<String, Integer> cartMap) {
         List<Integer> laptopIds = cartMap.keySet().stream().map(Integer::parseInt).collect(Collectors.toList());
         return laptopDAO.findByIds(laptopIds).stream().map(laptop -> {
             Integer quantity = cartMap.get(laptop.getId().toString());
@@ -94,5 +136,18 @@ public class OrderServiceImpl implements OrderService {
                     .productType(ProductType.PROMOTION).unitPrice(promotion.getPrice())
                     .quantity(quantity).totalPrice(totalPrice).build();
         }).collect(Collectors.toList());
+    }
+
+    private LocalDate buildDeliveryDate() {
+        LocalDate result = LocalDate.now();
+        int addedDays = 0;
+        while (addedDays < NUMBER_OF_DELIVERY_DAYS) {
+            result = result.plusDays(1);
+            boolean isWeekendDay = result.getDayOfWeek() == DayOfWeek.SATURDAY || result.getDayOfWeek() == DayOfWeek.SUNDAY;
+            if (!isWeekendDay) {
+                ++addedDays;
+            }
+        }
+        return result;
     }
 }

@@ -40,11 +40,11 @@ export const updateCartQuantity = (cart) => {
     cartQuantity.innerText = quantity;
 };
 
-export const updateCartDatabase = (cart) => {
+export const updateCartDatabase = async (cart) => {
     const token = getCookie("access_token");
     if (!token) return;
 
-    fetch("/api/users/me/carts", {
+    await fetch("/api/users/me/carts", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: JSON.stringify(cart),

@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from "react";
-import { Label, Button } from "reactstrap";
+import { Label, Button, Spinner } from "reactstrap";
 import ItemBlock from "./components/ItemBlock";
 import { FaShoppingCart, FaBoxOpen, FaGift, FaMoneyBillWave } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import { getCart, removeFromCart } from "../../../../services/helper/cart";
+import Loader from "react-loader-advanced";
 import { withRouter } from "react-router-dom";
 
 class CartPage extends Component {
@@ -83,7 +84,7 @@ class CartPage extends Component {
                     </Button>
                 </div>
 
-                {loading || products.length === 0 ? null : (
+                <Loader show={loading} message={<Spinner />}>
                     <div className={styles.total}>
                         <span>
                             <b>
@@ -109,18 +110,22 @@ class CartPage extends Component {
                             <sup>đ</sup>
                         </span>
                     </div>
-                )}
 
-                {loading ? null : (
                     <div className={styles.list}>
                         {products.length === 0 ? (
                             <div className={styles.emptyCart}>
                                 <FaBoxOpen size={80} />
                                 <br />
-                                <h4>Giỏ hàng trống</h4>
-                                <Button size="lg" color="warning" type="a" href="/">
-                                    Quay lại trang mua sắm
-                                </Button>
+                                {loading ? (
+                                    <h5>Đang tải giỏ hàng...</h5>
+                                ) : (
+                                    <Fragment>
+                                        <h4>Giỏ hàng trống</h4>
+                                        <Button size="lg" color="warning" type="a" href="/">
+                                            Quay lại trang mua sắm
+                                        </Button>
+                                    </Fragment>
+                                )}
                             </div>
                         ) : (
                             products.map((product) => (
@@ -128,7 +133,7 @@ class CartPage extends Component {
                             ))
                         )}
                     </div>
-                )}
+                </Loader>
             </Fragment>
         );
     }

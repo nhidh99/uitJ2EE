@@ -8,6 +8,7 @@ import org.example.type.RoleType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity

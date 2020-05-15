@@ -1,13 +1,14 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import styles from "./styles.module.scss";
 import AddressBlock from "./components/AddressBlock";
 import ProductsBlock from "./components/ProductsBlock";
 import PromotionsBlock from "./components/PromotionsBlock";
 import SummaryBlock from "./components/SummaryBlock";
-import { Button } from "reactstrap";
+import { Button, Spinner } from "reactstrap";
 import { getCart, removeFromCart } from "../../../../services/helper/cart";
 import { getCookie } from "../../../../services/helper/cookie";
 import { FaBoxOpen } from "react-icons/fa";
+import Loader from "react-loader-advanced";
 
 class PaymentPage extends Component {
     state = {
@@ -16,6 +17,7 @@ class PaymentPage extends Component {
         promotionQties: {},
         products: [],
         isEmptyCart: false,
+        submitted: false,
         loading: true,
     };
 
@@ -92,39 +94,57 @@ class PaymentPage extends Component {
         });
     };
 
-    render() {
-        const { addresses, promotions, products, promotionQties, loading } = this.state;
+    toggleSubmit = () => {
+        this.setState({ submitted: !this.state.submitted });
+    };
 
+    render() {
+        const { addresses, promotions, products, promotionQties, loading, submitted } = this.state;
         const cart = getCart();
         const productsPrice = products
             .map((p) => cart[p["id"]] * (p["unit_price"] - p["discount_price"]))
             .reduce((a, b) => a + b, 0);
 
-        return loading ? null : products.length === 0 ? (
-            <div className={styles.emptyCart}>
-                <FaBoxOpen size={80} />
-                <br />
-                <h4>Giỏ hàng trống</h4>
-                <Button size="lg" color="warning" type="a" href="/">
-                    Quay lại trang mua sắm
-                </Button>
-            </div>
-        ) : (
-            <div className={styles.container}>
-                <div className={styles.address}>
-                    <header className={styles.header}>1. ĐỊA CHỈ GIAO HÀNG</header>
-                    <Button color="primary">Tạo địa chỉ mới</Button>
-                </div>
-                <AddressBlock addresses={addresses} />
+        return (
+            <Loader show={loading} message={<Spinner />}>
+                {products.length === 0 ? (
+                    <div className={styles.emptyCart}>
+                        <FaBoxOpen size={80} />
+                        <br />
+                        {loading ? (
+                            <h5>Đang tải giỏ hàng...</h5>
+                        ) : (
+                            <Fragment>
+                                <h4>Giỏ hàng trống</h4>
+                                <Button size="lg" color="warning" type="a" href="/">
+                                    Quay lại trang mua sắm
+                                </Button>
+                            </Fragment>
+                        )}
+                    </div>
+                ) : (
+                    <Loader show={submitted} message={<Spinner />}>
+                        <div className={styles.container}>
+                            <div className={styles.address}>
+                                <header className={styles.header}>1. ĐỊA CHỈ GIAO HÀNG</header>
+                                <Button color="primary">Tạo địa chỉ mới</Button>
+                            </div>
+                            <AddressBlock addresses={addresses} />
 
-                <header className={styles.header}>2. DANH SÁCH SẢN PHẨM</header>
-                <ProductsBlock products={products} />
+                            <header className={styles.header}>2. DANH SÁCH SẢN PHẨM</header>
+                            <ProductsBlock products={products} />
 
-                <header className={styles.header}>3. DANH SÁCH KHUYẾN MÃI</header>
-                <PromotionsBlock promotions={promotions} quantities={promotionQties} />
+                            <header className={styles.header}>3. DANH SÁCH KHUYẾN MÃI</header>
+                            <PromotionsBlock promotions={promotions} quantities={promotionQties} />
 
-                <SummaryBlock productsPrice={productsPrice} />
-            </div>
+                            <SummaryBlock
+                                productsPrice={productsPrice}
+                                toggleSubmit={this.toggleSubmit}
+                            />
+                        </div>
+                    </Loader>
+                )}
+            </Loader>
         );
     }
 }
