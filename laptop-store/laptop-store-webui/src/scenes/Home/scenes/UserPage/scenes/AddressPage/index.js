@@ -1,15 +1,16 @@
-import React, { Component, Fragment } from "react";
-import { Button } from "reactstrap";
+import React, { Component } from "react";
+import { Button, Spinner } from "reactstrap";
 import { FaBook } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import styles from "./styles.module.scss";
 import AddressBlock from "./components/AddressBlock";
 import { getCookie } from "../../../../../../services/helper/cookie";
+import Loader from "react-loader-advanced";
 
 class AddressPage extends Component {
-
     state = {
-        addressList: [],
+        addresses: [],
+        loading: true,
     };
 
     componentDidMount() {
@@ -17,72 +18,42 @@ class AddressPage extends Component {
     }
 
     fetchData = async () => {
-        const response = await fetch("/api/addresses", {
+        const response = await fetch("/api/users/me/addresses", {
             method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getCookie('access_token'),
-            }
+            headers: { Authorization: "Bearer " + getCookie("access_token") },
         });
 
         if (response.ok) {
-            const addressList = await response.json();
-            this.setState({
-                addressList: addressList,
-            });
-        }
-        else {
-            const status = parseInt(response.status);
-            switch (status) {
-                case 403:
-                    this.setState({
-                        error: "Not permission",
-                        loading: false
-                    });
-                    break;
-                case 401:
-                    alert('You have to login to access this page.')
-                    window.location.href = "/auth/login";
-                    break;
-                default:
-                    this.setState({
-                        error: "Server error",
-                        loading: false
-                    });
-            }
+            const addresses = await response.json();
+            this.setState({ addresses: addresses, loading: false });
         }
     };
+
     render() {
+        const { addresses, loading } = this.state;
         return (
-            <Fragment>
+            <Loader
+                show={loading}
+                message={<Spinner color="primary" />}
+                className={styles.loader}
+                backgroundStyle={{ backgroundColor: "transparent" }}
+            >
                 <div className={styles.title}>
                     <label className={styles.header}>
                         <FaBook />
                         &nbsp;&nbsp;SỔ ĐỊA CHỈ
                     </label>
-                    <Link to=
-                        {{
-                            pathname: '/user/address/create',
-                            state: {
-                                address: null,
-                            }
-                        }}>
+                    <Link to={{ pathname: "/user/address/create", state: { address: null } }}>
                         <Button color="success" className={styles.submit}>
                             Thêm địa chỉ
                         </Button>
                     </Link>
-
                 </div>
 
-                {
-                    this.state.addressList.map((address) => (
-                        <AddressBlock address={address} />
-                    ))
-                }
-
-
-
-            </Fragment >
+                {addresses.map((address) => (
+                    <AddressBlock address={address} />
+                ))}
+            </Loader>
         );
     }
 }

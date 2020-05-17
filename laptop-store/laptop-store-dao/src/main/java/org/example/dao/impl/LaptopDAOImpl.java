@@ -35,7 +35,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     @Transactional(Transactional.TxType.REQUIRED)
     private void insert(Laptop laptop) {
         laptop.setAvgRating(5.0f);
-        em.persist(laptop);
+        em.merge(laptop);
     }
 
     @Transactional(Transactional.TxType.REQUIRED)

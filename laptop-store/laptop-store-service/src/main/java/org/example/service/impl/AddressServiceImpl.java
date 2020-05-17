@@ -30,23 +30,6 @@ public class AddressServiceImpl implements AddressService {
     private UserDAO userDAO;
 
     @Override
-    @GET
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response findAddressByUser(@Context SecurityContext securityContext) {
-        try {
-            Principal principal = securityContext.getUserPrincipal();
-            Integer userId = Integer.parseInt(principal.getName());
-            List<Address> addresses = addressDAO.findByUserId(userId);
-            ObjectMapper om = new ObjectMapper();
-            String addressesJSON = om.writeValueAsString(addresses);
-            return Response.ok(addressesJSON).build();
-        } catch (Exception e) {
-            return Response.serverError().build();
-        }
-    }
-
-    @Override
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)

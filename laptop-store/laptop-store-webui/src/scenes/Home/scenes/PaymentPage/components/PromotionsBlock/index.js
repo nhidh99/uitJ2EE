@@ -19,7 +19,17 @@ class PromotionsBlock extends Component {
                         const quantity = quantities[promotion["id"]];
                         return (
                             <tr>
-                                <td className={styles.promotionCol}>{promotion["name"]}</td>
+                                <td className={styles.promotionCol}>
+                                    <img
+                                        src={`/api/images/200/promotions/${promotion["id"]}/${promotion["alt"]}.jpg`}
+                                        width={40}
+                                        height={40}
+                                        alt={promotion["name"]}
+                                        title={promotion["name"]}
+                                        className={styles.img}
+                                    />
+                                    {promotion["name"]}
+                                </td>
 
                                 <td className={styles.unitPriceCol}>
                                     {promotion["price"].toLocaleString()}

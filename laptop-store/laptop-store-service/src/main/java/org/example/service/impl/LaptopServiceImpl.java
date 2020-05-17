@@ -149,36 +149,39 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     private RAM buildRAMFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("ram-id", Integer.class);
         Integer size = body.getAttachmentObject("ram-size", Integer.class);
         RAMType type = body.getAttachmentObject("ram-type", RAMType.class);
         Integer bus = body.getAttachmentObject("ram-bus", Integer.class);
         Integer extraSlot = body.getAttachmentObject("ram-extra-slot", Integer.class);
-        return RAM.builder().size(size).type(type).bus(bus).extraSlot(extraSlot).build();
+        return RAM.builder().id(id == -1 ? null : id).size(size).type(type).bus(bus).extraSlot(extraSlot).build();
     }
 
     private CPU buildCPUFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("cpu-id", Integer.class);
         CPUType type = body.getAttachmentObject("cpu-type", CPUType.class);
         String detail = body.getAttachmentObject("cpu-detail", String.class);
         Float speed = body.getAttachmentObject("cpu-speed", Float.class);
         Float maxSpeed = body.getAttachmentObject("cpu-max-speed", Float.class);
-        return CPU.builder().type(type).detail(detail).speed(speed).maxSpeed(maxSpeed).build();
+        return CPU.builder().id(id == -1 ? null : id).type(type).detail(detail).speed(speed).maxSpeed(maxSpeed).build();
     }
 
     private HardDrive buildHardDriveFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("hd-id", Integer.class);
         HardDriveType type = body.getAttachmentObject("hd-type", HardDriveType.class);
         Integer size = body.getAttachmentObject("hd-size", Integer.class);
         String detail = body.getAttachmentObject("hd-detail", String.class);
-        return HardDrive.builder().type(type).size(size).detail(detail).build();
+        return HardDrive.builder().id(id == -1 ? null : id).type(type).size(size).detail(detail).build();
     }
 
     private Monitor buildMonitorFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("monitor-id", Integer.class);
         Float size = body.getAttachmentObject("monitor-size", Float.class);
         ResolutionType type = body.getAttachmentObject("resolution-type", ResolutionType.class);
         Integer resolutionWidth = body.getAttachmentObject("resolution-width", Integer.class);
         Integer resolutionHeight = body.getAttachmentObject("resolution-height", Integer.class);
-        return Monitor.builder().size(size)
-                .resolutionType(type)
-                .resolutionWidth(resolutionWidth)
+        return Monitor.builder().id(id == -1 ? null : id).size(size)
+                .resolutionType(type).resolutionWidth(resolutionWidth)
                 .resolutionHeight(resolutionHeight).build();
     }
 

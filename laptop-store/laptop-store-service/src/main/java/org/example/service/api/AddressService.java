@@ -6,8 +6,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 public interface AddressService {
-    Response findAddressByUser(SecurityContext securityContext);
-
     Response createAddress(AddressInput addressInput, SecurityContext securityContex);
 
     Response updateAddress(Integer id, AddressInput addressInput, SecurityContext securityContext);

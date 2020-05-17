@@ -16,14 +16,30 @@ class PaymentPage extends Component {
         promotions: [],
         promotionQties: {},
         products: [],
+        cart: {},
         isEmptyCart: false,
         submitted: false,
         loading: true,
     };
 
-    componentDidMount() {
-        this.loadData();
+    async componentDidMount() {
+        const cart = await this.loadCart();
+        this.setState({ cart: cart }, () => this.loadData());
     }
+
+    loadCart = async () => {
+        const response = await fetch("/api/users/me", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
+        }); 
+              
+        if (response.ok) {
+            const user = await response.json();
+            return JSON.parse(user["cart"]);
+        } else {
+            return getCart();
+        }
+    };
 
     loadData = async () => {
         await Promise.all([this.loadProducts(), this.loadAddresses(), this.loadPromotions()]);
@@ -31,7 +47,7 @@ class PaymentPage extends Component {
     };
 
     loadProducts = async () => {
-        const cart = getCart();
+        const cart = this.state.cart;
         if (Object.keys(cart).length === 0) {
             this.setState({ products: [] });
             return;
@@ -52,7 +68,7 @@ class PaymentPage extends Component {
     };
 
     loadAddresses = async () => {
-        const response = await fetch("/api/addresses", {
+        const response = await fetch("/api/users/me/addresses", {
             method: "GET",
             headers: { Authorization: `Bearer ${getCookie("access_token")}` },
         });
@@ -64,7 +80,7 @@ class PaymentPage extends Component {
     };
 
     loadPromotions = async () => {
-        const cart = getCart();
+        const cart = this.state.cart;
         const quantities = {};
         const promotions = [];
         const length = Object.keys(cart).length;
@@ -99,8 +115,16 @@ class PaymentPage extends Component {
     };
 
     render() {
-        const { addresses, promotions, products, promotionQties, loading, submitted } = this.state;
-        const cart = getCart();
+        const {
+            addresses,
+            promotions,
+            products,
+            promotionQties,
+            loading,
+            submitted,
+            cart,
+        } = this.state;
+
         const productsPrice = products
             .map((p) => cart[p["id"]] * (p["unit_price"] - p["discount_price"]))
             .reduce((a, b) => a + b, 0);

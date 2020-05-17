@@ -15,4 +15,6 @@ public interface UserService {
     Response updateUser(UserInput userInput, @Context SecurityContext securityContext);
 
     Response updatePassword(PasswordInput passwordInput, SecurityContext securityContext);
+
+    Response findUserAddresses(SecurityContext securityContext);
 }

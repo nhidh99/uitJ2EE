@@ -23,7 +23,17 @@ class ProductsBlock extends Component {
                         const quantity = cart[product["id"]];
                         return (
                             <tr>
-                                <td className={styles.productCol}>{product["name"]}</td>
+                                <td className={styles.productCol}>
+                                    <img
+                                        src={`/api/images/400/laptops/${product["id"]}/${product["alt"]}.jpg`}
+                                        width={60}
+                                        height={60}
+                                        alt={product["name"]}
+                                        title={product["name"]}
+                                        className={styles.img}
+                                    />
+                                    {product["name"]}
+                                </td>
                                 <td className={styles.unitPriceCol}>
                                     {price.toLocaleString()}
                                     <sup>đ</sup>
