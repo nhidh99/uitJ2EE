@@ -31,12 +31,13 @@ public class PromotionServiceImpl implements PromotionService {
     @Path("/")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findAllPromotions() {
+    public Response findPromotions(@QueryParam("page") @DefaultValue("1") Integer page) {
         try {
-            List<Promotion> promotions = promotionDAO.findAll();
+            List<Promotion> promotions = promotionDAO.findByPage(page);
+            Long promotionCount = promotionDAO.findTotalPromotions();
             ObjectMapper om = new ObjectMapper();
             String promotionsJSON = om.writeValueAsString(promotions);
-            return Response.ok(promotionsJSON).build();
+            return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }

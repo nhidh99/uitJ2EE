@@ -17,7 +17,7 @@ import java.util.Optional;
 @Stateless
 @LocalBean
 public class LaptopDAOImpl implements LaptopDAO {
-    private static final Integer ELEMENT_PER_BLOCK = 20;
+    private static final Integer ELEMENT_PER_BLOCK = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
@@ -73,6 +73,13 @@ public class LaptopDAOImpl implements LaptopDAO {
     public Optional<Laptop> findById(Integer id) {
         Laptop laptop = em.find(Laptop.class, id);
         return Optional.of(laptop);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Long findTotalLaptops() {
+        String query = "SELECT COUNT(l) FROM Laptop l WHERE l.recordStatus = true";
+        return em.createQuery(query, Long.class).getSingleResult();
     }
 
     @Override

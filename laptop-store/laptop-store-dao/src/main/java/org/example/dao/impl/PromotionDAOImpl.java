@@ -17,15 +17,19 @@ import java.util.Optional;
 @Stateless
 @LocalBean
 public class PromotionDAOImpl implements PromotionDAO {
+    private static final Integer ELEMENT_PER_BLOCK = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public List<Promotion> findAll() {
+    public List<Promotion> findByPage(Integer page) {
         String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
-        return em.createQuery(query, Promotion.class).getResultList();
+        return em.createQuery(query, Promotion.class)
+                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                .setMaxResults(ELEMENT_PER_BLOCK)
+                .getResultList();
     }
 
     @Override
@@ -36,6 +40,13 @@ public class PromotionDAOImpl implements PromotionDAO {
         return em.createQuery(query, Promotion.class)
                 .setParameter("ids", ids)
                 .getResultList();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Long findTotalPromotions() {
+        String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
+        return em.createQuery(query, Long.class).getSingleResult();
     }
 
     @Override

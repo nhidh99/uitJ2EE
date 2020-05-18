@@ -13,7 +13,6 @@ import org.example.type.GenderType;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

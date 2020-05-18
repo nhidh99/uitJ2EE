@@ -5,7 +5,7 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import javax.ws.rs.core.Response;
 
 public interface PromotionService {
-    Response findAllPromotions();
+    Response findPromotions(Integer page);
 
     Response findPromotionsById(Integer id);
 

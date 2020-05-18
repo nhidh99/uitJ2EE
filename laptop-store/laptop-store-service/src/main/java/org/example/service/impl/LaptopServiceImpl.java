@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.LaptopDAO;
@@ -44,15 +45,27 @@ public class LaptopServiceImpl implements LaptopService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response findLaptops(@BeanParam LaptopFilter laptopFilter) {
         try {
-            List<Laptop> laptops = laptopFilter.getIds().isEmpty()
-                    ? laptopDAO.findByPage(laptopFilter.getPage())
-                    : laptopDAO.findByIds(laptopFilter.getIds());
-            ObjectMapper om = new ObjectMapper();
-            String laptopsJSON = om.writeValueAsString(laptops);
-            return Response.ok(laptopsJSON).build();
+            return laptopFilter.getIds().isEmpty()
+                    ? findByPage(laptopFilter.getPage())
+                    : findByIds(laptopFilter.getIds());
         } catch (Exception e) {
             return Response.serverError().build();
         }
+    }
+
+    private Response findByPage(Integer page) throws JsonProcessingException {
+        List<Laptop> laptops = laptopDAO.findByPage(page);
+        Long laptopCount = laptopDAO.findTotalLaptops();
+        ObjectMapper om = new ObjectMapper();
+        String laptopsJSON = om.writeValueAsString(laptops);
+        return Response.ok(laptopsJSON).header("X-Total-Count", laptopCount).build();
+    }
+
+    private Response findByIds(List<Integer> ids) throws JsonProcessingException {
+        List<Laptop> laptops = laptopDAO.findByIds(ids);
+        ObjectMapper om = new ObjectMapper();
+        String laptopsJSON = om.writeValueAsString(laptops);
+        return Response.ok(laptopsJSON).build();
     }
 
     @Override
