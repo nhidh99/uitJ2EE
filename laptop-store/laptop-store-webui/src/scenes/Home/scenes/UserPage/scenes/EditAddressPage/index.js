@@ -15,6 +15,10 @@ import styles from "./styles.module.scss";
 import { getCookie } from "../../../../../../services/helper/cookie";
 
 class EditAddressPage extends Component {
+    state = {
+        errors: [],
+    };
+
     buildAddressBody = () => {
         const receiverName = document.getElementById("receiverName").value;
         const phone = document.getElementById("phone").value;
@@ -35,14 +39,37 @@ class EditAddressPage extends Component {
         };
     };
 
+    validateInputs = (inputs) => {
+        const errors = [];
+        const validate = (message, condition) => (condition() ? null : errors.push(message));
+        validate("Họ và tên không được để trống", () =>
+            inputs["receiverName"].length > 0
+        );
+        validate("Số điện thoại từ 6 - 12 chữ số", () => inputs["phone"].match(/^\d{6,12}$/));
+        validate("Tỉnh/Thành phố không được để trống", () => inputs["city"].length > 0);
+        validate("Quận huyện không được để trống", () => inputs["district"].length > 0);
+        validate("Phường xã không được để trống", () => inputs["ward"].length > 0);
+        validate("Đường không được để trống", () => inputs["street"].length > 0);
+        validate("Số nhà không được để trống", () => inputs["addressNum"].length > 0);
+        return errors;
+    };
+
+
     createAddress = async () => {
+        const body = this.buildAddressBody();
+        const errors = this.validateInputs(body);
+
+        if (errors.length > 0) {
+            this.setState({ errors: errors });
+            return;
+        }
+
         const url =
             "/api/addresses/" +
             (this.props.location.state.address != null
                 ? this.props.location.state.address["id"]
                 : "");
 
-        const body = this.buildAddressBody();
         const response = await fetch(url, {
             method: this.props.location.state.address != null ? "PUT" : "POST",
             headers: {
@@ -81,6 +108,7 @@ class EditAddressPage extends Component {
 
     render() {
         const address = this.props.location.state.address;
+        const { errors } = this.state;
         return (
             <Container id="content">
                 <Row>
@@ -90,6 +118,13 @@ class EditAddressPage extends Component {
                                 <FaBook /> {address === null ? "Tạo sổ địa chỉ" : "Sửa địa chỉ"}
                             </h3>
                         </Row>
+                        {errors.length > 0 ? (
+                            <p>
+                                {errors.map((error) => (
+                                    <label className={styles.error}>{error}.</label>
+                                ))}
+                            </p>
+                        ) : null}
                         <Form className={styles.form}>
                             <FormGroup row>
                                 <Label for="receiverName" sm="3">

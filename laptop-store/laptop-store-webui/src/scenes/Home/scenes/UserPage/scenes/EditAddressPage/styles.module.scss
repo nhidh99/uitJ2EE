@@ -34,3 +34,10 @@ input[type="submit"] {
     display: flex;
     align-items: center;
 }
+
+.error {
+    color: red;
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+}

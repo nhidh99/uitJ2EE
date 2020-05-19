@@ -49,9 +49,8 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void update(User user) {
-        em.merge(user);
-    }
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void update(User user) { em.merge(user); }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
@@ -77,6 +76,16 @@ public class UserDAOImpl implements UserDAO {
         List<User> users = em.createQuery(query, User.class)
                 .setParameter("email", email)
                 .setParameter("username", username)
+                .setMaxResults(1).getResultList();
+        return users.isEmpty();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public boolean checkEmailExisted(String email) {
+        String query = "SELECT u FROM User u WHERE u.email = :email";
+        List<User> users = em.createQuery(query, User.class)
+                .setParameter("email", email)
                 .setMaxResults(1).getResultList();
         return users.isEmpty();
     }

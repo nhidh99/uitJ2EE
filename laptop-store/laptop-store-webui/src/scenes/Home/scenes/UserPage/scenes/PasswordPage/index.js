@@ -5,13 +5,42 @@ import { FaLock } from "react-icons/fa";
 import { getCookie } from "../../../../../../services/helper/cookie";
 
 class PasswordPage extends Component {
+    state = {
+        errors: [],
+    };
 
-    updatePassword = async () => {
+    buildRequestBody = () => {
         const oldPassword = document.getElementById("oldPassword").value;
         const newPassword = document.getElementById("newPassword").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
 
-        if(confirmPassword !== newPassword) {
+        return {
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+            confirmPassword: confirmPassword,
+        };
+    };
+
+    validateInputs = (inputs) => {
+        const errors = [];
+        const validate = (message, condition) => (condition() ? null : errors.push(message));
+        validate("Mật khẩu cũ không được để trống", () => inputs["oldPassword"].length > 0);
+        validate("Mật khẩu mới không được để trống", () => inputs["newPassword"].length > 0);
+        validate("Mật khẩu xác nhận không được để trống", () => inputs["confirmPassword"].length > 0);
+        return errors;
+    };
+
+    updatePassword = async () => {
+        const body = this.buildRequestBody();
+        const errors = this.validateInputs(body);
+
+        if (errors.length > 0) {
+            this.setState({ errors: errors });
+            return;
+        }
+
+
+        if (body["confirmPassword"] !== body["newPassword"]) {
             alert("Vui lòng xác nhận lại mật khẩu");
             return;
         }
@@ -22,10 +51,7 @@ class PasswordPage extends Component {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + getCookie('access_token'),
             },
-            body: JSON.stringify({
-                oldPassword: oldPassword,
-                newPassword: newPassword
-            }),
+            body: JSON.stringify(body),
         });
 
         if (response.ok) {
@@ -44,7 +70,7 @@ class PasswordPage extends Component {
                     alert('You have to login to access this page.');
                     window.location.href = "/auth/login";
                     break;
-                case 400: 
+                case 400:
                     alert('Mật khẩu cũ không đúng');
                     break;
                 default:
@@ -57,6 +83,7 @@ class PasswordPage extends Component {
     };
 
     render() {
+        const { errors } = this.state;
         return (
             <Fragment>
                 <div className={styles.title}>
@@ -68,7 +95,13 @@ class PasswordPage extends Component {
                         Đổi mật khẩu
                     </Button>
                 </div>
-
+                {errors.length > 0 ? (
+                    <p>
+                        {errors.map((error) => (
+                            <label className={styles.error}>{error}.</label>
+                        ))}
+                    </p>
+                ) : null}
                 <table className={styles.table}>
                     <tr>
                         <td className={styles.labelCol}>

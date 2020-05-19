@@ -8,6 +8,7 @@ class InfoPage extends Component {
     state = {
         loading: true,
         user: null,
+        errors: [],
     };
 
     componentDidMount() {
@@ -47,6 +48,18 @@ class InfoPage extends Component {
                         loading: false,
                     });
             }
+        }
+    };
+
+    validateInputs = () => {
+        const errors = getInputErrors();
+        this.setState({ errors: errors });
+        return errors.length === 0;
+    };
+
+    submit = () => {
+        if (this.validateInputs()) {
+            this.updateUser();
         }
     };
 
@@ -97,7 +110,7 @@ class InfoPage extends Component {
     };
 
     render() {
-        const { user, loading } = this.state;
+        const { user, loading, errors } = this.state;
         const birthday = user
             ? new Date(
                   user["birthday"]["year"],
@@ -117,11 +130,14 @@ class InfoPage extends Component {
                         type="submit"
                         className={styles.submit}
                         color="success"
-                        onClick={this.updateUser}
+                        onClick={this.submit}
                     >
                         Lưu
                     </Button>
                 </div>
+                {errors.length !== 0
+                    ? errors.map((err) => <label className={styles.err}>- {err}</label>)
+                    : null}
                 <table className={styles.table}>
                     <tr>
                         <td className={styles.labelCol}>
@@ -217,4 +233,45 @@ class InfoPage extends Component {
         );
     }
 }
+
+const getInputErrors = () => {
+    const errors = [];
+    const inputs = {
+        fullName: document.getElementById("fullName"),
+        telephone: document.getElementById("telephone"),
+        email: document.getElementById("email"),
+    };
+
+    const validate = (message, condition) => {
+        try {
+            if (!condition()) {
+                errors.push(message);
+            }
+        } catch (err) {
+            errors.push(message);
+        }
+    };
+
+    validate(
+        "Họ tên phải từ 6 - 45 kí tự",
+        () =>  inputs["fullName"].value.length >= 6 && inputs["fullName"].value.length <= 45
+    );
+
+    validate(
+        "Số điện thoại phải để trống hoặc là một dãy số",
+        () =>
+            inputs["telephone"].value.length === 0 ||
+            !isNaN(inputs["telephone"].value)
+    );
+
+    validate(
+        "Email không hợp lệ (Email phải được để trống hoặc phải có dạng abc@xyz)",
+        () => {
+            return ((inputs["email"].value.length === 0) || inputs["email"].value.trim().match(/\S+@\S+\.\S+/));
+        }
+    );
+
+
+    return errors;
+};
 export default InfoPage;

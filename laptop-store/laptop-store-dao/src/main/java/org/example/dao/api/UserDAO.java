@@ -11,6 +11,8 @@ public interface UserDAO {
 
     boolean checkRegister(String username, String email);
 
+    boolean checkEmailExisted(String email);
+
     void register(User user);
 
     void update(User user);

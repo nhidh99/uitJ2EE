@@ -85,8 +85,15 @@ public class UserServiceImpl implements UserService {
         GenderType gender = GenderType.valueOf(userInput.getGender());
         LocalDate birthday = Instant.ofEpochMilli(userInput.getBirthday()).atZone(ZoneId.systemDefault()).toLocalDate();
 
+        if(!user.getEmail().equals(userInput.getEmail())) {
+            if(userDAO.checkEmailExisted(userInput.getEmail())) {
+                user.setEmail(userInput.getEmail());
+            } else {
+                throw new BadRequestException();
+            }
+        }
+
         user.setName(userInput.getName());
-        user.setEmail(userInput.getEmail());
         user.setPhone(userInput.getPhone());
         user.setGender(gender);
         user.setBirthday(birthday);
