@@ -25,8 +25,8 @@ class PasswordPage extends Component {
         const errors = [];
         const validate = (message, condition) => (condition() ? null : errors.push(message));
         validate("Mật khẩu cũ không được để trống", () => inputs["oldPassword"].length > 0);
-        validate("Mật khẩu mới không được để trống", () => inputs["newPassword"].length > 0);
-        validate("Mật khẩu xác nhận không được để trống", () => inputs["confirmPassword"].length > 0);
+        validate("Mật khẩu mới phải từ 6 - 35 kí tự", () => inputs["newPassword"].match(/^.{6,35}$/));
+        validate("Mật khẩu xác nhận phải từ 6 - 35 kí tự", () => inputs["confirmPassword"].match(/^.{6,35}$/));
         return errors;
     };
 

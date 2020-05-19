@@ -32,10 +32,10 @@ class EditAddressPage extends Component {
     validateInputs = (inputs) => {
         const errors = [];
         const validate = (message, condition) => (condition() ? null : errors.push(message));
-        validate("Họ và tên không được để trống", () =>
-            inputs["receiverName"].length > 0
+        validate("Họ và tên không được để trống hoặc chứa chữ số", () =>
+            inputs["receiverName"].match(/^[a-zA-Z\s\p{L}]{3,30}$/gu)
         );
-        validate("Số điện thoại từ 6 - 12 chữ số", () => inputs["phone"].match(/^\d{6,12}$/));
+        validate("Số điện thoại từ 6 - 12 chữ số", () => inputs["receiverPhone"].match(/^\d{6,12}$/));
         validate("Tỉnh/Thành phố không được để trống", () => inputs["city"].length > 0);
         validate("Quận huyện không được để trống", () => inputs["district"].length > 0);
         validate("Phường xã không được để trống", () => inputs["ward"].length > 0);

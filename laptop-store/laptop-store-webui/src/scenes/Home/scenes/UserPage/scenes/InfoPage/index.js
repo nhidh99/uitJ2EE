@@ -134,11 +134,13 @@ class InfoPage extends Component {
                         Lưu
                     </Button>
                 </div>
+                <div>
+                    {errors.length !== 0
+                        ? errors.map((err) => <label className={styles.err}>- {err}</label>)
+                        : null}
+                </div>
 
                 {loading ? null : (
-                    {errors.length !== 0
-                            ? errors.map((err) => <label className={styles.err}>- {err}</label>)
-                    : null}
                     <table className={styles.table}>
                         <tr>
                             <td className={styles.labelCol}>
@@ -255,7 +257,7 @@ const getInputErrors = () => {
 
     validate(
         "Họ tên phải từ 6 - 45 kí tự",
-        () =>  inputs["fullName"].value.length >= 6 && inputs["fullName"].value.length <= 45
+        () => inputs["fullName"].value.length >= 6 && inputs["fullName"].value.length <= 45
     );
 
     validate(
