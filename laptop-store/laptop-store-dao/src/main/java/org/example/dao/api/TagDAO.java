@@ -9,7 +9,10 @@ import java.util.Optional;
 @Local
 public interface TagDAO {
     List<Tag> findAll();
+
     List<Tag> findByIds(List<Integer> ids);
+
     List<Tag> findByLaptopId(Integer laptopId);
+
     Optional<Tag> findById(Integer id);
 }

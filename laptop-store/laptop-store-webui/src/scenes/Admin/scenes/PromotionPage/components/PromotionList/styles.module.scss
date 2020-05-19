@@ -1,6 +1,7 @@
 .table {
     background-color: white;
     table-layout: fixed;
+    font-size: 14px;
 
     td,
     th {
@@ -15,18 +16,22 @@
 }
 
 .nameCol {
-    width: 40%;
+    width: 35%;
+}
+
+.imgCol {
+    width: 15%;
 }
 
 td.nameCol {
     text-align: left;
 }
 
-.quantityCol {
+.priceCol {
     width: 15%;
 }
 
-.priceCol {
+.quantityCol {
     width: 15%;
 }
 
@@ -37,4 +42,10 @@ td.nameCol {
 .modal {
     min-width: 1000px !important;
     max-width: 1000px !important;
+}
+
+.pagination {
+    float: right !important;
+    font-size: 14px;
+    font-weight: 600;
 }

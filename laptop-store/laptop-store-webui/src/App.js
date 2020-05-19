@@ -22,8 +22,6 @@ class App extends Component {
 
     fetchToken = async () => {
         const token = getCookie("access_token");
-        if (token === null) return null;
-
         const response = await fetch("/api/auth/token", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -41,10 +39,24 @@ class App extends Component {
 
     createRefreshTokenHeart = () => {
         const heart = createHeart(REFRESH_TOKENS_TIMESPAN, "refresh_token");
-        heart.createEvent(1, this.fetchToken);
+        heart.createEvent(1, async () => {
+            const token = await this.fetchToken();
+            if (token) {
+                createCookie("access_token", token);
+            } else {
+                removeCookie("access_token");
+                killHeart("refresh_token");
+                window.location.href = "/";
+            }
+        });
     };
 
     loadData = async () => {
+        if (getCookie("access_token") === null) {
+            this.setState({ role: ROLE_GUEST, loading: false });
+            return;
+        }
+
         const token = await this.fetchToken();
         if (token) {
             createCookie("access_token", token);
@@ -91,23 +103,22 @@ class App extends Component {
     );
 
     userRoutes = () => (
-        <Fragment>
-            <Route
-                exact
-                component={Home}
-                path={[
-                    "/",
-                    "/search",
-                    "/user",
-                    "/cart",
-                    "/product/:id",
-                    "/product/:alt/:id",
-                    "/user/(info|password|address|order|payment)",
-                    "/user/address/(edit|create)",
-                    "/user/address/:id",
-                ]}
-            />
-        </Fragment>
+        <Route
+            exact
+            component={Home}
+            path={[
+                "/",
+                "/search",
+                "/user",
+                "/cart",
+                "/payment",
+                "/product/:id",
+                "/product/:alt/:id",
+                "/user/(info|password|address|order)",
+                "/user/address/(edit|create)",
+                "/user/address/:id",
+            ]}
+        />
     );
 
     adminRoutes = () => (
@@ -120,9 +131,10 @@ class App extends Component {
                     "/search",
                     "/user",
                     "/cart",
+                    "/payment",
                     "/product/:id",
                     "/product/:alt/:id",
-                    "/user/(info|password|address|order|payment)",
+                    "/user/(info|password|address|order)",
                     "/user/address/(edit|create)",
                     "/user/order/:orderId",
                 ]}

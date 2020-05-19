@@ -2,6 +2,7 @@ package org.example.dao.impl;
 
 import org.example.dao.api.AddressDAO;
 import org.example.model.Address;
+import org.example.model.Laptop;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -10,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import java.util.List;
+import java.util.Optional;
 
 @Stateless
 @LocalBean
@@ -17,6 +19,13 @@ public class AddressDAOImpl implements AddressDAO {
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Optional<Address> findById(Integer id) {
+        Address address = em.find(Address.class, id);
+        return Optional.of(address);
+    }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
@@ -28,7 +37,7 @@ public class AddressDAOImpl implements AddressDAO {
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void save(Address address) {
-        if(address.getId() == null) {
+        if (address.getId() == null) {
             insert(address);
         } else {
             update(address);

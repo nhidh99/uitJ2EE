@@ -1,0 +1,26 @@
+.table {
+    th {
+        text-align: center;
+    }
+
+    th,
+    td {
+        vertical-align: middle !important;
+    }
+}
+
+.productCol {
+    text-align: left !important;
+    width: 40%;
+}
+
+.unitPriceCol,
+.quantityCol,
+.totalPriceCol {
+    width: 20%;
+    text-align: center;
+}
+
+.img {
+    margin: 0 15px 0 10px;
+}

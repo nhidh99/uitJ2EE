@@ -34,12 +34,18 @@ class ProductForm extends Component {
     submit = async (e) => {
         e.target.disabled = true;
         const { product } = this.props;
+        const data = buildProductData();
+        data.append("cpu-id", product ? product["cpu"]["id"] : -1);
+        data.append("ram-id", product ? product["ram"]["id"] : -1);
+        data.append("monitor-id", product ? product["monitor"]["id"] : -1);
+        data.append("hd-id", product ? product["hard_drive"]["id"] : -1);
+
         const response = await fetch(`/api/laptops/${product?.["id"] ?? ""}`, {
             method: product ? "PUT" : "POST",
             header: {
                 "Content-Type": "multipart/form-data; charset=utf-8",
             },
-            body: buildProductData(),
+            body: data,
         });
 
         if (response.ok) {

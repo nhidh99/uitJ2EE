@@ -1,0 +1,21 @@
+.table {
+    border-collapse: separate;
+    border-spacing: 10px;
+
+    input, select {
+        font-size: 14px;
+    }
+
+    input[readonly] {
+        background-color: white !important;
+    }
+}
+
+.labelCol {
+    min-width: 100px;
+    font-weight: 600;
+}
+
+.inputCol {
+    width: 100%;
+}

@@ -112,7 +112,7 @@ public class Laptop {
     @JsonIgnore
     private boolean recordStatus;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_tag",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -120,7 +120,7 @@ public class Laptop {
     @JsonIgnore
     private List<Tag> tags;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_promotion",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "promotion_id"))

@@ -21,7 +21,7 @@ export const getCookie = (cname) => {
             return c.substring(name.length, c.length);
         }
     }
-    return "";
+    return null;
 }
 
 export const removeCookie = (name) => {
