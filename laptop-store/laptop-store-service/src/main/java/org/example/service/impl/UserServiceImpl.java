@@ -2,10 +2,12 @@ package org.example.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dao.api.AddressDAO;
+import org.example.dao.api.OrderDAO;
 import org.example.dao.api.UserDAO;
 import org.example.input.PasswordInput;
 import org.example.input.UserInput;
 import org.example.model.Address;
+import org.example.model.OrderOverview;
 import org.example.model.User;
 import org.example.security.Secured;
 import org.example.service.api.UserService;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @EJB(mappedName = "AddressDAOImpl")
     private AddressDAO addressDAO;
+
+    @EJB(mappedName = "OrderDAOImpl")
+    private OrderDAO orderDAO;
 
     @Override
     @GET
@@ -125,6 +130,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @GET
     @Path("/me/addresses")
+    @Secured({RoleType.ADMIN, RoleType.USER})
     @Produces(MediaType.APPLICATION_JSON)
     public Response findUserAddresses(@Context SecurityContext securityContext) {
         try {
@@ -135,8 +141,27 @@ public class UserServiceImpl implements UserService {
             String addressesJSON = om.writeValueAsString(addresses);
             return Response.ok(addressesJSON).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            return Response.serverError().build();
         }
-        return Response.serverError().build();
+    }
+
+    @Override
+    @GET
+    @Secured({RoleType.ADMIN, RoleType.USER})
+    @Path("/me/orders")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findUserOrderOverviews(@QueryParam("page") @DefaultValue("1") Integer page,
+                                           @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            List<OrderOverview> orderOverviews = orderDAO.findOverviewsByUserId(page, userId);
+            Long orderCount = orderDAO.findTotalOrdersByUserId(userId);
+            ObjectMapper om = new ObjectMapper();
+            String orderOverviewsJSON = om.writeValueAsString(orderOverviews);
+            return Response.ok(orderOverviewsJSON).header("X-Total-Count", orderCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 }

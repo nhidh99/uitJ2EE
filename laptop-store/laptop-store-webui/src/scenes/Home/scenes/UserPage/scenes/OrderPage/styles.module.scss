@@ -17,17 +17,17 @@
 }
 
 .idCol {
-    width: 17%;
+    width: 15%;
     text-align: center;
 }
 
 .dateCol {
-    width: 10%;
+    width: 15%;
     text-align: center;
 }
 
 .productsCol {
-    width: 40%;
+    width: 35%;
 }
 
 .priceCol {
@@ -36,6 +36,27 @@
 }
 
 .statusCol {
-    width: 15%;
-    text-align: right;
+    width: 17%;
+    text-align: center;
+}
+
+.table {
+    border: 1px solid lightgrey;
+
+    th {
+        font-size: 14px;
+        background-color: #eee;
+    }
+
+    td {
+        padding-top: 25px !important;
+        padding-bottom: 25px !important;
+        vertical-align: middle !important;
+    }
+}
+
+.pagination {
+    float: right !important;
+    font-size: 14px;
+    font-weight: 600;
 }

@@ -35,6 +35,10 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @Column(name="order_date")
+    @JsonProperty("order_date")
+    private LocalDate orderDate;
+
     @Column(name = "delivery_date")
     @JsonProperty("delivery_date")
     private LocalDate deliveryDate;

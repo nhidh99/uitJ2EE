@@ -9,6 +9,7 @@ import { getCart, removeFromCart } from "../../../../services/helper/cart";
 import { getCookie } from "../../../../services/helper/cookie";
 import { FaBoxOpen } from "react-icons/fa";
 import Loader from "react-loader-advanced";
+import { withRouter } from "react-router-dom";
 
 class PaymentPage extends Component {
     state = {
@@ -31,8 +32,8 @@ class PaymentPage extends Component {
         const response = await fetch("/api/users/me", {
             method: "GET",
             headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        }); 
-              
+        });
+
         if (response.ok) {
             const user = await response.json();
             return JSON.parse(user["cart"]);
@@ -114,6 +115,10 @@ class PaymentPage extends Component {
         this.setState({ submitted: !this.state.submitted });
     };
 
+    redirectToCreateAddress = () => {
+        this.props.history.push("/user/address/create");
+    }
+
     render() {
         const {
             addresses,
@@ -130,7 +135,7 @@ class PaymentPage extends Component {
             .reduce((a, b) => a + b, 0);
 
         return (
-            <Loader show={loading} message={<Spinner />}>
+            <Loader show={loading || submitted} message={<Spinner />}>
                 {products.length === 0 ? (
                     <div className={styles.emptyCart}>
                         <FaBoxOpen size={80} />
@@ -147,30 +152,30 @@ class PaymentPage extends Component {
                         )}
                     </div>
                 ) : (
-                    <Loader show={submitted} message={<Spinner />}>
-                        <div className={styles.container}>
-                            <div className={styles.address}>
-                                <header className={styles.header}>1. ĐỊA CHỈ GIAO HÀNG</header>
-                                <Button color="primary">Tạo địa chỉ mới</Button>
-                            </div>
-                            <AddressBlock addresses={addresses} />
-
-                            <header className={styles.header}>2. DANH SÁCH SẢN PHẨM</header>
-                            <ProductsBlock products={products} />
-
-                            <header className={styles.header}>3. DANH SÁCH KHUYẾN MÃI</header>
-                            <PromotionsBlock promotions={promotions} quantities={promotionQties} />
-
-                            <SummaryBlock
-                                productsPrice={productsPrice}
-                                toggleSubmit={this.toggleSubmit}
-                            />
+                    <div className={styles.container}>
+                        <div className={styles.address}>
+                            <header className={styles.header}>1. ĐỊA CHỈ GIAO HÀNG</header>
+                            <Button onClick={this.redirectToCreateAddress} color="primary">
+                                Tạo địa chỉ mới
+                            </Button>
                         </div>
-                    </Loader>
+                        <AddressBlock addresses={addresses} />
+
+                        <header className={styles.header}>2. DANH SÁCH SẢN PHẨM</header>
+                        <ProductsBlock products={products} />
+
+                        <header className={styles.header}>3. DANH SÁCH KHUYẾN MÃI</header>
+                        <PromotionsBlock promotions={promotions} quantities={promotionQties} />
+
+                        <SummaryBlock
+                            productsPrice={productsPrice}
+                            toggleSubmit={this.toggleSubmit}
+                        />
+                    </div>
                 )}
             </Loader>
         );
     }
 }
 
-export default PaymentPage;
+export default withRouter(PaymentPage);

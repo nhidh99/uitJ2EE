@@ -13,10 +13,7 @@ import org.example.type.ProductType;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -82,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
                 .city(address.getCity()).receiverName(address.getReceiverName())
                 .receiverPhone(address.getReceiverPhone()).transportFee(TRANSPORT_FEE)
                 .totalPrice(totalPrice).orderDetails(orderDetails).status(OrderStatus.PENDING)
-                .deliveryDate(deliveryDate).user(user).build();
+                .orderDate(LocalDate.now()).deliveryDate(deliveryDate).user(user).build();
     }
 
     private Map<String, Integer> buildCartMapFromRequestBody(String cartJSON) throws JsonProcessingException {

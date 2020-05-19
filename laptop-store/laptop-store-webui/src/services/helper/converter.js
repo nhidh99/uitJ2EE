@@ -39,3 +39,12 @@ export const convertResolutionType = (type) => {
 export const convertBrandType = (type) => {
     return type === "MSI" ? "MSI" : type.charAt(0) + type.slice(1).toLowerCase();
 };
+
+export const convertOrderStatus = (status) => {
+    switch (status) {
+        case "PENDING":
+            return "Đang xử lí";
+        default:
+            return null;
+    }
+};

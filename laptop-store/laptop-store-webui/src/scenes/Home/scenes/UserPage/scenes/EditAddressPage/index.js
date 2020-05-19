@@ -56,12 +56,12 @@ class EditAddressPage extends Component {
 
         const url =
             "/api/addresses/" +
-            (this.props.location.state.address != null
+            (this.props.location.state?.address
                 ? this.props.location.state.address["id"]
                 : "");
 
         const response = await fetch(url, {
-            method: this.props.location.state.address != null ? 'PUT' : 'POST',
+            method: this.props.location.state?.address ? 'PUT' : 'POST',
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + getCookie("access_token"),
@@ -97,17 +97,17 @@ class EditAddressPage extends Component {
     }
 
     render() {
-        const address = this.props.location.state.address;
+        const address = this.props.location.state?.address;
         const { errors } = this.state;
         return (
             <Fragment>
-                <h3>
+                <header className={styles.header}>
                     <FaBook />
-                    &nbsp;&nbsp;{address === null ? "TẠO ĐỊA CHỈ" : "SỬA ĐỊA CHỈ"}
+                    &nbsp;&nbsp;{address ? "SỬA ĐỊA CHỈ" : "TẠO ĐỊA CHỈ"}
                     <Button color="success" onClick={this.createAddress} className={styles.button}>
                         Lưu địa chỉ
                     </Button>
-                </h3>
+                </header>
         {errors.length > 0 ? (
             <p>
             {errors.map((error) => (

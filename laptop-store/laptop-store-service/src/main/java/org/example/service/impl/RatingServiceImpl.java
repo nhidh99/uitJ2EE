@@ -44,7 +44,6 @@ public class RatingServiceImpl implements RatingService {
     public Response createRating(@QueryParam("product-id") Integer productId,
                                  RatingInput ratingInput,
                                  @Context SecurityContext securityContext) {
-        //Todo: create rating, cal average rating,
         try {
             Rating rating = buildRatingFromRequestBody(productId, ratingInput);
             Principal principal = securityContext.getUserPrincipal();

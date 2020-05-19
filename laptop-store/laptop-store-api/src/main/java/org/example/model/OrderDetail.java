@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.example.type.ProductType;
@@ -46,7 +47,7 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
-    @JsonProperty("order")
+    @JsonIgnore
     @ToString.Exclude
     private Order order;
 }
