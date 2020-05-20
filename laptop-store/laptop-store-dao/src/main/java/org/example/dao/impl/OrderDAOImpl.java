@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Stateless
@@ -46,25 +47,19 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public List<OrderOverview> findOverviewsByUserId(Integer page, Integer userId) {
+    public Optional<Order> findById(Integer id) {
+        Order order = em.find(Order.class, id);
+        return Optional.ofNullable(order);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Order> findOrdersByUserId(Integer page, Integer userId) {
         String query = "SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.id DESC";
-        List<Order> orders = em.createQuery(query, Order.class).setParameter("userId", userId)
+        return em.createQuery(query, Order.class).setParameter("userId", userId)
                 .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
                 .setMaxResults(ELEMENT_PER_BLOCK)
                 .getResultList();
-
-        List<OrderOverview> orderOverviews = new LinkedList<>();
-        for (Order order : orders) {
-            List<OrderDetail> orderProducts = order.getOrderDetails().stream()
-                    .filter(detail -> detail.getProductType() == ProductType.LAPTOP)
-                    .collect(Collectors.toList());
-            Integer productCount = orderProducts.stream().mapToInt(OrderDetail::getQuantity).sum();
-            OrderOverview orderOverview = OrderOverview.builder()
-                    .order(order).firstProduct(orderProducts.get(0))
-                    .productCount(productCount).build();
-            orderOverviews.add(orderOverview);
-        }
-        return orderOverviews;
     }
 
     @Override

@@ -32,9 +32,8 @@ public class ImageServiceImpl implements ImageService {
                                        @PathParam("alt") String alt,
                                        @PathParam("resolution") Integer resolution) {
         try {
-            Promotion promotion = promotionDAO.findById(id).orElseThrow(Exception::new);
             byte[] image = resolution == PROMOTION_IMAGE_RESOLUTION ? promotionDAO.findImageById(id) : null;
-            return (image != null) && promotion.getAlt().equals(alt)
+            return (image != null)
                     ? Response.ok(image).header(HttpHeaders.CONTENT_TYPE, "image/jpeg").build()
                     : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
@@ -50,7 +49,6 @@ public class ImageServiceImpl implements ImageService {
                                     @PathParam("alt") @DefaultValue("") String alt,
                                     @PathParam("resolution") Integer resolution) {
         try {
-            Laptop laptop = laptopDAO.findById(id).orElseThrow(BadRequestException::new);
             byte[] image;
             switch (resolution) {
                 case LAPTOP_IMAGE_RESOLUTION:
@@ -63,7 +61,7 @@ public class ImageServiceImpl implements ImageService {
                     image = null;
                     break;
             }
-            return (image != null) && laptop.getAlt().equals(alt)
+            return (image != null)
                     ? Response.ok(image).header(HttpHeaders.CONTENT_TYPE, "image/jpeg").build()
                     : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {

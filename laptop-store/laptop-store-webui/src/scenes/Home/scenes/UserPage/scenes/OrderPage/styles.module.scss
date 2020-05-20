@@ -16,6 +16,10 @@
     border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.orderRow:hover {
+    cursor: pointer;
+}
+
 .idCol {
     width: 15%;
     text-align: center;

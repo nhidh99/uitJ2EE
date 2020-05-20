@@ -7,6 +7,7 @@ import { getCookie } from "../../../../../../services/helper/cookie";
 import { ITEM_COUNT_PER_PAGE } from "../../../../../../constants";
 import Pagination from "react-js-pagination";
 import { convertOrderStatus } from "../../../../../../services/helper/converter";
+import { withRouter } from "react-router-dom";
 
 class OrderPage extends Component {
     state = {
@@ -38,6 +39,10 @@ class OrderPage extends Component {
         this.setState({ loading: true, activePage: pageNumber }, () => this.loadData());
     };
 
+    redirectToOrderDetail = (orderId) => {
+        this.props.history.push(`/user/order/${orderId}`);
+    };
+
     render() {
         const { loading, orders, activePage, orderCount } = this.state;
         return (
@@ -60,7 +65,7 @@ class OrderPage extends Component {
                         />
                     </div>
                 </div>
-                <Loader show={loading} message={<Spinner color="primary" />}>
+                <Loader show={loading} message={<Spinner />}>
                     <Table className={styles.table} hover bordered>
                         <tbody>
                             <tr>
@@ -75,7 +80,10 @@ class OrderPage extends Component {
                                 const { order, first_product, product_count } = orderOverview;
                                 const { order_date } = order;
                                 return (
-                                    <tr>
+                                    <tr
+                                        onClick={() => this.redirectToOrderDetail(order["id"])}
+                                        className={styles.orderRow}
+                                    >
                                         <td className={styles.idCol}>{order["id"]}</td>
 
                                         <td className={styles.dateCol}>
@@ -110,4 +118,4 @@ class OrderPage extends Component {
     }
 }
 
-export default OrderPage;
+export default withRouter(OrderPage);

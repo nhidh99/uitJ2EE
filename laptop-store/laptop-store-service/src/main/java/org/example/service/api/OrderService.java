@@ -7,4 +7,6 @@ import javax.ws.rs.core.SecurityContext;
 
 public interface OrderService {
     Response createOrder(OrderInput orderInput, SecurityContext securityContext);
+
+    Response findOrderById(Integer orderId, SecurityContext securityContext);
 }

@@ -20,6 +20,7 @@
     "react-scripts": "3.4.1",
     "react-slideshow-image": "^1.4.2",
     "react-star-ratings": "^2.3.0",
+    "react-step-progress-bar": "^1.0.3",
     "reactstrap": "^8.4.1"
   },
   "scripts": {

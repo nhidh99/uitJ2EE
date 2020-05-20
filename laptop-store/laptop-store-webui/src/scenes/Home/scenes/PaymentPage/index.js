@@ -154,17 +154,17 @@ class PaymentPage extends Component {
                 ) : (
                     <div className={styles.container}>
                         <div className={styles.address}>
-                            <header className={styles.header}>1. ĐỊA CHỈ GIAO HÀNG</header>
+                            <header className={styles.header}>A. ĐỊA CHỈ GIAO HÀNG</header>
                             <Button onClick={this.redirectToCreateAddress} color="primary">
                                 Tạo địa chỉ mới
                             </Button>
                         </div>
                         <AddressBlock addresses={addresses} />
 
-                        <header className={styles.header}>2. DANH SÁCH SẢN PHẨM</header>
+                        <header className={styles.header}>B. DANH SÁCH SẢN PHẨM</header>
                         <ProductsBlock products={products} />
 
-                        <header className={styles.header}>3. DANH SÁCH KHUYẾN MÃI</header>
+                        <header className={styles.header}>C. DANH SÁCH KHUYẾN MÃI</header>
                         <PromotionsBlock promotions={promotions} quantities={promotionQties} />
 
                         <SummaryBlock

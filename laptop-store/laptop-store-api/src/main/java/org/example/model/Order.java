@@ -78,6 +78,5 @@ public class Order {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
-    @ToString.Exclude
     private List<OrderDetail> orderDetails;
 }
