@@ -9,6 +9,8 @@ public interface PromotionService {
 
     Response findPromotionsById(Integer id);
 
+    Response findPromotionsByFilter(String queryParam, Integer page);
+
     Response createPromotion(MultipartBody body);
 
     Response deletePromotionById(Integer id);

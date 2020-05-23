@@ -14,11 +14,14 @@ public interface LaptopDAO {
 
     List<Laptop> findByPage(Integer page);
 
-    Long findTotalLaptops();
+    Long findTotalLaptops(String filter);
 
     List<Laptop> findByIds(List<Integer> ids);
 
     Optional<Laptop> findById(Integer id);
+
+    List<Laptop> findByFilter(String filter, Integer page);
+
 
     byte[] findImageById(Integer id);
 

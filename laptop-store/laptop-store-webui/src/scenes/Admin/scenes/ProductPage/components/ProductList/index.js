@@ -17,7 +17,29 @@ class ProductList extends Component {
     };
 
     componentDidMount() {
-        this.loadData();
+
+        const searchParams = window.location.pathname.substring(16, window.location.pathname.length) + window.location.search;
+        if (searchParams === "") {
+            this.loadData();
+        } else {
+            this.search(searchParams);
+        }
+    }
+
+    search = async (filter) => {
+        const response = await fetch(`/api/laptops/${filter}&page=${this.state.activePage}`, {
+            method: "GET",
+            headers: { Authorization: "Bearer " + getCookie("access_token") }
+        });
+        if (response.ok) {
+            const products = await response.json();
+            const productCount = parseInt(response.headers.get("X-Total-Count"));
+            this.setState({
+                loading: false,
+                products: products,
+                productCount: productCount,
+            });
+        }
     }
 
     loadData = async () => {
@@ -39,7 +61,14 @@ class ProductList extends Component {
 
     pageChange = (pageNumber) => {
         if (pageNumber === this.state.activePage) return;
-        this.setState({ loading: true, activePage: pageNumber }, () => this.loadData());
+        this.setState({ loading: true, activePage: pageNumber }, () => {
+            const searchParams = window.location.pathname.substring(16, window.location.pathname.length) + window.location.search;
+            if (searchParams === "") {
+                this.loadData();
+            } else {
+                this.search(searchParams);
+            }
+        });
     };
 
     render() {

@@ -14,7 +14,9 @@ public interface PromotionDAO {
 
     List<Promotion> findByLaptopId(Integer laptopId);
 
-    Long findTotalPromotions();
+    Long findTotalPromotions(String filter);
+
+    List<Promotion> findByFilter(String filter, Integer page);
 
     Optional<Promotion> findById(Integer id);
 

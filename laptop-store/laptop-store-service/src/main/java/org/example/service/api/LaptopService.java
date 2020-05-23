@@ -12,6 +12,8 @@ public interface LaptopService {
 
     Response findLaptopById(Integer id);
 
+    Response findLaptopsByFilter(String queryParam, Integer page);
+
     Response createLaptop(MultipartBody body);
 
     Response updateLaptop(Integer id, MultipartBody body);

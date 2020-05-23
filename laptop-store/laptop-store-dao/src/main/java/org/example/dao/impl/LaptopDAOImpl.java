@@ -2,7 +2,6 @@ package org.example.dao.impl;
 
 import org.example.dao.api.LaptopDAO;
 import org.example.model.Laptop;
-import org.example.model.Promotion;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,7 +41,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     private void update(Laptop laptop) {
         Laptop oldLaptop = findById(laptop.getId()).orElseThrow(BadRequestException::new);
         if (laptop.getImage() == null) {
-            laptop.setImage(oldLaptop.getImage()); 
+            laptop.setImage(oldLaptop.getImage());
             laptop.setThumbnail(oldLaptop.getThumbnail());
         }
         laptop.setAvgRating(oldLaptop.getAvgRating());
@@ -77,10 +76,48 @@ public class LaptopDAOImpl implements LaptopDAO {
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public Long findTotalLaptops() {
-        String query = "SELECT COUNT(l) FROM Laptop l WHERE l.recordStatus = true";
-        return em.createQuery(query, Long.class).getSingleResult();
+    public List<Laptop> findByFilter(String filter, Integer page) {
+        if (filter.matches("[0-9]+")) {
+            String query = "SELECT l FROM Laptop l WHERE l.id = :id OR l.name LIKE CONCAT('%',:name,'%') AND l.recordStatus = true";
+            return em.createQuery(query, Laptop.class)
+                    .setParameter("id", Integer.parseInt(filter))
+                    .setParameter("name", filter)
+                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                    .setMaxResults(ELEMENT_PER_BLOCK)
+                    .getResultList();
+        } else {
+            String query = "SELECT l FROM Laptop l WHERE l.name LIKE CONCAT('%',:name,'%') AND l.recordStatus = true";
+            return em.createQuery(query, Laptop.class)
+                    .setParameter("name", filter)
+                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                    .setMaxResults(ELEMENT_PER_BLOCK)
+                    .getResultList();
+        }
+
     }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Long findTotalLaptops(String filter) {
+        if(filter == null) {
+            String query = "SELECT COUNT(l) FROM Laptop l WHERE l.recordStatus = true";
+            return em.createQuery(query, Long.class).getSingleResult();
+        } else {
+            if(filter.matches("[0-9]+")) {
+                String query = "SELECT COUNT(l) FROM Laptop l WHERE l.id = :id OR l.name LIKE CONCAT('%',:name,'%') AND l.recordStatus = true";
+                return em.createQuery(query, Long.class)
+                        .setParameter("id", Integer.parseInt(filter))
+                        .setParameter("name", filter)
+                        .getSingleResult();
+            } else {
+                String query = "SELECT COUNT(l) FROM Laptop l WHERE l.name LIKE CONCAT('%',:name,'%') AND l.recordStatus = true";
+                return em.createQuery(query, Long.class)
+                        .setParameter("name", filter)
+                        .getSingleResult();
+            }
+        }
+    }
+
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
     Row,
     Col,
@@ -12,30 +12,40 @@ import { FaSearch } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import ProductEdit from "../ProductEdit";
 
-const ProductList = () => (
-    <Row className={styles.row}>
-        <Col sm="8" className={styles.searchCol}>
-            <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                        <FaSearch />
-                    </InputGroupText>
-                </InputGroupAddon>
-                <Input type="text" placeholder="Tìm kiếm..." />
-            </InputGroup>
-        </Col>
+class ProductFilter extends Component {
+    search = () => {
+        const filter = document.getElementById("filter").value;
+        if (filter !== "") {
+            window.location.href = `/admin/products/search?q=${filter}`
+        } else window.location.href = "/admin/products";
+    }
+    render() {
+        return (
+            <Row className={styles.row}>
+                <Col sm="8" className={styles.searchCol}>
+                    <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <FaSearch />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="text" id="filter" placeholder="Tìm kiếm..." />
+                    </InputGroup>
+                </Col>
 
-        <Col sm="2" className={styles.buttonCol}>
-            <Button className={styles.button} color="info">
-                <FaSearch />
+                <Col sm="2" className={styles.buttonCol}>
+                    <Button className={styles.button} color="info" onClick={this.search}>
+                        <FaSearch />
                 &nbsp;&nbsp;Tìm kiếm
             </Button>
-        </Col>
+                </Col>
 
-        <Col sm="2" className={styles.buttonCol}>
-            <ProductEdit />
-        </Col>
-    </Row>
-);
+                <Col sm="2" className={styles.buttonCol}>
+                    <ProductEdit />
+                </Col>
+            </Row>
+        )
+    };
+}
 
-export default ProductList;
+export default ProductFilter;

@@ -34,10 +34,26 @@ public class PromotionServiceImpl implements PromotionService {
     public Response findPromotions(@QueryParam("page") @DefaultValue("1") Integer page) {
         try {
             List<Promotion> promotions = promotionDAO.findByPage(page);
-            Long promotionCount = promotionDAO.findTotalPromotions();
+            Long promotionCount = promotionDAO.findTotalPromotions(null);
             ObjectMapper om = new ObjectMapper();
             String promotionsJSON = om.writeValueAsString(promotions);
             return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findPromotionsByFilter(@QueryParam("q") String queryParam, @QueryParam("page") Integer page) {
+        try {
+            List<Promotion> promotions = promotionDAO.findByFilter(queryParam, page);
+            Long promotionCount = promotionDAO.findTotalPromotions(queryParam);
+            ObjectMapper om = new ObjectMapper();
+            String laptopsJSON = om.writeValueAsString(promotions);
+            return Response.ok(laptopsJSON).header("X-Total-Count", promotionCount).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }

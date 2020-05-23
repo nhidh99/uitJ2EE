@@ -17,7 +17,30 @@ class PromotionList extends Component {
     };
 
     componentDidMount() {
-        this.loadData();
+        const searchParams = window.location.pathname.substring(18, window.location.pathname.length) + window.location.search;
+        console.log(searchParams);
+        if (searchParams === "") {
+            this.loadData();
+        } else {
+            this.search(searchParams);
+        }
+    
+    }
+
+    search = async (filter) => {
+        const response = await fetch(`/api/promotions/${filter}&page=${this.state.activePage}`, {
+            method: "GET",
+            headers: { Authorization: "Bearer " + getCookie("access_token") }
+        });
+        if (response.ok) {
+            const promotions = await response.json();
+            const promotionCount = parseInt(response.headers.get("X-Total-Count"));
+            this.setState({
+                promotions: promotions,
+                loading: false,
+                promotionCount: promotionCount,
+            });
+        }
     }
 
     loadData = async () => {
@@ -42,7 +65,14 @@ class PromotionList extends Component {
 
     pageChange = (pageNumber) => {
         if (pageNumber === this.state.activePage) return;
-        this.setState({ loading: true, activePage: pageNumber }, () => this.loadData());
+        this.setState({ loading: true, activePage: pageNumber }, () => {
+            const searchParams = window.location.pathname.substring(18, window.location.pathname.length) + window.location.search;
+            if (searchParams === "") {
+                this.loadData();
+            } else {
+                this.search(searchParams);
+            }
+        });
     };
 
     render() {

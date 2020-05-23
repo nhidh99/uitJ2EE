@@ -139,7 +139,14 @@ class App extends Component {
                     "/user/order/:orderId",
                 ]}
             />
-            <Route exact component={Admin} path="/admin/(|products|orders|promotions)" />
+            <Route 
+                exact 
+                component={Admin} 
+                path={[
+                    "/admin/(|products|orders|promotions)",
+                    "/admin/products/search",
+                    "/admin/promotions/search",
+                    ]} />
         </Fragment>
     );
 

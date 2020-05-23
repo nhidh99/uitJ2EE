@@ -19,8 +19,20 @@ class Admin extends Component {
 
                     <Route
                         exact
+                        component={ProductPage}
+                        path="/admin/products/search"
+                    />
+
+                    <Route
+                        exact
                         component={PromotionPage}
                         path="/admin/promotions"
+                    />
+
+                    <Route
+                        exact
+                        component={PromotionPage}
+                        path="/admin/promotions/search"
                     />
 
                     <Route

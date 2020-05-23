@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -53,9 +54,10 @@ public class LaptopServiceImpl implements LaptopService {
         }
     }
 
+
     private Response findByPage(Integer page) throws JsonProcessingException {
         List<Laptop> laptops = laptopDAO.findByPage(page);
-        Long laptopCount = laptopDAO.findTotalLaptops();
+        Long laptopCount = laptopDAO.findTotalLaptops(null);
         ObjectMapper om = new ObjectMapper();
         String laptopsJSON = om.writeValueAsString(laptops);
         return Response.ok(laptopsJSON).header("X-Total-Count", laptopCount).build();
@@ -66,6 +68,22 @@ public class LaptopServiceImpl implements LaptopService {
         ObjectMapper om = new ObjectMapper();
         String laptopsJSON = om.writeValueAsString(laptops);
         return Response.ok(laptopsJSON).build();
+    }
+
+    @Override
+    @GET
+    @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findLaptopsByFilter(@QueryParam("q") String queryParam, @QueryParam("page") Integer page) {
+        try {
+            List<Laptop> laptops = laptopDAO.findByFilter(queryParam, page);
+            Long laptopCount = laptopDAO.findTotalLaptops(queryParam);
+            ObjectMapper om = new ObjectMapper();
+            String laptopsJSON = om.writeValueAsString(laptops);
+            return Response.ok(laptopsJSON).header("X-Total-Count", laptopCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 
     @Override
