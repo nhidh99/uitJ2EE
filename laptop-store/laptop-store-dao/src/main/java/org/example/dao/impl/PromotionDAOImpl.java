@@ -45,23 +45,13 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByFilter(String filter, Integer page) {
-        if (filter.matches("[0-9]+")) {
-            String query = "SELECT p FROM Promotion p WHERE p.id = :id OR p.name LIKE CONCAT('%',:name,'%') AND p.recordStatus = true";
-            return em.createQuery(query, Promotion.class)
-                    .setParameter("id", Integer.parseInt(filter))
-                    .setParameter("name", filter)
-                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                    .setMaxResults(ELEMENT_PER_BLOCK)
-                    .getResultList();
-        } else {
-            String query = "SELECT p FROM Promotion p WHERE p.name LIKE CONCAT('%',:name,'%') AND p.recordStatus = true";
-            return em.createQuery(query, Promotion.class)
-                    .setParameter("name", filter)
-                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                    .setMaxResults(ELEMENT_PER_BLOCK)
-                    .getResultList();
-        }
-
+        String query = "SELECT * FROM Promotion p WHERE p.id = ? OR p.name LIKE CONCAT('%',?,'%') AND p.record_status = true";
+        return em.createNativeQuery(query, Promotion.class)
+            .setParameter(1, filter)
+            .setParameter(2, filter)
+            .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+            .setMaxResults(ELEMENT_PER_BLOCK)
+            .getResultList();
     }
 
     @Override
@@ -71,18 +61,11 @@ public class PromotionDAOImpl implements PromotionDAO {
             String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
             return em.createQuery(query, Long.class).getSingleResult();
         } else {
-            if(filter.matches("[0-9]+")) {
-                String query = "SELECT COUNT(p) FROM Promotion p WHERE p.id = :id OR p.name LIKE CONCAT('%',:name,'%') AND p.recordStatus = true";
-                return em.createQuery(query, Long.class)
-                        .setParameter("id", Integer.parseInt(filter))
-                        .setParameter("name", filter)
-                        .getSingleResult();
-            } else {
-                String query = "SELECT COUNT(p) FROM Promotion p WHERE p.name LIKE CONCAT('%',:name,'%') AND p.recordStatus = true";
-                return em.createQuery(query, Long.class)
-                        .setParameter("name", filter)
-                        .getSingleResult();
-            }
+            String query = "SELECT COUNT(*) FROM Promotion p WHERE p.id = ? OR p.name LIKE CONCAT('%',?,'%') AND p.record_status = true";
+            return ((Number) em.createNativeQuery(query)
+                    .setParameter(1, filter)
+                    .setParameter(2, filter)
+                    .getSingleResult()).longValue();
         }
     }
 
