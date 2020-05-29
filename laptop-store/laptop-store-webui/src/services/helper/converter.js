@@ -43,7 +43,17 @@ export const convertBrandType = (type) => {
 export const convertOrderStatus = (status) => {
     switch (status) {
         case "PENDING":
-            return "Đang xử lí";
+            return "Chờ xử lí";
+        case "RECEIVED":
+            return "Tiếp nhận";
+        case "PACKAGED":
+            return "Đóng gói";
+        case "DELIVERING":
+            return "Vận chuyển";
+        case "DELIVERED":
+            return "Đã giao";
+        case "CANCELED":
+            return "Hủy đơn";
         default:
             return null;
     }

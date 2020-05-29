@@ -108,7 +108,6 @@ public class Laptop {
     private byte[] thumbnail;
 
     @Column(name = "record_status")
-    @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
 

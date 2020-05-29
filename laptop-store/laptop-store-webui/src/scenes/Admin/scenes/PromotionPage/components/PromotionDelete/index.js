@@ -7,6 +7,21 @@ const PromotionDelete = ({ promotion }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
+    const externalCloseBtn = (
+        <button
+            className="close"
+            style={{
+                position: "absolute",
+                right: "15px",
+                fontSize: "65px",
+                color: "white",
+            }}
+            onClick={toggle}
+        >
+            &times;
+        </button>
+    );
+
     const submit = async () => {
         const response = await fetch(`/api/promotions/${promotion["id"]}`, {
             method: "DELETE",
@@ -22,8 +37,8 @@ const PromotionDelete = ({ promotion }) => {
                 <FaTrash />
             </Button>
 
-            <Modal isOpen={modal} toggle={toggle} className={styles.modal}>
-                <ModalHeader toggle={toggle}>
+            <Modal isOpen={modal} external={externalCloseBtn} className={styles.modal}>
+                <ModalHeader>
                     <FaTrash />
                     &nbsp;&nbsp;Xóa khuyến mãi
                 </ModalHeader>

@@ -7,16 +7,31 @@ const ProductDelete = ({ product }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
+    const externalCloseBtn = (
+        <button
+            className="close"
+            style={{
+                position: "absolute",
+                right: "15px",
+                fontSize: "65px",
+                color: "white",
+            }}
+            onClick={toggle}
+        >
+            &times;
+        </button>
+    );
+
     const submit = async (e) => {
         const input = e.target;
         input.disabled = true;
-        const response = await fetch(`/api/laptops/${product['id']}`, {
-            method: 'DELETE'
+        const response = await fetch(`/api/laptops/${product["id"]}`, {
+            method: "DELETE",
         });
         if (response.ok) {
             window.location.reload();
         }
-    }
+    };
 
     return (
         <Fragment>
@@ -24,8 +39,8 @@ const ProductDelete = ({ product }) => {
                 <FaTrash />
             </Button>
 
-            <Modal isOpen={modal} toggle={toggle} className={styles.modal}>
-                <ModalHeader toggle={toggle}>
+            <Modal isOpen={modal} external={externalCloseBtn} className={styles.modal}>
+                <ModalHeader>
                     <FaTrash />
                     &nbsp;&nbsp;Xóa sản phẩm
                 </ModalHeader>
@@ -38,7 +53,9 @@ const ProductDelete = ({ product }) => {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button color="danger" onClick={submit}>Xác nhận</Button>
+                    <Button color="danger" onClick={submit}>
+                        Xác nhận
+                    </Button>
                     <Button color="secondary" onClick={toggle}>
                         Đóng
                     </Button>
