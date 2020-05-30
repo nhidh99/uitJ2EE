@@ -4,7 +4,7 @@ import { Table, Button } from "reactstrap";
 import { FaShoppingCart } from "react-icons/fa";
 import { NUMBER_OF_DELIVERY_DAYS, DELIVERY_FEE } from "../../../../../../constants";
 import { getCookie } from "../../../../../../services/helper/cookie";
-import { getCart, updateCartDatabase } from "../../../../../../services/helper/cart";
+import { getCart } from "../../../../../../services/helper/cart";
 
 class SummaryBlock extends Component {
     createOrder = async () => {
@@ -25,8 +25,8 @@ class SummaryBlock extends Component {
 
         if (response.ok) {
             localStorage.setItem("cart", null);
-            await updateCartDatabase({});
-            window.location.href = "/user/order";
+            const orderId = await response.text();
+            window.location.href = "/user/order/" + orderId;
         }
     };
 

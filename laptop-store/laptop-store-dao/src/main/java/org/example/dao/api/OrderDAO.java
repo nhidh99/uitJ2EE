@@ -1,9 +1,10 @@
 package org.example.dao.api;
 
 import org.example.model.Order;
-import org.example.model.OrderOverview;
+import org.example.type.OrderStatus;
 
 import javax.ejb.Local;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +14,13 @@ public interface OrderDAO {
 
     Optional<Order> findById(Integer id);
 
-    List<Order> findOrdersByUserId(Integer page, Integer userId);
+    Long findTotalOrder();
+
+    List<Order> findByUserId(Integer page, Integer userId);
+
+    List<Order> findByPages(Integer page);
 
     Long findTotalOrdersByUserId(Integer userId);
+
+    void updateStatus(Integer orderId, OrderStatus orderStatus) throws SQLException;
 }

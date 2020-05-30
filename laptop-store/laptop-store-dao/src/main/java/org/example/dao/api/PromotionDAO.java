@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Local
 public interface PromotionDAO {
+    List<Promotion> findAll();
+
     List<Promotion> findByPage(Integer page);
 
     List<Promotion> findByIds(List<Integer> ids);

@@ -156,27 +156,14 @@ public class UserServiceImpl implements UserService {
         try {
             Principal principal = securityContext.getUserPrincipal();
             Integer userId = Integer.parseInt(principal.getName());
-            List<Order> orders = orderDAO.findOrdersByUserId(page, userId);
+            List<Order> orders = orderDAO.findByUserId(page, userId);
             Long orderCount = orderDAO.findTotalOrdersByUserId(userId);
-            List<OrderOverview> orderOverviews = orders.stream()
-                    .map(this::buildOverviewFromOrder)
-                    .collect(Collectors.toList());
-
+            List<OrderOverview> orderOverviews = orders.stream().map(OrderOverview::fromOrder).collect(Collectors.toList());
             ObjectMapper om = new ObjectMapper();
             String orderOverviewsJSON = om.writeValueAsString(orderOverviews);
             return Response.ok(orderOverviewsJSON).header("X-Total-Count", orderCount).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
-    }
-
-    private OrderOverview buildOverviewFromOrder(Order order) {
-        List<OrderDetail> orderProducts = order.getOrderDetails().stream()
-                .filter(detail -> detail.getProductType() == ProductType.LAPTOP)
-                .collect(Collectors.toList());
-        Integer productCount = orderProducts.stream().mapToInt(OrderDetail::getQuantity).sum();
-        return OrderOverview.builder()
-                .order(order).firstProduct(orderProducts.get(0))
-                .productCount(productCount).build();
     }
 }

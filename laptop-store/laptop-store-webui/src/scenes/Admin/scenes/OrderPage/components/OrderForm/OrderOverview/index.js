@@ -8,21 +8,58 @@ import {
     ButtonGroup,
     Button,
 } from "reactstrap";
+import { getCookie } from "../../../../../../../services/helper/cookie";
 
 class OrderOverview extends Component {
+    updateOrderStatus = async (e) => {
+        e.target.disabled = true;
+        const status = document.getElementById("status").value;
+        const response = await fetch(`/api/orders/${this.props.order.id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${getCookie("access_token")}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status: status }),
+        });
+        if (response.ok) {
+            window.location.reload();
+        }
+    };
+
+    buildStatusOptions = (status) => {
+        if (!status) return [];
+        const options = [
+            <option value="PENDING">Chờ xử lí</option>,
+            <option value="RECEIVED">Tiếp nhận</option>,
+            <option value="PACKAGED">Đóng gói</option>,
+            <option value="DELIVERING">Vận chuyển</option>,
+            <option value="DELIVERED">Đã giao</option>,
+            <option value="CANCELED">Hủy đơn</option>,
+        ];
+        const index = [
+            "PENDING",
+            "RECEIVED",
+            "PACKAGED",
+            "DELIVERING",
+            "DELIVERED",
+            "CANCELED",
+        ].indexOf(status);
+        return options.slice(index, options.length - (status === "DELIVERED" ? 1 : 0));
+    };
+
     render() {
+        const { order } = this.props;
+        const order_date = order["order_date"];
+        const delivery_date = order["delivery_date"];
+
         return (
             <table className={styles.table}>
                 <tbody>
                     <tr>
                         <td className={styles.labelCol}>Người nhận:</td>
                         <td>
-                            <Input
-                                readOnly
-                                type="text"
-                                id="name"
-                                value="Đinh Hoàng Nhi"
-                            />
+                            <Input readOnly type="text" id="name" value={order["receiver_name"]} />
                         </td>
                     </tr>
                     <tr>
@@ -32,7 +69,7 @@ class OrderOverview extends Component {
                                 readOnly
                                 type="text"
                                 id="unit-price"
-                                value="0336887109"
+                                value={order["receiver_phone"]}
                             />
                         </td>
                     </tr>
@@ -44,7 +81,13 @@ class OrderOverview extends Component {
                                 readOnly
                                 type="text"
                                 id="discount-price"
-                                value="106/2 Đường Đào Cử, thị trấn Cần Thạnh, huyện Cần Giờ, Thành phố Hồ Chí Minh"
+                                value={[
+                                    order["address_num"],
+                                    order["street"],
+                                    order["ward"],
+                                    order["district"],
+                                    order["city"],
+                                ].join(", ")}
                             />
                         </td>
                     </tr>
@@ -56,7 +99,9 @@ class OrderOverview extends Component {
                                 readOnly
                                 type="text"
                                 id="discount-price"
-                                value="Thứ ba, ngày 21 tháng 4 năm 2020"
+                                value={`Ngày ${order_date?.["dayOfMonth"] ?? ""} tháng ${
+                                    order_date?.["monthValue"] ?? ""
+                                } năm ${order_date?.["year"] ?? ""}`}
                             />
                         </td>
                     </tr>
@@ -68,25 +113,10 @@ class OrderOverview extends Component {
                                 readOnly
                                 type="text"
                                 id="discount-price"
-                                value="Thứ tư, ngày 22 tháng 4 năm 2020"
+                                value={`Ngày ${delivery_date?.["dayOfMonth"] ?? ""} tháng ${
+                                    delivery_date?.["monthValue"] ?? ""
+                                } năm ${delivery_date?.["year"] ?? ""}`}
                             />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className={styles.labelCol}>Số sản phẩm:</td>
-                        <td>
-                            <InputGroup>
-                                <Input
-                                    readOnly
-                                    type="text"
-                                    id="quantity"
-                                    value="1"
-                                />
-                                <InputGroupAddon addonType="append">
-                                    <InputGroupText>sản phẩm</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
                         </td>
                     </tr>
 
@@ -98,7 +128,7 @@ class OrderOverview extends Component {
                                     readOnly
                                     type="text"
                                     id="actual-price"
-                                    value="0"
+                                    value={order["transport_fee"]?.toLocaleString()}
                                 />
                                 <InputGroupAddon addonType="append">
                                     <InputGroupText>đ</InputGroupText>
@@ -115,7 +145,7 @@ class OrderOverview extends Component {
                                     readOnly
                                     type="text"
                                     id="actual-price"
-                                    value="16,900,000đ"
+                                    value={order["total_price"]?.toLocaleString()}
                                 />
                                 <InputGroupAddon addonType="append">
                                     <InputGroupText>đ</InputGroupText>
@@ -128,17 +158,12 @@ class OrderOverview extends Component {
                         <td className={styles.labelCol}>Trạng thái:</td>
                         <td>
                             <ButtonGroup className={styles.statusBtnGroup}>
-                                <Input
-                                    type="select"
-                                    className={styles.statusSelect}
-                                >
-                                    <option>Chờ xử lí</option>
-                                    <option>Đang đóng gói</option>
-                                    <option>Đang vận chuyển</option>
-                                    <option>Đã nhận hàng</option>
-                                    <option>Hủy đơn</option>
+                                <Input type="select" className={styles.statusSelect} id="status">
+                                    {this.buildStatusOptions(order["status"])}
                                 </Input>
-                                <Button color="primary">Cập nhật</Button>
+                                <Button color="primary" onClick={this.updateOrderStatus}>
+                                    Cập nhật
+                                </Button>
                             </ButtonGroup>
                         </td>
                     </tr>

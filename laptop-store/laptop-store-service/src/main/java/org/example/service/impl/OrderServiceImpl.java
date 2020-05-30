@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.dao.api.*;
 import org.example.input.OrderInput;
+import org.example.input.OrderUpdateInput;
 import org.example.model.*;
 import org.example.security.Secured;
 import org.example.service.api.OrderService;
@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -56,11 +57,12 @@ public class OrderServiceImpl implements OrderService {
     @Path("/")
     @Secured({RoleType.ADMIN, RoleType.USER})
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public Response createOrder(OrderInput orderInput, @Context SecurityContext securityContext) {
         try {
             Order order = buildOrderFromRequestBody(orderInput, securityContext);
             orderDAO.save(order);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.ok(order.getId()).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
@@ -187,5 +189,63 @@ public class OrderServiceImpl implements OrderService {
         JsonNode detailsNode = om.readTree(detailsJSON);
         ((ObjectNode) orderNode).set("details", detailsNode);
         return orderNode.toString();
+    }
+
+    @Override
+    @GET
+    @Path("/")
+    @Secured(RoleType.ADMIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findOrdersByPage(@QueryParam("page") @DefaultValue("1") Integer page) {
+        try {
+            List<Order> orders = orderDAO.findByPages(page);
+            List<OrderOverview> orderOverviews = orders.stream().map(OrderOverview::fromOrder).collect(Collectors.toList());
+            Long orderCount = orderDAO.findTotalOrder();
+            ObjectMapper om = new ObjectMapper();
+            String overviewsJSON = om.writeValueAsString(orderOverviews);
+            return Response.ok(overviewsJSON).header("X-Total-Count", orderCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Secured(RoleType.ADMIN)
+    public Response updateOrder(@PathParam("id") Integer orderId, OrderUpdateInput status) {
+        try {
+            OrderStatus orderStatus = OrderStatus.valueOf(status.getStatus());
+            orderDAO.updateStatus(orderId, orderStatus);
+            return Response.noContent().build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @PUT
+    @Path("/{id}/cancel")
+    @Secured({RoleType.ADMIN, RoleType.USER})
+    public Response cancelOrder(@PathParam("id") Integer orderId, @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            Order order = orderDAO.findById(orderId).orElseThrow(BadRequestException::new);
+            boolean isValidRequest = order.getUser().getId().equals(userId) && order.getStatus().isBeforePackaged();
+            if (isValidRequest) {
+                orderDAO.updateStatus(orderId, OrderStatus.CANCELED);
+                return Response.noContent().build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+        } catch (SQLException | BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 }
