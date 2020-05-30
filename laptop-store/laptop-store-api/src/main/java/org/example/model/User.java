@@ -8,6 +8,7 @@ import org.example.type.RoleType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -52,7 +53,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    @Column(name="birthday")
+    @Column(name = "birthday")
     @JsonProperty("birthday")
     private LocalDate birthday;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Rating> ratings;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<RatingReply> ratingReplies;
+
+    @Column(name = "cart")
+    @JsonProperty("cart")
+    private String cart;
 }

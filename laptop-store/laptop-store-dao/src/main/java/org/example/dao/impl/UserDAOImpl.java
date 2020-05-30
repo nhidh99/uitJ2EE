@@ -24,6 +24,11 @@ public class UserDAOImpl implements UserDAO {
 
     private static final int WORKLOAD = 12;
 
+    private String hashPassword(String plainPassword) {
+        String salt = BCrypt.gensalt(WORKLOAD);
+        return BCrypt.hashpw(plainPassword, salt);
+    }
+
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public boolean login(String username, String plainPassword) {
@@ -38,12 +43,14 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void register(User user) {
-        String salt = BCrypt.gensalt(WORKLOAD);
-        String plainPassword = user.getPassword();
-        String hashedPassword = BCrypt.hashpw(plainPassword, salt);
+        String hashedPassword = hashPassword(user.getPassword());
         user.setPassword(hashedPassword);
         em.persist(user);
     }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void update(User user) { em.merge(user); }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
@@ -71,5 +78,37 @@ public class UserDAOImpl implements UserDAO {
                 .setParameter("username", username)
                 .setMaxResults(1).getResultList();
         return users.isEmpty();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public boolean checkEmailExisted(String email) {
+        String query = "SELECT u FROM User u WHERE u.email = :email";
+        List<User> users = em.createQuery(query, User.class)
+                .setParameter("email", email)
+                .setMaxResults(1).getResultList();
+        return users.isEmpty();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void saveCart(Integer userId, String cartJSON) {
+        User user = em.find(User.class, userId);
+        if (user == null) throw new NoResultException();
+        user.setCart(cartJSON);
+        em.merge(user);
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public boolean updatePassword(Integer userId, String oldPassword, String newPassword) {
+        User user = em.find(User.class, userId);
+        boolean isValidCredential = user != null && BCrypt.checkpw(oldPassword, user.getPassword());
+        if (isValidCredential) {
+            String newHashedPassword = hashPassword(newPassword);
+            user.setPassword(newHashedPassword);
+            return em.merge(user) != null;
+        }
+        return false;
     }
 }

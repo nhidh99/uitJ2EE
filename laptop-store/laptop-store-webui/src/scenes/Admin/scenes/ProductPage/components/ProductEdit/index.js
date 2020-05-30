@@ -8,14 +8,29 @@ const ProductEdit = ({ product }) => {
     const [modal, setModal] = useState(false);
     const toggle = () => setModal(!modal);
 
+    const externalCloseBtn = (
+        <button
+            className="close"
+            style={{
+                position: "absolute",
+                right: "15px",
+                fontSize: "65px",
+                color: "white",
+            }}
+            onClick={toggle}
+        >
+            &times;
+        </button>
+    );
+
     return product ? (
         <Fragment>
             <Button color="primary" onClick={toggle}>
                 <FaPen />
             </Button>
 
-            <Modal isOpen={modal} toggle={toggle} className={styles.modal}>
-                <ModalHeader toggle={toggle}>
+            <Modal isOpen={modal} className={styles.modal} external={externalCloseBtn}>
+                <ModalHeader>
                     <FaPen />
                     &nbsp;&nbsp;Cập nhật sản phẩm (Mã sản phẩm: {product["id"]})
                 </ModalHeader>
@@ -39,7 +54,7 @@ const ProductEdit = ({ product }) => {
                 </ModalHeader>
 
                 <ModalBody>
-                    <ProductForm product={product} toggle={toggle} />
+                    <ProductForm toggle={toggle} />
                 </ModalBody>
             </Modal>
         </Fragment>

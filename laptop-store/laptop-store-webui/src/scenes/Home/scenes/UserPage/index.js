@@ -5,7 +5,6 @@ import AddressPage from "./scenes/AddressPage";
 import EditAddressPage from "./scenes/EditAddressPage";
 import PasswordPage from "./scenes/PasswordPage";
 import OrderPage from "./scenes/OrderPage";
-import PaymentPage from "./scenes/PaymentPage";
 import SideBar from "./components/SideBar";
 import styles from "./styles.module.scss";
 import { Col, Row } from "reactstrap";
@@ -24,12 +23,15 @@ class UserPage extends Component {
                     <Switch>
                         <Route exact component={InfoPage} path="/user/info" />
                         <Route exact component={AddressPage} path="/user/address" />
-                        <Route exact component={EditAddressPage} path="/user/address/create" />
+                        <Route
+                            exact
+                            component={EditAddressPage}
+                            path="/user/address/(edit|create)"
+                        />
                         <Route exact component={PasswordPage} path="/user/password" />
                         <Route exact component={OrderPage} path="/user/order" />
                         <Route exact component={OrderDetail} path="/user/order/:orderId" />
                         <Route exact component={CartPage} path="/user/cart" />
-                        <Route exact component={PaymentPage} path="/user/payment" />
                     </Switch>
                 </Col>
             </Row>

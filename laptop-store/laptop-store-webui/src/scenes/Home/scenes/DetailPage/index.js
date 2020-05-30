@@ -8,11 +8,14 @@ import { Row, Label } from "reactstrap";
 import styles from "./styles.module.scss";
 import { FaCaretRight } from "react-icons/fa";
 import { convertBrandType } from "../../../../services/helper/converter";
+import { getCookie } from "../../../../services/helper/cookie";
 
 class DetailPage extends Component {
     state = {
         loading: true,
         product: null,
+        ratings: null,
+        replies: null,
     };
 
     componentDidMount() {
@@ -21,25 +24,72 @@ class DetailPage extends Component {
         if (isNaN(parseInt(productId))) {
             window.location.href = "/";
         } else {
-            this.loadProduct(productId);
+            this.loadData(productId);
         }
     }
 
+    loadData = async (productId) => {
+        await Promise.all([this.loadProduct(productId), this.loadRating(productId)]);
+        const ratingIds = this.state.ratings.map((rating) => rating['id']);
+        await this.loadRatingReplies(ratingIds);
+        this.setState({ loading: false })
+    }
+
+
     loadProduct = async (productId) => {
-        const response = await fetch(`/api/laptops/${productId}`);
+        const response = await fetch(`/api/laptops/${productId}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            }
+        });
         if (response.ok) {
             const product = await response.json();
             this.setState({
-                loading: false,
-                product: product,
+                product: product
             });
         } else {
             window.location.href = "/";
         }
     };
 
+    loadRatingReplies = async (ratingIds) => {
+        const params = new URLSearchParams();
+        ratingIds.forEach(id => params.append('rating-ids', id));
+        const url = '/api/replies?' + params.toString();
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            const replies = await response.json();
+            this.setState({
+                replies: replies,
+            })
+        }
+    }
+
+
+    loadRating = async (productId) => {
+        const response = await fetch(`/api/ratings/${productId}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + getCookie('access_token'),
+            }
+        });
+        if (response.ok) {
+            const ratings = await response.json();
+            this.setState({
+                ratings: ratings
+            })
+        }
+    }
+
+
     render() {
-        const { loading, product } = this.state;
+        const { loading, product, ratings, replies } = this.state;
         return loading ? null : (
             <Fragment>
                 <ContentBlock
@@ -54,9 +104,9 @@ class DetailPage extends Component {
 
                 <ContentBlock title="Sản phẩm tương tự" component={<SuggestBlock />} />
 
-                <ContentBlock title="Đánh giá sản phẩm" component={<RatingBlock />} />
+                <ContentBlock title="Đánh giá sản phẩm" component={<RatingBlock ratings={ratings} product ={product} />} />
 
-                <ContentBlock title="Khách hàng nhận xét" component={<CommentBlock />} />
+                <ContentBlock title="Khách hàng nhận xét" component={<CommentBlock ratings={ratings} replies= {replies}/>} />
             </Fragment>
         );
     }
@@ -83,11 +133,11 @@ const ProductTitle = (props) => {
             <FaCaretRight color="#007bff" />
             &nbsp;
             <a href="/" className={styles.productRedirect}>
-                {convertBrandType(product["brand"])}
+                {convertBrandType(product?.["brand"])}
             </a>
             &nbsp;
             <FaCaretRight color="#007bff" />
-            &nbsp;Laptop {product["name"]}
+            &nbsp;Laptop {product?.["name"]}
         </Label>
     );
 };

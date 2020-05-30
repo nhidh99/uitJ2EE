@@ -9,11 +9,19 @@ import java.util.Optional;
 public interface UserDAO {
     boolean login(String username, String password) throws Exception;
 
+    boolean checkRegister(String username, String email);
+
+    boolean checkEmailExisted(String email);
+
     void register(User user);
+
+    void update(User user);
+
+    void saveCart(Integer userId, String cartJSON);
 
     Optional<User> findByUsername(String username);
 
     Optional<User> findById(Integer id);
 
-    boolean checkRegister(String username, String email);
+    boolean updatePassword(Integer userId, String oldPassword, String newPassword);
 }

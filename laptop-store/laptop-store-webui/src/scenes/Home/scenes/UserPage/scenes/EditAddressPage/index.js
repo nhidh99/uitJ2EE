@@ -1,112 +1,232 @@
-import React, { Component } from "react";
-import { Container, Row, Col, Form, FormGroup, Label, Input, CustomInput } from "reactstrap";
+import React, { Component, Fragment } from "react";
+import { Label, Input, Button } from "reactstrap";
 import { FaBook } from "react-icons/fa";
-import SideBar from "../../components/SideBar";
 import styles from "./styles.module.scss";
+import { getCookie } from "../../../../../../services/helper/cookie";
 
 class EditAddressPage extends Component {
+    state = {
+        errors: [],
+    };
+
+    buildAddressBody = () => {
+        const receiverName = document.getElementById("receiverName").value;
+        const phone = document.getElementById("phone").value;
+        const city = document.getElementById("city").value;
+        const district = document.getElementById("district").value;
+        const ward = document.getElementById("ward").value;
+        const street = document.getElementById("street").value;
+        const addressNum = document.getElementById("addressNum").value;
+
+        return {
+            receiverName: receiverName,
+            receiverPhone: phone,
+            city: city,
+            district: district,
+            ward: ward,
+            street: street,
+            addressNum: addressNum,
+        };
+    };
+
+    validateInputs = (inputs) => {
+        const errors = [];
+        const validate = (message, condition) => (condition() ? null : errors.push(message));
+        validate("Họ và tên không được để trống hoặc chứa chữ số", () =>
+            inputs["receiverName"].match(/^[a-zA-Z\s\p{L}]{3,30}$/gu)
+        );
+        validate("Số điện thoại từ 6 - 12 chữ số", () => inputs["receiverPhone"].match(/^\d{6,12}$/));
+        validate("Tỉnh/Thành phố không được để trống", () => inputs["city"].length > 0);
+        validate("Quận huyện không được để trống", () => inputs["district"].length > 0);
+        validate("Phường xã không được để trống", () => inputs["ward"].length > 0);
+        validate("Đường không được để trống", () => inputs["street"].length > 0);
+        validate("Số nhà không được để trống", () => inputs["addressNum"].length > 0);
+        return errors;
+    };
+
+
+    createAddress = async () => {
+        const body = this.buildAddressBody();
+        const errors = this.validateInputs(body);
+
+        if (errors.length > 0) {
+            this.setState({ errors: errors });
+            return;
+        }
+
+        const url =
+            "/api/addresses/" +
+            (this.props.location.state?.address
+                ? this.props.location.state.address["id"]
+                : "");
+
+        const response = await fetch(url, {
+            method: this.props.location.state?.address ? 'PUT' : 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + getCookie("access_token"),
+            },
+            body: JSON.stringify(body),
+        });
+        if (response.ok) {
+            alert("success");
+            window.location.href = "/user/address";
+        }
+        const status = parseInt(response.status);
+        switch (status) {
+            case 201:
+                alert("insert thành công");
+                window.location.href = "/user/address";
+                break;
+            case 403:
+                this.setState({
+                    error: "Not permission",
+                    loading: false,
+                });
+                break;
+            case 401:
+                alert("You have to login to access this page.");
+                window.location.href = "/auth/login";
+                break;
+            default:
+                this.setState({
+                    error: "Server error",
+                    loading: false,
+                });
+        }
+    }
+
     render() {
+        const address = this.props.location.state?.address;
+        const { errors } = this.state;
         return (
-            <Container id="content">
-                <Row>
-                    <Col md="9" className={styles.inner}>
-                        <Row className={styles.pageHeader}>
-                            <h3>
-                                <FaBook /> Tạo sổ địa chỉ
-                            </h3>
-                        </Row>
-                        <Form className={styles.form}>
-                            <FormGroup row>
-                                <Label for="fullName" sm="3">
-                                    Họ và tên:
-                                </Label>
+            <Fragment>
+                <header className={styles.header}>
+                    <FaBook />
+                    &nbsp;&nbsp;{address ? "SỬA ĐỊA CHỈ" : "TẠO ĐỊA CHỈ"}
+                    <Button color="success" onClick={this.createAddress} className={styles.button}>
+                        Lưu địa chỉ
+                    </Button>
+                </header>
+        {errors.length > 0 ? (
+            <p>
+            {errors.map((error) => (
+                    <label className={styles.error}>{error}.</label>
+        ))}
+        </p>
+        ) : null}
+                <table className={styles.form}>
+                    <tbody>
+                        <tr>
+                            <td className={styles.labelCol}>
+                                <Label>Họ và tên:</Label>
+                            </td>
+                            <td className={styles.inputCol}>
                                 <Input
                                     type="text"
-                                    name="fullName"
-                                    id="fullName"
+                                    name="receiverName"
+                                    id="receiverName"
                                     placeholder="Nhập họ và tên"
-                                    className="col-sm-8"
+                                    defaultValue={address != null ? address["receiver_name"] : null}
                                 />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label for="telephone" sm="3">
-                                    Điện thoại:
-                                </Label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Điện thoại:</Label>
+                            </td>
+                            <td>
                                 <Input
                                     type="text"
-                                    name="telephone"
-                                    id="telephone"
+                                    name="phone"
+                                    id="phone"
                                     placeholder="Nhập số điện thoại"
-                                    className="col-sm-8"
+                                    defaultValue={
+                                        address != null ? address["receiver_phone"] : null
+                                    }
                                 />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label for="city" sm="3">
-                                    Tỉnh/ Thành phố:
-                                </Label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Tỉnh/Thành:</Label>
+                            </td>
+                            <td>
                                 <Input
                                     type="text"
                                     name="city"
                                     id="city"
                                     placeholder="Nhập tỉnh/ thành phố"
-                                    className="col-sm-8"
+                                    defaultValue={address != null ? address["city"] : null}
                                 />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label for="district" sm="3">
-                                    Quận huyện:
-                                </Label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Quận huyện:</Label>
+                            </td>
+                            <td>
                                 <Input
                                     type="text"
                                     name="district"
                                     id="district"
                                     placeholder="Nhập quận huyện"
-                                    className="col-sm-8"
+                                    defaultValue={address != null ? address["district"] : null}
                                 />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label for="ward" sm="3">
-                                    Phường xã:
-                                </Label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Phường xã:</Label>
+                            </td>
+                            <td>
                                 <Input
                                     type="text"
                                     name="ward"
                                     id="ward"
                                     placeholder="Nhập phường xã"
-                                    className="col-sm-8"
+                                    defaultValue={address != null ? address["ward"] : null}
                                 />
-                            </FormGroup>
-                            <FormGroup row className={styles.textArea}>
-                                <Label for="street" sm="3">
-                                    Địa chỉ:
-                                </Label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Đường:</Label>
+                            </td>
+                            <td>
                                 <Input
-                                    type="textarea"
+                                    type="text"
                                     name="street"
                                     id="street"
+                                    placeholder="Nhập tên đường"
+                                    defaultValue={address != null ? address["street"] : null}
+                                />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <Label className={styles.labelCol}>Địa chỉ:</Label>
+                            </td>
+                            <td>
+                                <Input
+                                    type="text"
+                                    name="addressNum"
+                                    id="addressNum"
                                     rows="3"
-                                    placeholder="Nhập địa chỉ (tên đường, số nhà)"
-                                    className="col-sm-8"
+                                    placeholder="Nhập địa chỉ (hẻm, số nhà)"
+                                    defaultValue={address != null ? address["address_num"] : null}
                                 />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label sm="3"></Label>
-                                <CustomInput
-                                    type="checkbox"
-                                    name="default-address"
-                                    id="default-address"
-                                    className={styles.inputCheckBox}
-                                    label="Đặt làm địa chỉ mặc định"
-                                />
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label sm="3"></Label>
-                                <Input type="submit" value="Lưu" className="col-sm-2" />
-                            </FormGroup>
-                        </Form>
-                    </Col>
-                </Row>
-            </Container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </Fragment>
         );
     }
 }

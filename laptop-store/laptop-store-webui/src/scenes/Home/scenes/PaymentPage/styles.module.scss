@@ -1,0 +1,33 @@
+.container {
+    background-color: white;
+    padding: 20px 30px;
+    font-size: 14px;
+    overflow: auto;
+}
+
+.header {
+    margin: 10px 0;
+    font-weight: bold;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.address {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+        margin: 10px 0 !important;
+        margin-right: 10px !important;        
+    }
+}
+
+.emptyCart {
+    text-align: center;
+    padding: 20px 0;
+    background-color: white;
+
+    h4 {
+        margin-bottom: 10px;
+    }
+}

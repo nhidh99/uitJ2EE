@@ -1,9 +1,11 @@
 import React, { Component, Fragment } from "react";
-import { Label, Button } from "reactstrap";
+import { Label, Button, Spinner } from "reactstrap";
 import ItemBlock from "./components/ItemBlock";
 import { FaShoppingCart, FaBoxOpen, FaGift, FaMoneyBillWave } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import { getCart, removeFromCart } from "../../../../services/helper/cart";
+import Loader from "react-loader-advanced";
+import { withRouter } from "react-router-dom";
 
 class CartPage extends Component {
     state = {
@@ -17,49 +19,51 @@ class CartPage extends Component {
         this.loadData();
     }
 
-    loadData = () => {
+    loadData = async () => {
         const cart = getCart();
-        const products = [];
-
-        let length = Object.keys(cart).length;
-        let totalPrice = 0;
-        let totalDiscount = 0;
-        let count = 0;
-
-        if (length === 0) {
+        if (Object.keys(cart).length === 0) {
             this.setState({ loading: false });
             return;
         }
 
-        Object.keys(cart).forEach(async (id) => {
-            const response = await fetch(`/api/laptops/${id}`);
-            if (response.ok) {
-                const product = await response.json();
-                const quantity = cart[[product["id"]]];
-                const discount = product["discount_price"] * quantity;
-                const price = (product["unit_price"] - product["discount_price"]) * quantity;
+        const params = new URLSearchParams();
+        Object.keys(cart).forEach((id) => params.append("ids", id));
+        const response = await fetch("/api/laptops?" + params.toString());
 
-                products.push(product);
-                totalPrice += price;
-                totalDiscount += discount;
-                count++;
-            } else {
-                if (response.status === 404) {
-                    removeFromCart(id);
-                    length--;
-                }
-            }
+        if (response.ok) {
+            const products = await response.json();
+            this.loadCart(products);
+        }
+    };
 
-            if (count === length) {
-                products.sort((a, b) => (a["id"] > b["id"] ? 1 : a["id"] < b["id"] ? -1 : 0));
-                this.setState({
-                    products: products,
-                    totalPrice: totalPrice,
-                    totalDiscount: totalDiscount,
-                    loading: false,
-                });
-            }
+    loadCart = (products) => {
+        const cart = getCart();
+        let totalPrice = 0;
+        let totalDiscount = 0;
+
+        products.forEach((product) => {
+            const quantity = cart[[product["id"]]];
+            const discount = product["discount_price"] * quantity;
+            const price = (product["unit_price"] - product["discount_price"]) * quantity;
+            totalPrice += price;
+            totalDiscount += discount;
         });
+
+        const productIds = products.map((product) => product["id"].toString());
+        Object.keys(cart)
+            .filter((id) => !productIds.includes(id))
+            .forEach((id) => removeFromCart(id));
+
+        this.setState({
+            products: products,
+            totalPrice: totalPrice,
+            totalDiscount: totalDiscount,
+            loading: false,
+        });
+    };
+
+    redirectToPayment = () => {
+        this.props.history.push("/payment");
     };
 
     render() {
@@ -70,12 +74,17 @@ class CartPage extends Component {
             <Fragment>
                 <div className={styles.title}>
                     <Label className={styles.pageTitle}>Giỏ hàng của tôi</Label>
-                    <Button tag="a" href="/user/payment" className={styles.btn} color="success">
+                    <Button
+                        onClick={this.redirectToPayment}
+                        className={styles.btn}
+                        color="success"
+                        disabled={products.length === 0}
+                    >
                         <FaShoppingCart className={styles.icon} /> Tiến hành đặt hàng
                     </Button>
                 </div>
 
-                {loading || products.length === 0 ? null : (
+                <Loader show={loading} message={<Spinner />}>
                     <div className={styles.total}>
                         <span>
                             <b>
@@ -101,18 +110,22 @@ class CartPage extends Component {
                             <sup>đ</sup>
                         </span>
                     </div>
-                )}
 
-                {loading ? null : (
                     <div className={styles.list}>
                         {products.length === 0 ? (
                             <div className={styles.emptyCart}>
                                 <FaBoxOpen size={80} />
                                 <br />
-                                <h4>Giỏ hàng trống</h4>
-                                <Button size="lg" color="warning" type="a" href="/">
-                                    Quay lại trang mua sắm
-                                </Button>
+                                {loading ? (
+                                    <h5>Đang tải giỏ hàng...</h5>
+                                ) : (
+                                    <Fragment>
+                                        <h4>Giỏ hàng trống</h4>
+                                        <Button size="lg" color="warning" type="a" href="/">
+                                            Quay lại trang mua sắm
+                                        </Button>
+                                    </Fragment>
+                                )}
                             </div>
                         ) : (
                             products.map((product) => (
@@ -120,10 +133,10 @@ class CartPage extends Component {
                             ))
                         )}
                     </div>
-                )}
+                </Loader>
             </Fragment>
         );
     }
 }
 
-export default CartPage;
+export default withRouter(CartPage);

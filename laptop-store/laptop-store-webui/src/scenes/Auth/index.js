@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { Route, Switch } from "react-router-dom";
-import LoginPage from "./components/LoginPage";
-import RegisterPage from "./components/RegisterPage";
-import ForgotPage from "./components/ForgotPage";
+import LoginPage from "./scenes/LoginPage";
+import RegisterPage from "./scenes/RegisterPage";
+import ForgotPage from "./scenes/ForgotPage";
 
 class Auth extends Component {
     render() {

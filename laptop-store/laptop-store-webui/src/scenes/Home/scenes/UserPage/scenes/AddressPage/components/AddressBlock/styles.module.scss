@@ -1,0 +1,13 @@
+.addressBlock {
+    padding: 20px;
+    border: 1.5px dashed darkgray;
+    font-size: 14px;
+}
+
+.addressBlock:not(:last-of-type) {
+    margin-bottom: 15px;
+}
+
+.actions {
+    float: right;
+}

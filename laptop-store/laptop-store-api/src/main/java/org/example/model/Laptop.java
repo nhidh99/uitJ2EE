@@ -29,7 +29,7 @@ public class Laptop {
     @Column(name = "brand")
     @JsonProperty("brand")
     @Enumerated(EnumType.STRING)
-    BrandType brand;
+    private BrandType brand;
 
     @Column(name = "unit_price")
     @JsonProperty("unit_price")
@@ -108,11 +108,10 @@ public class Laptop {
     private byte[] thumbnail;
 
     @Column(name = "record_status")
-    @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_tag",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -120,7 +119,7 @@ public class Laptop {
     @JsonIgnore
     private List<Tag> tags;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(name = "laptop_promotion",
             joinColumns = @JoinColumn(name = "laptop_id"),
             inverseJoinColumns = @JoinColumn(name = "promotion_id"))

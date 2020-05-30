@@ -1,8 +1,10 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.PromotionDAO;
+import org.example.filter.PromotionFilter;
 import org.example.type.ImageType;
 import org.example.model.Promotion;
 import org.example.service.api.PromotionService;
@@ -31,22 +33,36 @@ public class PromotionServiceImpl implements PromotionService {
     @Path("/")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findAllPromotions() {
+    public Response findPromotions(@BeanParam PromotionFilter promotionFilter) {
         try {
-            List<Promotion> promotions = promotionDAO.findAll();
-            ObjectMapper om = new ObjectMapper();
-            String promotionsJSON = om.writeValueAsString(promotions);
-            return Response.ok(promotionsJSON).build();
+            return promotionFilter.getIds().isEmpty()
+                    ? findByPage(promotionFilter.getPage())
+                    : findByIds(promotionFilter.getIds());
         } catch (Exception e) {
             return Response.serverError().build();
         }
+    }
+
+    private Response findByPage(Integer page) throws JsonProcessingException {
+        List<Promotion> promotions = (page == null) ? promotionDAO.findAll() : promotionDAO.findByPage(page);
+        Long promotionCount = promotionDAO.findTotalPromotions();
+        ObjectMapper om = new ObjectMapper();
+        String promotionsJSON = om.writeValueAsString(promotions);
+        return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
+    }
+
+    private Response findByIds(List<Integer> ids) throws JsonProcessingException {
+        List<Promotion> promotions = promotionDAO.findByIds(ids);
+        ObjectMapper om = new ObjectMapper();
+        String promotionsJSON = om.writeValueAsString(promotions);
+        return Response.ok(promotionsJSON).build();
     }
 
     @Override
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findPromotionsById(@PathParam("id") Integer id) {
+    public Response findPromotionById(@PathParam("id") Integer id) {
         try {
             Promotion promotion = promotionDAO.findById(id).orElseThrow(BadRequestException::new);
             if (!promotion.isRecordStatus()) throw new BadRequestException();

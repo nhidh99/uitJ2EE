@@ -17,6 +17,7 @@ import { removeCookie } from "../../../../../../services/helper/cookie";
 class SideBar extends Component {
     logout = () => {
         removeCookie("access_token");
+        localStorage.setItem("cart", null);
         window.location.href = "/";
     };
 

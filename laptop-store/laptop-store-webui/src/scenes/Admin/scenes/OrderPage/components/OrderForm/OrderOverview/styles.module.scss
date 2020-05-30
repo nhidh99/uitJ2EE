@@ -6,6 +6,10 @@
     th {
         vertical-align: middle;
     }
+
+    input:read-only {
+        background-color: whitesmoke;
+    }
 }
 
 .labelCol {

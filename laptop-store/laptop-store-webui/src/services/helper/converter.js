@@ -39,3 +39,22 @@ export const convertResolutionType = (type) => {
 export const convertBrandType = (type) => {
     return type === "MSI" ? "MSI" : type.charAt(0) + type.slice(1).toLowerCase();
 };
+
+export const convertOrderStatus = (status) => {
+    switch (status) {
+        case "PENDING":
+            return "Chờ xử lí";
+        case "RECEIVED":
+            return "Tiếp nhận";
+        case "PACKAGED":
+            return "Đóng gói";
+        case "DELIVERING":
+            return "Vận chuyển";
+        case "DELIVERED":
+            return "Đã giao";
+        case "CANCELED":
+            return "Hủy đơn";
+        default:
+            return null;
+    }
+};

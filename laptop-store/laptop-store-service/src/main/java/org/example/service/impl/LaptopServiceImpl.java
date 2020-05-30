@@ -1,10 +1,12 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.PromotionDAO;
 import org.example.dao.api.TagDAO;
+import org.example.filter.LaptopFilter;
 import org.example.model.*;
 import org.example.service.api.LaptopService;
 import org.example.type.*;
@@ -41,15 +43,29 @@ public class LaptopServiceImpl implements LaptopService {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findLaptopsByPage(@QueryParam("page") @DefaultValue("1") Integer page) {
+    public Response findLaptops(@BeanParam LaptopFilter laptopFilter) {
         try {
-            List<Laptop> laptops = laptopDAO.findByPage(page);
-            ObjectMapper om = new ObjectMapper();
-            String laptopsJSON = om.writeValueAsString(laptops);
-            return Response.ok(laptopsJSON).build();
+            return laptopFilter.getIds().isEmpty()
+                    ? findByPage(laptopFilter.getPage())
+                    : findByIds(laptopFilter.getIds());
         } catch (Exception e) {
             return Response.serverError().build();
         }
+    }
+
+    private Response findByPage(Integer page) throws JsonProcessingException {
+        List<Laptop> laptops = laptopDAO.findByPage(page);
+        Long laptopCount = laptopDAO.findTotalLaptops();
+        ObjectMapper om = new ObjectMapper();
+        String laptopsJSON = om.writeValueAsString(laptops);
+        return Response.ok(laptopsJSON).header("X-Total-Count", laptopCount).build();
+    }
+
+    private Response findByIds(List<Integer> ids) throws JsonProcessingException {
+        List<Laptop> laptops = laptopDAO.findByIds(ids);
+        ObjectMapper om = new ObjectMapper();
+        String laptopsJSON = om.writeValueAsString(laptops);
+        return Response.ok(laptopsJSON).build();
     }
 
     @Override
@@ -146,36 +162,39 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     private RAM buildRAMFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("ram-id", Integer.class);
         Integer size = body.getAttachmentObject("ram-size", Integer.class);
         RAMType type = body.getAttachmentObject("ram-type", RAMType.class);
         Integer bus = body.getAttachmentObject("ram-bus", Integer.class);
         Integer extraSlot = body.getAttachmentObject("ram-extra-slot", Integer.class);
-        return RAM.builder().size(size).type(type).bus(bus).extraSlot(extraSlot).build();
+        return RAM.builder().id(id == -1 ? null : id).size(size).type(type).bus(bus).extraSlot(extraSlot).build();
     }
 
     private CPU buildCPUFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("cpu-id", Integer.class);
         CPUType type = body.getAttachmentObject("cpu-type", CPUType.class);
         String detail = body.getAttachmentObject("cpu-detail", String.class);
         Float speed = body.getAttachmentObject("cpu-speed", Float.class);
         Float maxSpeed = body.getAttachmentObject("cpu-max-speed", Float.class);
-        return CPU.builder().type(type).detail(detail).speed(speed).maxSpeed(maxSpeed).build();
+        return CPU.builder().id(id == -1 ? null : id).type(type).detail(detail).speed(speed).maxSpeed(maxSpeed).build();
     }
 
     private HardDrive buildHardDriveFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("hd-id", Integer.class);
         HardDriveType type = body.getAttachmentObject("hd-type", HardDriveType.class);
         Integer size = body.getAttachmentObject("hd-size", Integer.class);
         String detail = body.getAttachmentObject("hd-detail", String.class);
-        return HardDrive.builder().type(type).size(size).detail(detail).build();
+        return HardDrive.builder().id(id == -1 ? null : id).type(type).size(size).detail(detail).build();
     }
 
     private Monitor buildMonitorFromRequestBody(MultipartBody body) {
+        Integer id = body.getAttachmentObject("monitor-id", Integer.class);
         Float size = body.getAttachmentObject("monitor-size", Float.class);
         ResolutionType type = body.getAttachmentObject("resolution-type", ResolutionType.class);
         Integer resolutionWidth = body.getAttachmentObject("resolution-width", Integer.class);
         Integer resolutionHeight = body.getAttachmentObject("resolution-height", Integer.class);
-        return Monitor.builder().size(size)
-                .resolutionType(type)
-                .resolutionWidth(resolutionWidth)
+        return Monitor.builder().id(id == -1 ? null : id).size(size)
+                .resolutionType(type).resolutionWidth(resolutionWidth)
                 .resolutionHeight(resolutionHeight).build();
     }
 
@@ -203,7 +222,7 @@ public class LaptopServiceImpl implements LaptopService {
             ObjectMapper om = new ObjectMapper();
             String promotionsJSON = om.writeValueAsString(promotions);
             return promotions == null
-                    ? Response.status(Response.Status.BAD_REQUEST).build()
+                    ? Response.status(Response.Status.NOT_FOUND).build()
                     : Response.ok(promotionsJSON).build();
         } catch (Exception e) {
             return Response.serverError().build();

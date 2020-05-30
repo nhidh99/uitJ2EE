@@ -1,6 +1,7 @@
 .table {
     background-color: white;
     table-layout: fixed;
+    font-size: 14px;
 
     td,
     th {
@@ -11,7 +12,15 @@
 }
 
 .idCol {
-    width: 15%;
+    width: 10%;
+}
+
+.productsCol {
+    width: 25%;
+}
+
+td.productsCol {
+    text-align: left !important;
 }
 
 .nameCol {
@@ -19,11 +28,11 @@
 }
 
 .phoneCol {
-    width: 15%;
+    width: 13%;
 }
 
 .priceCol {
-    width: 15%;
+    width: 13%;
 }
 
 .dateCol {
@@ -31,9 +40,11 @@
 }
 
 .statusCol {
-    width: 13%;
+    width: 12%;
 }
 
-.actionCol {
-    width: 15%;
+.pagination {
+    float: right !important;
+    font-size: 14px;
+    font-weight: 600;
 }

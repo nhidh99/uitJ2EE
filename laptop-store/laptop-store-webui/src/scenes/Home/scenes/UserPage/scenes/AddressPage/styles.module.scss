@@ -18,15 +18,7 @@
     width: 100px;
 }
 
-.addressBlock {
-    padding: 20px;
-    border: 1.5px dashed darkgray;
-}
-
-.addressBlock:not(:last-of-type) {
-    margin-bottom: 15px;
-}
-
-.actions {
-    float: right;
+.loader {
+    width: 100%;
+    height: 100%;
 }

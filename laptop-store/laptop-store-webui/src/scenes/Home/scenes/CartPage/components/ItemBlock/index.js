@@ -3,7 +3,13 @@ import { Col, Row, Label, Button, Input, InputGroup } from "reactstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import { convertCPUType } from "../../../../../../services/helper/converter";
-import { getCart, updateCartQuantity, removeFromCart } from "../../../../../../services/helper/cart";
+import {
+    getCart,
+    updateCartQuantity,
+    removeFromCart,
+    updateCart,
+    updateCartDatabase,
+} from "../../../../../../services/helper/cart";
 import { Link } from "react-router-dom";
 import NumberFormat from "react-number-format";
 import { MAXIMUM_QUANTITY_PER_PRODUCT } from "../../../../../../constants";
@@ -61,20 +67,24 @@ class ItemBlock extends Component {
 
         if (productId in cart && cart[productId] !== quantity) {
             cart[productId] = quantity;
-            updateCartQuantity(cart);
+            updateCart(cart);
             window.location.reload();
         }
     };
 
     reloadPageAfterTimeout = () => {
+        const cart = getCart();
         clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => window.location.reload(), 600);
+        this.timeout = setTimeout(async () => {
+            updateCartDatabase(cart);
+            window.location.reload();
+        }, 600);
     };
 
     removeProduct = (productId) => {
         removeFromCart(productId);
         window.location.reload();
-    }
+    };
 
     render() {
         const { product, quantity } = this.props;

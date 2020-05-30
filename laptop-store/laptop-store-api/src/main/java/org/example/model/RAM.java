@@ -19,7 +19,7 @@ import javax.persistence.*;
 public class RAM {
     @Id
     @Column(name = "id")
-    @JsonIgnore
+    @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

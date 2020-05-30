@@ -17,6 +17,7 @@ import java.util.Optional;
 @Stateless
 @LocalBean
 public class PromotionDAOImpl implements PromotionDAO {
+    private static final Integer ELEMENT_PER_BLOCK = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
@@ -24,8 +25,18 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findAll() {
-        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
+        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true ORDER BY p.id DESC";
         return em.createQuery(query, Promotion.class).getResultList();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Promotion> findByPage(Integer page) {
+        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true ORDER BY p.id DESC";
+        return em.createQuery(query, Promotion.class)
+                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                .setMaxResults(ELEMENT_PER_BLOCK)
+                .getResultList();
     }
 
     @Override
@@ -36,6 +47,13 @@ public class PromotionDAOImpl implements PromotionDAO {
         return em.createQuery(query, Promotion.class)
                 .setParameter("ids", ids)
                 .getResultList();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Long findTotalPromotions() {
+        String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
+        return em.createQuery(query, Long.class).getSingleResult();
     }
 
     @Override
@@ -82,7 +100,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByLaptopId(Integer laptopId) {
         Laptop laptop = em.find(Laptop.class, laptopId);
-        if (laptop == null) return null;
+        if (laptop == null || !laptop.isRecordStatus()) return null;
         return laptop.getPromotions();
     }
 
