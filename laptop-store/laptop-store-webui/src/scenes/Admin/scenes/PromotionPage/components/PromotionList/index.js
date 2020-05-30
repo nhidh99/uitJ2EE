@@ -23,25 +23,30 @@ const PromotionList = (props) => {
     }, []);
 
     useEffect(() => {
+        if (!page) return;
         setLoading(true);
-        loadData();
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get("q");
+        if (query === null) {
+            loadData();
+        } else {
+            search(query);
+        }
     }, [page]);
 
-    // search = async (filter) => {
-    //     const response = await fetch(`/api/promotions/${filter}&page=${this.state.activePage}`, {
-    //         method: "GET",
-    //         headers: { Authorization: "Bearer " + getCookie("access_token") }
-    //     });
-    //     if (response.ok) {
-    //         const promotions = await response.json();
-    //         const promotionCount = parseInt(response.headers.get("X-Total-Count"));
-    //         this.setState({
-    //             promotions: promotions,
-    //             loading: false,
-    //             promotionCount: promotionCount,
-    //         });
-    //     }
-    // }
+    const search = async (query) => {
+        const response = await fetch(`/api/promotions/search?q=${query}&page=${page}`, {
+            method: "GET",
+            headers: { Authorization: "Bearer " + getCookie("access_token") }
+        });
+        if (response.ok) {
+            const promotions = await response.json();
+            const count = parseInt(response.headers.get("X-Total-Count"));
+            setPromotions(promotions);
+            setCount(count);
+            setLoading(false);
+        }
+    }
 
     const loadData = async () => {
         const response = await fetch(`/api/promotions?page=${page}`, {
@@ -63,7 +68,13 @@ const PromotionList = (props) => {
 
     const pageChange = (pageNumber) => {
         if (pageNumber === page) return;
-        props.history.push("/admin/promotions?page=" + pageNumber);
+        const params = new URLSearchParams(window.location.search);
+        const query = params.get("q");
+        if (query === null) {
+            props.history.push("/admin/promotions?page=" + pageNumber);
+        } else {
+            props.history.push("/admin/promotions/search?q=" + query + "&page=" + pageNumber);
+        }
         setPage(pageNumber);
     };
 

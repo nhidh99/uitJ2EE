@@ -1,8 +1,10 @@
 package org.example.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.PromotionDAO;
+import org.example.filter.PromotionFilter;
 import org.example.type.ImageType;
 import org.example.model.Promotion;
 import org.example.service.api.PromotionService;
@@ -43,7 +45,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     private Response findByPage(Integer page) throws JsonProcessingException {
         List<Promotion> promotions = (page == null) ? promotionDAO.findAll() : promotionDAO.findByPage(page);
-        Long promotionCount = promotionDAO.findTotalPromotions();
+        Long promotionCount = promotionDAO.findTotalPromotions(null);
         ObjectMapper om = new ObjectMapper();
         String promotionsJSON = om.writeValueAsString(promotions);
         return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
