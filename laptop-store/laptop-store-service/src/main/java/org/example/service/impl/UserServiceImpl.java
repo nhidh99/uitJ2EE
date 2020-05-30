@@ -2,14 +2,15 @@ package org.example.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dao.api.AddressDAO;
+import org.example.dao.api.OrderDAO;
 import org.example.dao.api.UserDAO;
 import org.example.input.PasswordInput;
 import org.example.input.UserInput;
-import org.example.model.Address;
-import org.example.model.User;
+import org.example.model.*;
 import org.example.security.Secured;
 import org.example.service.api.UserService;
 import org.example.type.GenderType;
+import org.example.type.ProductType;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
@@ -20,7 +21,9 @@ import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/api/users")
 @Secured({RoleType.USER, RoleType.ADMIN})
@@ -31,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @EJB(mappedName = "AddressDAOImpl")
     private AddressDAO addressDAO;
+
+    @EJB(mappedName = "OrderDAOImpl")
+    private OrderDAO orderDAO;
 
     @Override
     @GET
@@ -88,8 +94,8 @@ public class UserServiceImpl implements UserService {
         GenderType gender = GenderType.valueOf(userInput.getGender());
         LocalDate birthday = Instant.ofEpochMilli(userInput.getBirthday()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-        if(!user.getEmail().equals(userInput.getEmail())) {
-            if(userDAO.checkEmailExisted(userInput.getEmail())) {
+        if (!user.getEmail().equals(userInput.getEmail())) {
+            if (userDAO.checkEmailExisted(userInput.getEmail())) {
                 user.setEmail(userInput.getEmail());
             } else {
                 throw new BadRequestException();
@@ -125,6 +131,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @GET
     @Path("/me/addresses")
+    @Secured({RoleType.ADMIN, RoleType.USER})
     @Produces(MediaType.APPLICATION_JSON)
     public Response findUserAddresses(@Context SecurityContext securityContext) {
         try {
@@ -135,8 +142,41 @@ public class UserServiceImpl implements UserService {
             String addressesJSON = om.writeValueAsString(addresses);
             return Response.ok(addressesJSON).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            return Response.serverError().build();
         }
-        return Response.serverError().build();
+    }
+
+    @Override
+    @GET
+    @Secured({RoleType.ADMIN, RoleType.USER})
+    @Path("/me/orders")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findUserOrderOverviews(@QueryParam("page") @DefaultValue("1") Integer page,
+                                           @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            List<Order> orders = orderDAO.findOrdersByUserId(page, userId);
+            Long orderCount = orderDAO.findTotalOrdersByUserId(userId);
+            List<OrderOverview> orderOverviews = orders.stream()
+                    .map(this::buildOverviewFromOrder)
+                    .collect(Collectors.toList());
+
+            ObjectMapper om = new ObjectMapper();
+            String orderOverviewsJSON = om.writeValueAsString(orderOverviews);
+            return Response.ok(orderOverviewsJSON).header("X-Total-Count", orderCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    private OrderOverview buildOverviewFromOrder(Order order) {
+        List<OrderDetail> orderProducts = order.getOrderDetails().stream()
+                .filter(detail -> detail.getProductType() == ProductType.LAPTOP)
+                .collect(Collectors.toList());
+        Integer productCount = orderProducts.stream().mapToInt(OrderDetail::getQuantity).sum();
+        return OrderOverview.builder()
+                .order(order).firstProduct(orderProducts.get(0))
+                .productCount(productCount).build();
     }
 }

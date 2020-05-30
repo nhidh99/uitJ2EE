@@ -52,7 +52,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByPage(Integer page) {
-        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true";
+        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true ORDER BY l.id DESC";
         return em.createQuery(query, Laptop.class)
                 .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
                 .setMaxResults(ELEMENT_PER_BLOCK)

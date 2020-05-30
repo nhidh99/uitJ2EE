@@ -2,7 +2,10 @@ package org.example.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.dao.api.*;
 import org.example.input.OrderInput;
 import org.example.model.*;
@@ -13,10 +16,7 @@ import org.example.type.ProductType;
 import org.example.type.RoleType;
 
 import javax.ejb.EJB;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     @EJB(mappedName = "LaptopDAOImpl")
-    LaptopDAO laptopDAO;
+    private LaptopDAO laptopDAO;
 
     @EJB(mappedName = "PromotionDAOImpl")
-    PromotionDAO promotionDAO;
+    private PromotionDAO promotionDAO;
 
     @EJB(mappedName = "UserDAOImpl")
     private UserDAO userDAO;
@@ -44,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
 
     @EJB(mappedName = "OrderDAOImpl")
     private OrderDAO orderDAO;
+
+    @EJB(mappedName = "OrderDetailDAOImpl")
+    private OrderDetailDAO orderDetailDAO;
 
     private static final Integer TRANSPORT_FEE = 45_000;
     private static final Integer NUMBER_OF_DELIVERY_DAYS = 3;
@@ -82,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
                 .city(address.getCity()).receiverName(address.getReceiverName())
                 .receiverPhone(address.getReceiverPhone()).transportFee(TRANSPORT_FEE)
                 .totalPrice(totalPrice).orderDetails(orderDetails).status(OrderStatus.PENDING)
-                .deliveryDate(deliveryDate).user(user).build();
+                .orderDate(LocalDate.now()).deliveryDate(deliveryDate).user(user).build();
     }
 
     private Map<String, Integer> buildCartMapFromRequestBody(String cartJSON) throws JsonProcessingException {
@@ -149,5 +152,40 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return result;
+    }
+
+    @Override
+    @GET
+    @Path("/{id}")
+    @Secured({RoleType.USER, RoleType.ADMIN})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findOrderById(@PathParam("id") Integer orderId,
+                                  @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            Order order = orderDAO.findById(orderId).orElseThrow(NotFoundException::new);
+            RoleType role = order.getUser().getRole();
+
+            boolean isValidUser = role == RoleType.ADMIN || (role == RoleType.USER && order.getUser().getId().equals(userId));
+            if (isValidUser) {
+                String orderJSON = buildOrderJSON(order);
+                return Response.ok(orderJSON).build();
+            }
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    private String buildOrderJSON(Order order) throws JsonProcessingException {
+        List<OrderDetail> orderDetails = orderDetailDAO.findByOrderId(order.getId());
+        ObjectMapper om = new ObjectMapper();
+        String orderJSON = om.writeValueAsString(order);
+        String detailsJSON = om.writeValueAsString(orderDetails);
+        JsonNode orderNode = om.readTree(orderJSON);
+        JsonNode detailsNode = om.readTree(detailsJSON);
+        ((ObjectNode) orderNode).set("details", detailsNode);
+        return orderNode.toString();
     }
 }

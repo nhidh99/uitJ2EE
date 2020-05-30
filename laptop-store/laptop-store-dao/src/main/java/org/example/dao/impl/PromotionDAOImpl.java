@@ -25,7 +25,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByPage(Integer page) {
-        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true";
+        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true ORDER BY p.id DESC";
         return em.createQuery(query, Promotion.class)
                 .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
                 .setMaxResults(ELEMENT_PER_BLOCK)
