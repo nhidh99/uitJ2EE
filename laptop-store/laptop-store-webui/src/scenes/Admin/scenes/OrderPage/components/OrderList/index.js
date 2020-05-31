@@ -25,8 +25,29 @@ const OrderList = (props) => {
     useEffect(() => {
         if (!page) return;
         setLoading(true);
-        loadData();
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const status = params.get("status");
+        if (id === null && status === null) {
+            loadData();
+        } else {
+            search(id, status);
+        }
     }, [page]);
+
+    const search = async (id, status) => {
+        const response = await fetch(`/api/orders/search?id=${id}&status=${status}&page=${page}`, {
+            method: "GET",
+            headers: { Authorization: "Bearer " + getCookie("access_token") }
+        });
+        if (response.ok) {
+            const orders = await response.json();
+            const count = parseInt(response.headers.get("X-Total-Count"));
+            setOrders(orders);
+            setCount(count);
+            setLoading(false);
+        }
+    }
 
     const loadData = async () => {
         const response = await fetch(`/api/orders?page=${page}`, {
@@ -45,7 +66,14 @@ const OrderList = (props) => {
 
     const pageChange = (pageNumber) => {
         if (pageNumber === page) return;
-        props.history.push("/admin/orders?page=" + pageNumber);
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const status = params.get("status");
+        if (id === null) {
+            props.history.push("/admin/orders?page=" + pageNumber);
+        } else {
+            props.history.push("/admin/orders/search?id=" + id + "&status=" + status + "&page=" + pageNumber);
+        }
         setPage(pageNumber);
     };
 

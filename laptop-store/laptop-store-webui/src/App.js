@@ -146,6 +146,7 @@ class App extends Component {
                     "/admin/(|products|orders|promotions)",
                     "/admin/products/search",
                     "/admin/promotions/search",
+                    "/admin/orders/search",
                     ]} />
         </Fragment>
     );

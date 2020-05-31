@@ -40,6 +40,13 @@ class Admin extends Component {
                         component={OrderPage}
                         path="/admin/orders"
                     />
+
+                    <Route
+                        exact
+                        component={OrderPage}
+                        path="/admin/orders/search"
+                    />
+
                 </Switch>
             </Fragment>
         );

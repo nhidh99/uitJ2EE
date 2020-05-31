@@ -82,9 +82,58 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public Long findTotalOrder() {
-        String query = "SELECT COUNT(o) FROM Order o";
-        return em.createQuery(query, Long.class).getSingleResult();
+    public Long findTotalOrder(String id, String status) {
+        if (id == null && status == null) {
+            String query = "SELECT COUNT(o) FROM Order o";
+            return em.createQuery(query, Long.class).getSingleResult();
+        } else {
+            if (!id.isEmpty() && status.isEmpty()) {
+                String query = "SELECT COUNT(o) FROM Order o WHERE o.id = :id";
+                return ((Number) em.createQuery(query)
+                        .setParameter("id", Integer.parseInt(id))
+                        .getSingleResult()).longValue();
+            } else if (id.isEmpty() && !status.isEmpty()) {
+                String query = "SELECT COUNT(o) FROM Order o WHERE o.status = :status";
+                return ((Number) em.createQuery(query)
+                        .setParameter("status", OrderStatus.valueOf(status))
+                        .getSingleResult()).longValue();
+            } else {
+                String query = "SELECT COUNT(o) FROM Order o WHERE o.id = :id AND o.status = :status";
+                return ((Number) em.createQuery(query)
+                        .setParameter("id", id)
+                        .setParameter("status", OrderStatus.valueOf(status))
+                        .getSingleResult()).longValue();
+            }
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Order> findByFilter(String id, String status, Integer page) {
+        if (!id.isEmpty() && status.isEmpty()) {
+            String query = "SELECT o FROM Order o WHERE o.id = :id";
+            return em.createQuery(query, Order.class)
+                    .setParameter("id", Integer.parseInt(id))
+                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                    .setMaxResults(ELEMENT_PER_BLOCK)
+                    .getResultList();
+        } else if (id.isEmpty() && !status.isEmpty()) {
+            String query = "SELECT o FROM Order o WHERE o.status = :status";
+            return em.createQuery(query, Order.class)
+                    .setParameter("status", OrderStatus.valueOf(status))
+                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                    .setMaxResults(ELEMENT_PER_BLOCK)
+                    .getResultList();
+        } else {
+            String query = "SELECT o FROM Order o WHERE o.id = :id AND o.status = :status";
+            return em.createQuery(query, Order.class)
+                    .setParameter("id", Integer.parseInt(id))
+                    .setParameter("status", status)
+                    .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                    .setMaxResults(ELEMENT_PER_BLOCK)
+                    .getResultList();
+        }
+
     }
 
     @Override

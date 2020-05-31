@@ -67,8 +67,8 @@ public class PromotionServiceImpl implements PromotionService {
             List<Promotion> promotions = promotionDAO.findByFilter(queryParam, page);
             Long promotionCount = promotionDAO.findTotalPromotions(queryParam);
             ObjectMapper om = new ObjectMapper();
-            String laptopsJSON = om.writeValueAsString(promotions);
-            return Response.ok(laptopsJSON).header("X-Total-Count", promotionCount).build();
+            String promotionsJSON = om.writeValueAsString(promotions);
+            return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
         } catch (Exception e) {
             return Response.serverError().build();
         }
