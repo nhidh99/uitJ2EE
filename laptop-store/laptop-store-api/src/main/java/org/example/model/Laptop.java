@@ -28,7 +28,8 @@ public class Laptop {
 
     @Column(name = "brand")
     @JsonProperty("brand")
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
+    @Convert(converter = BrandType.BrandConverter.class)
     private BrandType brand;
 
     @Column(name = "unit_price")

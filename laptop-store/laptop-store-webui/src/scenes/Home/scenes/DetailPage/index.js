@@ -30,6 +30,7 @@ class DetailPage extends Component {
 
     loadData = async (productId) => {
         await Promise.all([this.loadProduct(productId), this.loadRating(productId)]);
+        console.log("rating: " + this.state.ratings);
         const ratingIds = this.state.ratings.map((rating) => rating['id']);
         await this.loadRatingReplies(ratingIds);
         this.setState({ loading: false })

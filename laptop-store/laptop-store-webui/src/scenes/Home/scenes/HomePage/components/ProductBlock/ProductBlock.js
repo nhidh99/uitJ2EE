@@ -3,117 +3,87 @@ import styles from './styles.module.scss';
 import { Button } from 'reactstrap';
 import {FaStar} from 'react-icons/fa';
 import Rating from 'react-rating';
+import {convertCPUType} from '../../../../../../services/helper/converter';
 
 class ProductBlock extends Component {
     constructor(props) {
         super(props);
-
-        this.handleReadmoreClicked = this.handleReadmoreClicked.bind(this);
         this.updateResource = this.updateResource.bind(this);
-        this.productblock =  [
-            {
-                id: 1,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"16 GB",
-                harddrive: "500GB",
-                price: 15000000,
-                rating: 4,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            },
-            {
-                id: 2,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"8 GB",
-                harddrive: "500GB",
-                price: 15000000,
-                rating: 4.5,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            },
-            {
-                id: 3,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"32Gb",
-                harddrive: "500GB",
-                price: 15000000,
-                rating: 3.2,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            },
-            {
-                id: 4,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"8 GB",
-                harddrive: "500GB",
-                price: 15000000,
-                rating: 5,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            }, 
-            {
-                id: 5,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"16 GB",
-                harddrive: "500GB",
-                price: 15000000,
-                rating: 3,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            }
-        ]
+        this.handleReadmoreClicked = this.handleReadmoreClicked.bind(this);
         this.state = {
-            productblock: this.productblock
+            isLoading: true,
+            productblock: [],
+            images: []
         }
     }
 
     render (){
-        let items = this.state.productblock;
-        let products = items.map((product)=>{
-            return(
-                <div className={styles.product} key={product.id}>
-                    <a href="./">
-                    <div className={styles.productimage}>
-                        <img src={product.src}></img>
+        let {productblock, isLoading, images} = this.state;
+        var products;
+        if(productblock.length>0) {
+            products = productblock.map((product, index)=>{
+                if(!product) {
+                    return "";
+                }
+                let realPrice = product.discount_price ? product.unit_price - product.discount_price : undefined;
+                let url = "./product/" + product.id;
+                return(
+                    <div className={styles.product} key={product.id}>
+                        <a href={url}>
+                        <div className={styles.productimage}>
+                            <img src= {images[index]}></img>
+                        </div>
+                        <table className={styles.productdetail}>
+                            <tbody>
+                                <tr>         
+                                    <td className={styles.name}>{product.name}</td>
+                                </tr>
+                                <tr>
+                                    <td className={styles.price} style={ product.discount_price ? {textDecorationLine: "line-through", color: "gray"} : {}}>{product.unit_price.toLocaleString() + "đ"}</td>
+                                </tr>
+                                {product.discount_price ? <tr><td className = {styles.discountPrice}>{realPrice.toLocaleString() + "đ"}</td></tr> :""}
+                                <tr>
+                                    <td>CPU: {convertCPUType(product.cpu.type)}</td>
+                                </tr>
+                                <tr>
+                                    <td>RAM: {product.ram.size + "GB"}</td>
+                                </tr>
+                                <tr>
+                                    <td>Ổ Cứng: {product.hard_drive.type + " " + product.hard_drive.size + "GB"}</td>
+                                </tr>
+                                <tr>
+                                    <Rating
+                                        fullSymbol={<FaStar color="#ffc120" className={styles.ratingIcon} />}
+                                        emptySymbol={<FaStar color="lightgray" className={styles.ratingIcon} />}
+                                        initialRating = {product.avg_rating}
+                                        readonly = {true}
+                                    />
+                                </tr>
+                            </tbody>
+                        </table>
+                        </a>
                     </div>
-                    <table className={styles.productdetail}>
-                        <tbody>
-                            <tr>         
-                                <td className={styles.name}>{product.name}</td>
-                            </tr>
-                            <tr>
-                                <td>CPU: {product.CPU}</td>
-                            </tr>
-                            <tr>
-                                <td>RAM: {product.ram}</td>
-                            </tr>
-                            <tr>
-                                <td>Ổ cứng: {product.harddrive}</td>
-                            </tr>
-                            <tr>
-                                <td className={styles.price}>Giá: {product.price.toLocaleString()}</td>
-                            </tr>
-                            <tr>
-                                <Rating
-                                    fullSymbol={<FaStar color="#ffc120" className={styles.ratingIcon} />}
-                                    emptySymbol={<FaStar color="lightgray" className={styles.ratingIcon} />}
-                                    initialRating = {product.rating}
-                                    readonly = {true}
-                                />
-                            </tr>
-                        </tbody>
-                    </table>
-                    </a>
-                </div>
-            )
-        })
+                )
+            })
+        }
+        else  {
+            products = "";
+        }
 
         return (
             <div className={styles.productblock}>    
                 <div className={styles.products}>
-                    {products}
+                    { isLoading ? null : products ? products 
+                    : <p style = {{
+                        fontSize: "18px", 
+                        color: "darkred",
+                        paddingLeft: "5px"
+                        }}>
+                        Không tìm thấy sản phẩm phù hợp
+                        </p>
+                    }
                 </div>
-                <Button className={styles.readmore} onClick={this.handleReadmoreClicked}>Xem thêm...</Button>
+                {products ? <Button className={styles.readmore} onClick={this.handleReadmoreClicked}>Xem thêm...</Button> : ""}
             </div>
         )
     }
@@ -122,9 +92,12 @@ class ProductBlock extends Component {
 
     }
 
-    updateResource(items) {
+    updateResource(items, images) {
+        console.log("items: " + items);
         this.setState({
-            productblock: items
+            productblock: this.state.productblock.concat(items),
+            isLoading: false,
+            images: this.state.images.concat(images)
         });
     }
 }

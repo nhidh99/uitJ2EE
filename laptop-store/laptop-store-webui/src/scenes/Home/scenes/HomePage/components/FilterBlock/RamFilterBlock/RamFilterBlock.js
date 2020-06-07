@@ -1,17 +1,19 @@
 import FilterBlock from '../FilterBlock.js';
+import {RAMFILTERTITLE, ALL, RAM4, RAM8, RAM12, RAM16, RAM32, RAM32_}
+from '../../../../../../../constants';
 
 class RamFilterBlock extends FilterBlock {
     constructor(props) {
         super(props);
         this.filterblock = {
-            title: "RAM",
+            title: RAMFILTERTITLE,
             filterTypes: [
-                "Tất cả",
-                "4 GB",
-                "6 GB",
-                "8 GB",
-                "16 GB",
-                "Từ 32 GB trở lên"
+                ALL,
+                RAM4,
+                RAM8,
+                RAM12,
+                RAM16,
+                RAM32_
             ]
         }
         this.state = {}
