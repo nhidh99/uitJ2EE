@@ -14,7 +14,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/rest/v1/users")
 public class UserControllerV1 {
-    private UserService userService;
+    private final UserService userService;
 
     @Inject
     public UserControllerV1(UserService userService) {

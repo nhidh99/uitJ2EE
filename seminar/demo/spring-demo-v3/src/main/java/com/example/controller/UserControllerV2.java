@@ -42,7 +42,7 @@ public class UserControllerV2 {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @RequestBody User newUser) throws Exception {
+    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @RequestBody User newUser) {
         boolean isValidRequest = newUser.getId().equals(id) && userService.findById(id).isPresent();
         if (isValidRequest) {
             userService.save(newUser);
@@ -51,13 +51,11 @@ public class UserControllerV2 {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> postUser(@RequestBody User newUser) throws Exception {
-        boolean isInvalidRequest = newUser.getId() != null;
-        if (isInvalidRequest) {
-            return ResponseEntity.badRequest().build();
-        }
-        userService.save(newUser);
+    @PostMapping(value = "/", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public ResponseEntity<?> postUser(@RequestParam("username") String username,
+                                      @RequestParam("password") String password) {
+        User user = User.builder().id(null).username(username).password(password).build();
+        userService.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

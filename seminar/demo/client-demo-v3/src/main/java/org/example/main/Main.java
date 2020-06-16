@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        demoDelete();
+        demoGetForEntity();
     }
 
     public static void demoGetForObject() {
@@ -71,5 +71,10 @@ public class Main {
     public static void demoDelete() {
         RestClientExample client = new RestClientExample();
         client.deleteUser(10);
+    }
+
+    public static void demoExchange() {
+        RestClientExample client = new RestClientExample();
+        client.getUserById(2);
     }
 }
