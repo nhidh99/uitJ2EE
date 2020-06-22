@@ -28,7 +28,7 @@ class ReplyBlock extends Component {
 
         switch (status) {
             case 201:
-                window.location.href = `/product/170001`;
+                window.location.reload();
                 break;
             case 403:
                 this.setState({

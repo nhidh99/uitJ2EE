@@ -26,6 +26,7 @@ import java.util.Optional;
 @LocalBean
 public class LaptopDAOImpl implements LaptopDAO {
     private static final Integer ELEMENT_PER_BLOCK = 8;
+    private static final Integer ADMIN_ELEMENT_PER_BLOCK = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
@@ -65,8 +66,8 @@ public class LaptopDAOImpl implements LaptopDAO {
     public List<Laptop> findByPage(Integer page) {
         String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true ORDER BY l.id DESC";
         return em.createQuery(query, Laptop.class)
-                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
+                .setFirstResult(ADMIN_ELEMENT_PER_BLOCK * (page - 1))
+                .setMaxResults(ADMIN_ELEMENT_PER_BLOCK)
                 .getResultList();
     }
 
@@ -165,8 +166,8 @@ public class LaptopDAOImpl implements LaptopDAO {
         return em.createNativeQuery(query, Laptop.class)
                 .setParameter(1, filter)
                 .setParameter(2, filter)
-                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
+                .setFirstResult(ADMIN_ELEMENT_PER_BLOCK * (page - 1))
+                .setMaxResults(ADMIN_ELEMENT_PER_BLOCK)
                 .getResultList();
     }
 

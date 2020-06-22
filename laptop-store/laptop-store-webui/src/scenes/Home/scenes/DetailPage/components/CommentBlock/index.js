@@ -15,7 +15,7 @@ class CommentBlock extends Component {
     render() {
         const ratings = this.props.ratings;
         return (
-            <ListGroup>
+            <ListGroup className={styles.list}>
                 {
                     ratings.map((rating) => {
                         const commentDate = rating ? new Date(
