@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -48,4 +49,7 @@ public class Rating {
     @JsonProperty("rating_date")
     private LocalDate ratingDate;
 
+    @OneToMany(mappedBy = "rating", fetch = FetchType.EAGER)
+    @JsonProperty("replies")
+    private List<RatingReply> replies;
 }

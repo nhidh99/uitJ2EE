@@ -30,9 +30,6 @@ class DetailPage extends Component {
 
     loadData = async (productId) => {
         await Promise.all([this.loadProduct(productId), this.loadRating(productId)]);
-        console.log("rating: " + this.state.ratings);
-        const ratingIds = this.state.ratings.map((rating) => rating['id']);
-        await this.loadRatingReplies(ratingIds);
         this.setState({ loading: false })
     }
 
@@ -55,23 +52,6 @@ class DetailPage extends Component {
         }
     };
 
-    loadRatingReplies = async (ratingIds) => {
-        const params = new URLSearchParams();
-        ratingIds.forEach(id => params.append('rating-ids', id));
-        const url = '/api/replies?' + params.toString();
-        const response = await fetch(url, {
-            method: 'GET',
-        });
-
-        if (response.ok) {
-            const replies = await response.json();
-            this.setState({
-                replies: replies,
-            })
-        }
-    }
-
-
     loadRating = async (productId) => {
         const response = await fetch(`/api/ratings/${productId}`, {
             method: "GET",
@@ -90,7 +70,7 @@ class DetailPage extends Component {
 
 
     render() {
-        const { loading, product, ratings, replies } = this.state;
+        const { loading, product, ratings } = this.state;
         return loading ? null : (
             <Fragment>
                 <ContentBlock
@@ -107,7 +87,7 @@ class DetailPage extends Component {
 
                 <ContentBlock title="Đánh giá sản phẩm" component={<RatingBlock ratings={ratings} product ={product} />} />
 
-                <ContentBlock title="Khách hàng nhận xét" component={<CommentBlock ratings={ratings} replies= {replies}/>} />
+                {ratings.length > 0  ? <ContentBlock title="Khách hàng nhận xét" component={<CommentBlock ratings={ratings}/>} /> : null}
             </Fragment>
         );
     }

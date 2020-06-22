@@ -24,13 +24,4 @@ public class RatingReplyDAOImpl implements RatingReplyDAO {
         em.persist(ratingReply);
     }
 
-    @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
-    public List<RatingReply> findByRatingIds(List<Integer> ratingIds) {
-//        List<Integer> ids = new ArrayList<Integer>();
-//        for (String s : ratingIds) ids.add(Integer.valueOf(s));
-
-        String query = "SELECT r FROM RatingReply r WHERE r.rating.id IN :ratingIds";
-        return em.createQuery(query, RatingReply.class).setParameter("ratingIds", ratingIds).getResultList();
-    }
 }

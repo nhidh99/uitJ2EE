@@ -1,6 +1,7 @@
 package org.example.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class RatingReply {
 
     @ManyToOne
     @JoinColumn(name="rating_id")
-    @JsonProperty("rating")
+    @JsonIgnore
     private Rating rating;
 
     @ManyToOne
