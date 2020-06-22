@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
 import styles from './styles.module.scss';
-import { Label, Button } from 'reactstrap';
 import {ALL, DEMANDFILTERTITLE, BRANDFILTERTITLE, PRICEFILTERTITLE, RAMFILTERTITLE,
     CPUFILTERTITLE, HARDDRIVEFILTERTITLE, SCREENFILTERTITLE, PRICE_15, PRICE15_20, 
     PRICE20_25, PRICE25_35, RAM4, RAM8, RAM12, RAM16, RAM32_, HARDDRIVE128, HARDDRIVE256, 
     HARDDRIVE512, HARDDRIVE1TB_, SCREEN_14, SCREEN14_16, SCREEN16_, PRICE35_ } from '../../../../../../constants';
-import { Redirect } from 'react-router-dom';
 
 class FilterBlock extends Component {
     constructor(props){
@@ -74,6 +72,7 @@ function convertFilterValueToValue(filterTitle, filterValue) {
                 case PRICE35_:
                     return 35000000;
             }
+            break;
         }
         case RAMFILTERTITLE: {
             switch(filterValue) {
@@ -90,6 +89,7 @@ function convertFilterValueToValue(filterTitle, filterValue) {
                 case RAM32_:
                     return 32;
             }
+            break;
         }
         case HARDDRIVEFILTERTITLE: {
             switch(filterValue) {
@@ -104,6 +104,7 @@ function convertFilterValueToValue(filterTitle, filterValue) {
                 case HARDDRIVE1TB_:
                     return 1024;
             }
+            break;
         }
         case SCREENFILTERTITLE: {
             switch(filterValue) {
@@ -115,9 +116,10 @@ function convertFilterValueToValue(filterTitle, filterValue) {
                 case SCREEN16_: 
                     return 16;
             }
+            break;
         }
         default:
-            if(filterValue == ALL) {
+            if(filterValue === ALL) {
                 return "";
             } else {
                 return filterValue;

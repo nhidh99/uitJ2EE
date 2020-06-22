@@ -17,7 +17,7 @@ class OrderFilter extends Component {
         const selection = document.getElementById("statusSelect").value;
         const status = convertToOrderStatus(selection);
         const filter = document.getElementById("filter").value;
-        if (filter !== "" || status !== null) {
+        if (filter !== "" || status !== "") {
             window.location.href = `/admin/orders/search?id=${filter}&status=${status}`
         } else window.location.href = "/admin/orders";
     }
