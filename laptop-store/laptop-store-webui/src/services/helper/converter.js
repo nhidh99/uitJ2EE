@@ -58,3 +58,20 @@ export const convertOrderStatus = (status) => {
             return null;
     }
 };
+
+export const convertToOrderStatus = (state) => {
+    switch(state) {
+        case "Chờ xử lí":
+            return "PENDING";
+        case "Đang đóng gói":
+            return "PACKAGED";
+        case "Đang vận chuyển":
+            return "DELIVERING";
+        case "Đã nhận hàng":
+            return "DELIVERED";
+        case "Bị hủy":
+            return "CANCELED";
+        default: 
+            return "";
+    }
+}

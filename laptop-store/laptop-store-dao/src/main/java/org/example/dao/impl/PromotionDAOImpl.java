@@ -51,9 +51,29 @@ public class PromotionDAOImpl implements PromotionDAO {
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public Long findTotalPromotions() {
-        String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
-        return em.createQuery(query, Long.class).getSingleResult();
+    public List<Promotion> findByFilter(String filter, Integer page) {
+        String query = "SELECT * FROM Promotion p WHERE p.id = ? OR p.name LIKE CONCAT('%',?,'%') AND p.record_status = true";
+        return em.createNativeQuery(query, Promotion.class)
+            .setParameter(1, filter)
+            .setParameter(2, filter)
+            .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+            .setMaxResults(ELEMENT_PER_BLOCK)
+            .getResultList();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public Long findTotalPromotions(String filter) {
+        if(filter == null) {
+            String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
+            return em.createQuery(query, Long.class).getSingleResult();
+        } else {
+            String query = "SELECT COUNT(*) FROM Promotion p WHERE p.id = ? OR p.name LIKE CONCAT('%',?,'%') AND p.record_status = true";
+            return ((Number) em.createNativeQuery(query)
+                    .setParameter(1, filter)
+                    .setParameter(2, filter)
+                    .getSingleResult()).longValue();
+        }
     }
 
     @Override

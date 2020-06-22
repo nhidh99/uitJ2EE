@@ -1,5 +1,6 @@
 package org.example.dao.api;
 
+import org.example.model.Filter;
 import org.example.model.Laptop;
 
 import javax.ejb.Local;
@@ -14,11 +15,20 @@ public interface LaptopDAO {
 
     List<Laptop> findByPage(Integer page);
 
-    Long findTotalLaptops();
+    Long findTotalLaptops(String filter);
 
     List<Laptop> findByIds(List<Integer> ids);
 
     Optional<Laptop> findById(Integer id);
+
+    List<Laptop> findByFilter(String filter, Integer page);
+
+
+    List<Laptop> findByCondition(Filter filter);
+
+    List<Laptop> findByType(String type, Integer page);
+
+    List<Laptop> findByName(String name, Integer page);
 
     byte[] findImageById(Integer id);
 

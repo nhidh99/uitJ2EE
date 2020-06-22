@@ -19,8 +19,20 @@ class Admin extends Component {
 
                     <Route
                         exact
+                        component={ProductPage}
+                        path="/admin/products/search"
+                    />
+
+                    <Route
+                        exact
                         component={PromotionPage}
                         path="/admin/promotions"
+                    />
+
+                    <Route
+                        exact
+                        component={PromotionPage}
+                        path="/admin/promotions/search"
                     />
 
                     <Route
@@ -28,6 +40,13 @@ class Admin extends Component {
                         component={OrderPage}
                         path="/admin/orders"
                     />
+
+                    <Route
+                        exact
+                        component={OrderPage}
+                        path="/admin/orders/search"
+                    />
+
                 </Switch>
             </Fragment>
         );

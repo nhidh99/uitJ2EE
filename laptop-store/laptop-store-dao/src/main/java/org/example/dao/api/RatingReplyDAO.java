@@ -8,6 +8,4 @@ import java.util.List;
 @Local
 public interface RatingReplyDAO {
     void save(RatingReply ratingReply);
-
-    List<RatingReply> findByRatingIds(List<Integer> ratingIds);
 }

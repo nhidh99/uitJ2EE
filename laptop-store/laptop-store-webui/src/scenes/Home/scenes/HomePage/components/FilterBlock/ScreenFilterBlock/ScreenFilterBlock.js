@@ -1,15 +1,16 @@
 import FilterBlock from '../FilterBlock.js';
-
+import {SCREENFILTERTITLE, ALL, SCREEN_14, SCREEN14_16, SCREEN16_}
+from '../../../../../../../constants';
 class ScreenFilterBlock extends FilterBlock {
     constructor(props) {
         super(props);
         this.filterblock = {
-            title: "Màn hình",
+            title: SCREENFILTERTITLE,
             filterTypes: [
-                "Tất cả",
-                "Dưới 14 inch",
-                "Từ 14 - 16 inch",
-                "Trên 16 inch"
+                ALL,
+                SCREEN_14,
+                SCREEN14_16,
+                SCREEN16_
             ]
         }
         this.state = {}

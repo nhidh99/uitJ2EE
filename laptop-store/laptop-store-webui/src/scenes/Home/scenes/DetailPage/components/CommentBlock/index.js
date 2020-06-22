@@ -15,9 +15,10 @@ class CommentBlock extends Component {
     render() {
         const ratings = this.props.ratings;
         return (
-            <ListGroup>
+            <ListGroup className={styles.list}>
                 {
                     ratings.map((rating) => {
+                        const replies = rating["replies"];
                         const commentDate = rating ? new Date(
                             rating["rating_date"]["year"],
                             rating["rating_date"]["monthValue"] - 1,
@@ -46,14 +47,14 @@ class CommentBlock extends Component {
                                     </p>
 
                                     <Link
-                                        id={"toggler" + rating['id']}
+                                        id={"toggler-" + rating['id']}
                                         style={{ marginBottom: "1rem" }}
                                     >
                                         Gửi trả lời
                                 </Link>
                                     <br />
                                     <br />
-                                    <ReplyBlock rating = {rating} replies = {this.props.replies} />
+                                    <ReplyBlock rating = {rating} replies = {replies} />
                                 </Col>
                             </Row>
                         </ListGroupItem>

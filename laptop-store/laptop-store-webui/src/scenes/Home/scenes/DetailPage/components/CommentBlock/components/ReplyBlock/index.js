@@ -4,17 +4,11 @@ import { FaPaperPlane } from 'react-icons/fa';
 import styles from './styles.module.scss';
 import { getCookie } from '../../../../../../../../services/helper/cookie';
 class ReplyBlock extends Component {
-    buildReplyBody = () => {
-        const reply = document.getElementById(`reply${this.props.rating['id']}`).value;
-        return {
-            reply: reply
-        }
-    }
 
     postReply = async () => {
-        const url = "/api/replies?rating-id=" + this.props.rating['id']
-        const body = this.buildReplyBody();
-
+        const url = `/api/ratings/${this.props.rating['id']}/replies`;
+        const reply = document.getElementById(`reply-${this.props.rating["id"]}`).value;
+        const body = { reply: reply };
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -28,7 +22,7 @@ class ReplyBlock extends Component {
 
         switch (status) {
             case 201:
-                window.location.href = `/product/170001`;
+                window.location.reload();
                 break;
             case 403:
                 this.setState({
@@ -49,16 +43,12 @@ class ReplyBlock extends Component {
     };
 
     render() {
-        const replies = this.props.replies.filter((reply) => {
-            return reply['rating']['id'] === this.props.rating['id']
-        });
-        console.log(replies);
         return (
             <Fragment>
-                <UncontrolledCollapse toggler={"#toggler" + this.props.rating['id']}>
+                <UncontrolledCollapse toggler={"#toggler-" + this.props.rating['id']}>
                     <textarea
                         class={styles.replyInput}
-                        id={"reply" + this.props.rating['id']}
+                        id={"reply-" + this.props.rating['id']}
                         rows="5"
                         maxlength="500"
                         placeholder="Gửi trả lời của bạn (tối đa 500 từ)"
@@ -84,7 +74,7 @@ class ReplyBlock extends Component {
                 >
                     <tbody>
                         {
-                            replies?.map((reply) => {
+                            this.props.replies?.map((reply) => {
                                 const replyDate = reply ? new Date(
                                     reply["reply_date"]["year"],
                                     reply["reply_date"]["monthValue"] - 1,

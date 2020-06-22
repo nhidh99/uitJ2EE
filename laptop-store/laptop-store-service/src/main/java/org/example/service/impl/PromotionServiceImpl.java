@@ -45,7 +45,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     private Response findByPage(Integer page) throws JsonProcessingException {
         List<Promotion> promotions = (page == null) ? promotionDAO.findAll() : promotionDAO.findByPage(page);
-        Long promotionCount = promotionDAO.findTotalPromotions();
+        Long promotionCount = promotionDAO.findTotalPromotions(null);
         ObjectMapper om = new ObjectMapper();
         String promotionsJSON = om.writeValueAsString(promotions);
         return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
@@ -56,6 +56,22 @@ public class PromotionServiceImpl implements PromotionService {
         ObjectMapper om = new ObjectMapper();
         String promotionsJSON = om.writeValueAsString(promotions);
         return Response.ok(promotionsJSON).build();
+    }
+
+    @Override
+    @GET
+    @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findPromotionsByFilter(@QueryParam("q") String queryParam, @QueryParam("page") Integer page) {
+        try {
+            List<Promotion> promotions = promotionDAO.findByFilter(queryParam, page);
+            Long promotionCount = promotionDAO.findTotalPromotions(queryParam);
+            ObjectMapper om = new ObjectMapper();
+            String promotionsJSON = om.writeValueAsString(promotions);
+            return Response.ok(promotionsJSON).header("X-Total-Count", promotionCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
     }
 
     @Override

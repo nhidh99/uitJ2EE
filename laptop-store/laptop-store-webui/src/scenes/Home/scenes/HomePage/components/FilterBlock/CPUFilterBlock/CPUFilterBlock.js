@@ -1,16 +1,19 @@
 import FilterBlock from '../FilterBlock.js';
-
+import {CPUFILTERTITLE, ALL, CPUI3, CPUI5, CPUI7, CPUCELERON, CUPPENTIUM,CPUAMD }
+from '../../../../../../../constants';
 class CPUFilterBlock extends FilterBlock {
     constructor(props) {
         super(props);
         this.filterblock = {
-            title: "CPU",
+            title: CPUFILTERTITLE,
             filterTypes: [
-                "Tất cả",
-                "Intel i3",
-                "Intel i5",
-                "Intel i7",
-                "Itel i9"
+                ALL,
+                CPUI3,
+                CPUI5,
+                CPUI7,
+                CPUCELERON,
+                CUPPENTIUM,
+                CPUAMD
             ]
         }
         this.state = {}

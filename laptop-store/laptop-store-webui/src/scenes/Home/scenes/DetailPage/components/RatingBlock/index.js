@@ -35,7 +35,7 @@ class RatingBlock extends Component {
         const status = parseInt(response.status);
         switch (status) {
             case 201:
-                window.location.href = `/product/170001`;
+                window.location.reload();
                 break;
             case 403:
                 this.setState({

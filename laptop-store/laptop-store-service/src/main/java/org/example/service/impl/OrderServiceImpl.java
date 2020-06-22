@@ -200,7 +200,24 @@ public class OrderServiceImpl implements OrderService {
         try {
             List<Order> orders = orderDAO.findByPages(page);
             List<OrderOverview> orderOverviews = orders.stream().map(OrderOverview::fromOrder).collect(Collectors.toList());
-            Long orderCount = orderDAO.findTotalOrder();
+            Long orderCount = orderDAO.findTotalOrder(null, null);
+            ObjectMapper om = new ObjectMapper();
+            String overviewsJSON = om.writeValueAsString(orderOverviews);
+            return Response.ok(overviewsJSON).header("X-Total-Count", orderCount).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findOrdersByFilter(@QueryParam("id") String id, @QueryParam("status") String status ,@QueryParam("page") Integer page) {
+        try {
+            List<Order> orders = orderDAO.findByFilter(id, status, page);
+            List<OrderOverview> orderOverviews = orders.stream().map(OrderOverview::fromOrder).collect(Collectors.toList());
+            Long orderCount = orderDAO.findTotalOrder(id, status);
             ObjectMapper om = new ObjectMapper();
             String overviewsJSON = om.writeValueAsString(orderOverviews);
             return Response.ok(overviewsJSON).header("X-Total-Count", orderCount).build();
