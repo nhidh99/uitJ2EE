@@ -51,4 +51,5 @@ public class TagDAOImpl implements TagDAO {
         Tag tag = em.find(Tag.class, id);
         return Optional.ofNullable(tag);
     }
+
 }

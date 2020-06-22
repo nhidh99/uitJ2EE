@@ -2,8 +2,6 @@
 .products {
     position: relative;
     margin-top: 20px;
-    padding-left: 5px;
-    padding-right: 5px;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -11,18 +9,20 @@
     flex-flow: wrap;
     align-content: center;
     border-collapse: collapse;
+    margin-right: 1%;
+    margin-left: 1%;
 }
 
 .product {
     box-sizing: border-box;
     list-style: none;
     text-align: center;
-    width: 19%;
+    max-width: 25%;
+    width: 25%;
+    min-width: 180px;
     height: 100%;
     margin-top: 15px;
     padding: 5px;
-    margin-left: 1%;
-    // border: solid 1px gray;
     border-collapse: collapse;
     a {
         text-decoration: none;
@@ -39,22 +39,30 @@
      &:hover {
          background-color: #efefef;
          border: thick 2px;
+
+         .name {
+            color: slateblue;
+         }
      }
 }
 
 .readmore {
     position: relative;
+    align-content: center;
+    align-items: center;
+    align-self: center;
     margin-top: 5px;
-    margin-left: 45%;
+    left: 350px;
 }
 
 .productimage {
     width: 100%;
     height: 50%;
+    margin-bottom: 10px;
     left: 0px;
     img {
-        width: 100%;
-        height: 100%;
+        width: 160px;
+        height: 160px;
     }
 }
 
@@ -68,17 +76,22 @@
 
 .name {
     font-size: 16px;
-    &:hover {
-        color: blue;
-    }
 }
 
 .price {
-    color: darkred;
+    font-size: 16px;
+    color: red;
+    font-weight: bold;
+}
+
+.discountPrice {
+    font-size: 14px;
+    color: red;
+    font-weight: bold;
 }
 
 .ratingIcon {
-    font-size: 24px;
+    font-size: 16px;
     margin-right: 3px;
 }
 

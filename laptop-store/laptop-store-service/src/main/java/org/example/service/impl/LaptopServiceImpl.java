@@ -11,6 +11,7 @@ import org.example.model.*;
 import org.example.service.api.LaptopService;
 import org.example.type.*;
 import org.example.util.api.ImageUtils;
+import org.example.service.constants.FilterConstants;
 
 import javax.ejb.EJB;
 import javax.imageio.ImageIO;
@@ -20,10 +21,7 @@ import javax.ws.rs.core.Response;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Path("/api/laptops")
 public class LaptopServiceImpl implements LaptopService {
@@ -53,7 +51,6 @@ public class LaptopServiceImpl implements LaptopService {
             return Response.serverError().build();
         }
     }
-
 
     private Response findByPage(Integer page) throws JsonProcessingException {
         List<Laptop> laptops = laptopDAO.findByPage(page);
@@ -106,6 +103,38 @@ public class LaptopServiceImpl implements LaptopService {
 
     @Override
     @POST
+    @Path("/result")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findLaptopByCondition(MultipartBody body) {
+        try {
+            List<Laptop> laptops;
+            Filter filter = buildFilterObjectFromRequestBody(body);
+            laptops = laptopDAO.findByCondition(filter);
+            ObjectMapper om = new ObjectMapper();
+            String laptopsJSON = om.writeValueAsString(laptops);
+            return Response.ok(laptopsJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @GET
+    @Path("/types/{type}")
+    public Response findLaptopByType(@PathParam("type") String type,
+                                     @QueryParam("page") @DefaultValue("1") Integer page) {
+        try {
+            List<Laptop> laptops = laptopDAO.findByType(type, page);
+            ObjectMapper om = new ObjectMapper();
+            String laptopsJSON = om.writeValueAsString(laptops);
+            return Response.ok(laptopsJSON).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    @POST
     @Path("/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createLaptop(MultipartBody body) {
@@ -131,6 +160,31 @@ public class LaptopServiceImpl implements LaptopService {
         } catch (Exception e) {
             return Response.serverError().build();
         }
+    }
+
+    private Filter buildFilterObjectFromRequestBody(MultipartBody body) {
+        Filter filter = new Filter();
+        if(body == null) {
+            return filter.page(1);
+        }
+        String demand = body.getAttachmentObject("demand", String.class);
+        String brand = body.getAttachmentObject("brand", String.class);
+        Integer price = body.getAttachmentObject("price", Integer.class);
+        String cpu = body.getAttachmentObject("cpu", String.class);
+        Integer ram = body.getAttachmentObject("ram", Integer.class);
+        Integer hardDrive = body.getAttachmentObject("hardDrive", Integer.class);
+        Integer monitor = body.getAttachmentObject("monitor", Integer.class);
+        Integer page = body.getAttachmentObject("page", Integer.class);
+        String name = body.getAttachmentObject("name", String.class);
+        return filter.demand(demand)
+                .brand(brand)
+                .price(price)
+                .cpu(cpu)
+                .ram(ram)
+                .hardDrive(hardDrive)
+                .monitor(monitor)
+                .page(page)
+                .name(name);
     }
 
     private Laptop buildLaptopFromRequestBody(MultipartBody body) throws IOException, BadRequestException {

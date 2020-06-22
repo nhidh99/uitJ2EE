@@ -1,21 +1,30 @@
 import FilterBlock from '../FilterBlock.js';
+import  {DEMANDFILTERTITLE, ALL} from '../../../../../../../constants';
 
 class DemandFilterBlock extends FilterBlock {
     constructor(props) {
         super(props);
-        this.filterblock = {
-            title: "Nhu cầu sử dụng",
-            filterTypes: [
-                "Tất cả",
-                "Học tập",
-                "Đồ họa - Kỹ thuật",
-                "Văn phòng",
-                "Cao cấp - Sang trọng",
-                "Game"
-            ]
+        this.tagObject = [];
+        this.state = {
+            title: DEMANDFILTERTITLE,
+            filterTypes: [],
+            tags: []
         }
-        this.state = {}
-        super.setResources(this.filterblock);
+    }
+
+    async componentDidMount() {
+        await fetch('/api/tags')
+        .then(response => response.json())
+        .then(data => this.setState({
+            tags: data
+        }))
+        .then(() => {
+            for(var i=0; i< this.state.tags.length; i++) {
+                this.state.filterTypes.push(this.state.tags[i].name)
+            }
+            this.state.filterTypes.unshift(ALL);
+            super.setResources(this.state);
+        })
     }
 }
 

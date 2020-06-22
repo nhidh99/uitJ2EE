@@ -96,7 +96,7 @@ class App extends Component {
             <Route
                 exact
                 component={Home}
-                path={["/", "/search", "/user", "/cart", "/product/:id", "/product/:alt/:id"]}
+                path={["/", "/result", "/search", "/user", "/cart", "/product/:id", "/product/:alt/:id"]}
             />
             <Route exact component={Auth} path="/auth/(forgot|login|register)" />
         </Fragment>
@@ -108,6 +108,7 @@ class App extends Component {
             component={Home}
             path={[
                 "/",
+                "/result",
                 "/search",
                 "/user",
                 "/cart",
@@ -128,6 +129,7 @@ class App extends Component {
                 component={Home}
                 path={[
                     "/",
+                    "/result",
                     "/search",
                     "/user",
                     "/cart",

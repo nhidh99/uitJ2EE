@@ -1,17 +1,18 @@
 import FilterBlock from '../FilterBlock.js';
+import { HARDDRIVEFILTERTITLE, ALL, HARDDRIVE128, HARDDRIVE256, HARDDRIVE512, HARDDRIVE1TB_ } 
+from '../../../../../../../constants';
 
 class HardDriveFilterBlock extends FilterBlock {
     constructor(props) {
         super(props);
         this.filterblock = {
-            title: "Ổ cứng",
+            title: HARDDRIVEFILTERTITLE,
             filterTypes: [
-                "Tất cả",
-                "4 GB",
-                "6 GB",
-                "8 GB",
-                "16 GB",
-                "Từ 32 GB trở lên"
+                ALL,
+                HARDDRIVE128,
+                HARDDRIVE256,
+                HARDDRIVE512,                
+                HARDDRIVE1TB_
             ]
         }
         this.state = {}

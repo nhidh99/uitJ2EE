@@ -4,27 +4,32 @@ import ProductBlock from '../ProductBlock.js';
 class TopSellingBlock extends ProductBlock {
     constructor(props) {
         super(props);
+        this.numberOfPage = 1;
     }
 
-
-    componentDidMount() {
-     
+    async componentDidMount() {
+       this.fetchResource(this.numberOfPage);
     }
 
     handleReadmoreClicked() {
-        let items =  [
-            {
-                id: 1,
-                name: "Máy tính cao cấp sang trọng cấu hình cực khủng",
-                CPU: "CPU",
-                ram:"ram",
-                price: 15000000,
-                rating: 3,
-                src: 'https://salt.tikicdn.com/ts/categoryblock/c3/01/eb/41ed16d900533ddf279c3bd795b51a90.png',
-            }
-        ]
-        console.log(items);
-        super.updateResource(items);
+        this.numberOfPage +=1;
+        this.fetchResource(this.numberOfPage);
+    }
+
+    async fetchResource(page) {
+        let url = "/api/laptops/types/top-selling?page=" + page;
+        await fetch(url)
+        .then(response => response.json())
+        .then(data => this.productblock = data);
+        let laptops =  this.productblock;
+        this.images = [];
+        laptops.map((laptop)=>{
+            let alt = laptop.alt;
+            let id = laptop.id;
+            let url = "/api/images/600/laptops/" + id + "/" + alt + ".jpg";
+            this.images.push(url);
+        })
+        super.updateResource(this.productblock, this.images);
     }
 }
 

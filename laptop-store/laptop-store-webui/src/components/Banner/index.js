@@ -26,6 +26,16 @@ class Banner extends Component {
             </div>
         );
     }
+
+    componentDidMount () {
+        var search = document.getElementById("search");
+        search.addEventListener("keypress", function(event) {
+            if(event.keyCode === 13) {
+                let url = "/result?type=name&value=" + search.value;
+                window.location.replace(url);
+            }
+        })
+    }
 }
 
 const BannerLeft = () => (
@@ -42,7 +52,7 @@ const BannerLeft = () => (
                         <FaSearch />
                     </InputGroupText>
                 </InputGroupAddon>
-                <Input type="text" placeholder="Tìm kiếm..." />
+                <Input id="search" type="text" placeholder="Tìm kiếm..."/>
             </InputGroup>
         </div>
     </div>
