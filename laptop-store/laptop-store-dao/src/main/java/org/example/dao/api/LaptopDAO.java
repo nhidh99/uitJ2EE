@@ -1,6 +1,6 @@
 package org.example.dao.api;
 
-import org.example.model.Filter;
+import org.example.filter.SearchFilter;
 import org.example.model.Laptop;
 
 import javax.ejb.Local;
@@ -23,8 +23,7 @@ public interface LaptopDAO {
 
     List<Laptop> findByFilter(String filter, Integer page);
 
-
-    List<Laptop> findByCondition(Filter filter);
+    List<Laptop> findByCondition(SearchFilter filter);
 
     List<Laptop> findByType(String type, Integer page);
 

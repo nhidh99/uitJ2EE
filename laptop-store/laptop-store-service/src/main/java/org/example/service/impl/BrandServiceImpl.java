@@ -1,4 +1,5 @@
 package org.example.service.impl;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.service.api.BrandService;
 import org.example.type.BrandType;
@@ -21,7 +22,7 @@ public class BrandServiceImpl implements BrandService {
     public Response findAllBrands() {
         try {
             List<String> brands = new ArrayList<String>();
-            for(BrandType brandType : BrandType.values()) {
+            for (BrandType brandType : BrandType.values()) {
                 brands.add(brandType.name());
             }
             ObjectMapper om = new ObjectMapper();

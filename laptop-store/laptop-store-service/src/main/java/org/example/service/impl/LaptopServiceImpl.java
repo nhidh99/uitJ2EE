@@ -6,12 +6,12 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.PromotionDAO;
 import org.example.dao.api.TagDAO;
+import org.example.filter.SearchFilter;
 import org.example.filter.LaptopFilter;
 import org.example.model.*;
 import org.example.service.api.LaptopService;
 import org.example.type.*;
 import org.example.util.api.ImageUtils;
-import org.example.service.constants.FilterConstants;
 
 import javax.ejb.EJB;
 import javax.imageio.ImageIO;
@@ -27,13 +27,13 @@ import java.util.*;
 public class LaptopServiceImpl implements LaptopService {
 
     @EJB(mappedName = "LaptopDAOImpl")
-    LaptopDAO laptopDAO;
+    private LaptopDAO laptopDAO;
 
     @EJB(mappedName = "PromotionDAOImpl")
-    PromotionDAO promotionDAO;
+    private PromotionDAO promotionDAO;
 
     @EJB(mappedName = "TagDAOImpl")
-    TagDAO tagDAO;
+    private TagDAO tagDAO;
 
     @EJB(mappedName = "ImageUtilsImpl")
     private ImageUtils imageUtils;
@@ -107,9 +107,8 @@ public class LaptopServiceImpl implements LaptopService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response findLaptopByCondition(MultipartBody body) {
         try {
-            List<Laptop> laptops;
-            Filter filter = buildFilterObjectFromRequestBody(body);
-            laptops = laptopDAO.findByCondition(filter);
+            SearchFilter filter = buildFilterObjectFromRequestBody(body);
+            List<Laptop> laptops = laptopDAO.findByCondition(filter);
             ObjectMapper om = new ObjectMapper();
             String laptopsJSON = om.writeValueAsString(laptops);
             return Response.ok(laptopsJSON).build();
@@ -162,10 +161,9 @@ public class LaptopServiceImpl implements LaptopService {
         }
     }
 
-    private Filter buildFilterObjectFromRequestBody(MultipartBody body) {
-        Filter filter = new Filter();
-        if(body == null) {
-            return filter.page(1);
+    private SearchFilter buildFilterObjectFromRequestBody(MultipartBody body) {
+        if (body == null) {
+            return SearchFilter.builder().page(1).build();
         }
         String demand = body.getAttachmentObject("demand", String.class);
         String brand = body.getAttachmentObject("brand", String.class);
@@ -176,15 +174,9 @@ public class LaptopServiceImpl implements LaptopService {
         Integer monitor = body.getAttachmentObject("monitor", Integer.class);
         Integer page = body.getAttachmentObject("page", Integer.class);
         String name = body.getAttachmentObject("name", String.class);
-        return filter.demand(demand)
-                .brand(brand)
-                .price(price)
-                .cpu(cpu)
-                .ram(ram)
-                .hardDrive(hardDrive)
-                .monitor(monitor)
-                .page(page)
-                .name(name);
+        return SearchFilter.builder().demand(demand).brand(brand)
+                .price(price).cpu(cpu).ram(ram).hardDrive(hardDrive)
+                .monitor(monitor).page(page).name(name).build();
     }
 
     private Laptop buildLaptopFromRequestBody(MultipartBody body) throws IOException, BadRequestException {

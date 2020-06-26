@@ -2,10 +2,8 @@ package org.example.dao.impl;
 
 import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.TagDAO;
-import org.example.model.Filter;
+import org.example.filter.SearchFilter;
 import org.example.model.Laptop;
-import org.example.model.Promotion;
-import org.example.model.Tag;
 import org.example.type.BrandType;
 import org.example.type.CPUType;
 
@@ -13,13 +11,11 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Stateless
@@ -32,7 +28,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     private EntityManager em;
 
     @EJB(mappedName = "TagDAOImpl")
-    TagDAO tagDAO;
+    private TagDAO tagDAO;
 
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
@@ -54,7 +50,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     private void update(Laptop laptop) {
         Laptop oldLaptop = findById(laptop.getId()).orElseThrow(BadRequestException::new);
         if (laptop.getImage() == null) {
-            laptop.setImage(oldLaptop.getImage()); 
+            laptop.setImage(oldLaptop.getImage());
             laptop.setThumbnail(oldLaptop.getThumbnail());
         }
         laptop.setAvgRating(oldLaptop.getAvgRating());
@@ -89,14 +85,14 @@ public class LaptopDAOImpl implements LaptopDAO {
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public List<Laptop> findByCondition(Filter filter) {
-        String query = "SELECT l FROM Laptop  l WHERE l.recordStatus = true";
+    public List<Laptop> findByCondition(SearchFilter filter) {
+        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true";
 
-        if(filter.getBrand() != null && !filter.getBrand().equals("")) {
-            BrandType []brandTypes = BrandType.values();
+        if (filter.getBrand() != null && !filter.getBrand().equals("")) {
+            BrandType[] brandTypes = BrandType.values();
             BrandType types = BrandType.MAC;
-            for(BrandType brandType: brandTypes) {
-                if(brandType.name().contains(filter.getBrand().toUpperCase()))
+            for (BrandType brandType : brandTypes) {
+                if (brandType.name().contains(filter.getBrand().toUpperCase()))
                     types = brandType;
             }
             query = "SELECT l FROM Laptop l WHERE l.brand IN (:types) AND l.recordStatus = true";
@@ -107,15 +103,16 @@ public class LaptopDAOImpl implements LaptopDAO {
                     .getResultList();
         }
 
-        if(filter.getCpu()!=null && !filter.getCpu().equals("")) {
-            CPUType []cpuTypes = CPUType.values();
+        if (filter.getCpu() != null && !filter.getCpu().equals("")) {
+            CPUType[] cpuTypes = CPUType.values();
             CPUType types = CPUType.INTEL_CORE_I3;
-            for(CPUType cpuType: cpuTypes) {
-                if(cpuType.name().contains(filter.getCpu().toUpperCase().replace(" ","_")))
+            for (CPUType cpuType : cpuTypes) {
+                if (cpuType.name().contains(filter.getCpu().toUpperCase().replace(" ", "_")))
                     types = cpuType;
             }
             query = "SELECT l FROM Laptop l INNER JOIN l.cpu cpu ON cpu.id = l.cpu.id " +
                     "WHERE cpu.type IN (:types) AND l.recordStatus = true";
+
             return em.createQuery(query)
                     .setParameter("types", types)
                     .setFirstResult(ELEMENT_PER_BLOCK * (filter.getPage() - 1))
@@ -123,34 +120,34 @@ public class LaptopDAOImpl implements LaptopDAO {
                     .getResultList();
         }
 
-        if(filter.getHardDrive() != null) {
+        if (filter.getHardDrive() != null) {
             query = "SELECT l FROM Laptop l INNER JOIN l.hardDrive hardDrive ON hardDrive.id = l.hardDrive.id " +
-                    "WHERE hardDrive.size >= "+filter.getHardDrive()+" AND l.recordStatus = true " +
+                    "WHERE hardDrive.size >= " + filter.getHardDrive() + " AND l.recordStatus = true " +
                     "ORDER BY hardDrive.size ASC";
         }
 
-        if(filter.getMonitor() != null) {
+        if (filter.getMonitor() != null) {
             query = "SELECT l FROM Laptop l INNER JOIN l.monitor monitor ON monitor.id = l.monitor.id " +
-                    "WHERE monitor.size >= "+filter.getMonitor()+" AND l.recordStatus = true " +
+                    "WHERE monitor.size >= " + filter.getMonitor() + " AND l.recordStatus = true " +
                     "ORDER BY monitor.size ASC";
         }
 
-        if(filter.getPrice() != null) {
-            query = "SELECT l FROM Laptop l WHERE l.unitPrice >= "+filter.getPrice()+" AND l.recordStatus = true " +
+        if (filter.getPrice() != null) {
+            query = "SELECT l FROM Laptop l WHERE l.unitPrice >= " + filter.getPrice() + " AND l.recordStatus = true " +
                     "ORDER BY l.unitPrice ASC";
         }
 
-        if(filter.getRam() != null) {
+        if (filter.getRam() != null) {
             query = "SELECT l FROM Laptop l INNER JOIN l.ram ram " +
-                    "WHERE ram.size >= "+filter.getRam()+" AND l.recordStatus = true ORDER BY ram.size ASC";
+                    "WHERE ram.size >= " + filter.getRam() + " AND l.recordStatus = true ORDER BY ram.size ASC";
         }
 
-        if(filter.getDemand() != null && !filter.getDemand().equals("")) {
-            query = "SELECT l FROM Laptop l INNER JOIN l.tags t WHERE t.name = '"+filter.getDemand()+"'";
+        if (filter.getDemand() != null && !filter.getDemand().equals("")) {
+            query = "SELECT l FROM Laptop l INNER JOIN l.tags t WHERE t.name = '" + filter.getDemand() + "'";
         }
 
-        if(filter.getName() !=null && !filter.getName().equals("")) {
-            query = "SELECT l FROM Laptop l WHERE l.name LIKE concat('%','"+filter.getName()+"','%')";
+        if (filter.getName() != null && !filter.getName().equals("")) {
+            query = "SELECT l FROM Laptop l WHERE l.name LIKE concat('%','" + filter.getName() + "','%')";
         }
 
         return em.createQuery(query)
@@ -174,7 +171,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public Long findTotalLaptops(String filter) {
-        if(filter == null) {
+        if (filter == null) {
             String query = "SELECT COUNT(l) FROM Laptop l WHERE l.recordStatus = true";
             return em.createQuery(query, Long.class).getSingleResult();
         } else {

@@ -17,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.List;
 
 @Path("/api/addresses")
 @Secured({RoleType.ADMIN, RoleType.USER})
