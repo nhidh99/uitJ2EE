@@ -16,7 +16,7 @@ class NewProductBlock extends ProductBlock {
     }
 
     async fetchResource(page) {
-        console.log("Page: " + page);
+        super.updateLoadingState(true);
         let url = "/api/laptops/types/new?page=" + page;
         await fetch(url)
         .then(response => response.json())
@@ -31,6 +31,7 @@ class NewProductBlock extends ProductBlock {
             this.images.push(url);
         })
         super.updateResource(this.productblock, this.images);
+        super.updateLoadingState(false);
     }
 }
 

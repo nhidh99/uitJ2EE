@@ -101,14 +101,14 @@ public class LaptopServiceImpl implements LaptopService {
         }
     }
 
+
     @Override
-    @POST
+    @GET
     @Path("/result")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findLaptopByCondition(MultipartBody body) {
+    public Response findLaptopByCondition(@BeanParam SearchFilter searchFilter) {
         try {
-            SearchFilter filter = buildFilterObjectFromRequestBody(body);
-            List<Laptop> laptops = laptopDAO.findByCondition(filter);
+            List<Laptop> laptops = laptopDAO.findByCondition(searchFilter);
             ObjectMapper om = new ObjectMapper();
             String laptopsJSON = om.writeValueAsString(laptops);
             return Response.ok(laptopsJSON).build();
@@ -159,24 +159,6 @@ public class LaptopServiceImpl implements LaptopService {
         } catch (Exception e) {
             return Response.serverError().build();
         }
-    }
-
-    private SearchFilter buildFilterObjectFromRequestBody(MultipartBody body) {
-        if (body == null) {
-            return SearchFilter.builder().page(1).build();
-        }
-        String demand = body.getAttachmentObject("demand", String.class);
-        String brand = body.getAttachmentObject("brand", String.class);
-        Integer price = body.getAttachmentObject("price", Integer.class);
-        String cpu = body.getAttachmentObject("cpu", String.class);
-        Integer ram = body.getAttachmentObject("ram", Integer.class);
-        Integer hardDrive = body.getAttachmentObject("hardDrive", Integer.class);
-        Integer monitor = body.getAttachmentObject("monitor", Integer.class);
-        Integer page = body.getAttachmentObject("page", Integer.class);
-        String name = body.getAttachmentObject("name", String.class);
-        return SearchFilter.builder().demand(demand).brand(brand)
-                .price(price).cpu(cpu).ram(ram).hardDrive(hardDrive)
-                .monitor(monitor).page(page).name(name).build();
     }
 
     private Laptop buildLaptopFromRequestBody(MultipartBody body) throws IOException, BadRequestException {

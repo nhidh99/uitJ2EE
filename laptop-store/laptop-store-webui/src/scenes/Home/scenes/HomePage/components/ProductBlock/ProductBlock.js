@@ -13,7 +13,8 @@ class ProductBlock extends Component {
         this.state = {
             isLoading: true,
             productblock: [],
-            images: []
+            images: [],
+            isAllProduct: false,
         }
     }
 
@@ -83,9 +84,13 @@ class ProductBlock extends Component {
                         </p>
                     }
                 </div>
-                {products ? <Button className={styles.readmore} onClick={this.handleReadmoreClicked}>Xem thêm...</Button> : ""}
+                { (products && this.state.isAllProduct) ? <Button className={styles.readmore} disabled={this.state.isLoading} onClick={this.handleReadmoreClicked}>Xem thêm...</Button> : ""}
             </div>
         )
+    }
+
+    updateLoadingState( loading) {
+        this.setState({isLoading: loading});
     }
 
     handleReadmoreClicked() {
@@ -95,6 +100,7 @@ class ProductBlock extends Component {
     updateResource(items, images) {
         console.log("items: " + items);
         this.setState({
+            isAllProduct: (items.length == 0) ? true : false,
             productblock: this.state.productblock.concat(items),
             isLoading: false,
             images: this.state.images.concat(images)

@@ -3,7 +3,9 @@ package org.example.service.api;
 
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.example.filter.LaptopFilter;
+import org.example.filter.SearchFilter;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.core.Response;
 
 public interface LaptopService {
@@ -13,7 +15,7 @@ public interface LaptopService {
 
     Response findLaptopsByFilter(String queryParam, Integer page);
 
-    Response findLaptopByCondition(MultipartBody body);
+    Response findLaptopByCondition(SearchFilter params);
 
     Response findLaptopByType(String type, Integer page);
 

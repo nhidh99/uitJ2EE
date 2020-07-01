@@ -17,6 +17,7 @@ class CommonProductBlock extends ProductBlock {
     }
 
     async fetchResource(page) {
+        super.updateLoadingState(true);
         let url = "/api/laptops/types/common?page=" + page;
         await fetch(url)
         .then(response => response.json())
@@ -30,6 +31,7 @@ class CommonProductBlock extends ProductBlock {
             this.images.push(url);
         })
         super.updateResource(this.productblock, this.images);
+        super.updateLoadingState(false);
     }
 }
 

@@ -19,20 +19,9 @@ class FilterProductBlock extends ProductBlock {
         const params = new URLSearchParams(window.location.search);
         var type = params.get("type");
         var value = params.get("value");
-        console.log("type: " + type + ": value: " + value);
-        var bodyContent = new FormData();
-        bodyContent.append(type, value);
-        bodyContent.append("page", page);
-        const requestOption = {
-            method: "POST",
-            header: {"Content-Type": "application/json; charset=utf-8"},
-            body: bodyContent
-        }
-        let url = "/api/laptops/result";
-        console.log(type + ":" + value + "" + url);
-        console.log("option: " + JSON.stringify(bodyContent));
-        console.log(url);
-        fetch(url, requestOption)
+        super.updateLoadingState(true);
+        let url = "/api/laptops/result?" + type + "=" + value;
+        fetch(url)
         .then(response => response.json())
         .then(data => this.productblock = data)
         .then(()=> {
@@ -48,6 +37,7 @@ class FilterProductBlock extends ProductBlock {
             }
             console.log("laptops: " + this.productblock);
             super.updateResource(this.productblock, this.images);
+            super.updateLoadingState(false);
         })   
     }
 }
