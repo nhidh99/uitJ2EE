@@ -1,15 +1,14 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.scss";
 import { FaLock, FaUser, FaMailBulk, FaPhone, FaTransgender, FaBirthdayCake } from "react-icons/fa";
 import { InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
 import { Link } from "react-router-dom";
+import authApi from "../../../../services/api/authApi";
 
-class RegisterPage extends Component {
-    state = {
-        errors: [],
-    };
+const RegisterPage = () => {
+    const [errors, setErrors] = useState([]);
 
-    buildRegisterBody = () => {
+    const buildRegisterBody = () => {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
         const confirm = document.getElementById("confirm").value;
@@ -31,7 +30,7 @@ class RegisterPage extends Component {
         };
     };
 
-    validateRegister = (register) => {
+    const validateRegister = (register) => {
         const errors = [];
         const validate = (message, condition) => (condition() ? null : errors.push(message));
         validate("Tài khoản từ 6 - 20 kí tự gồm chữ hoặc số", () =>
@@ -49,182 +48,162 @@ class RegisterPage extends Component {
         return errors;
     };
 
-    register = async () => {
-        const body = this.buildRegisterBody();
-        const errors = this.validateRegister(body);
+    const register = async () => {
+        const data = buildRegisterBody();
+        const errors = validateRegister(data);
 
         if (errors.length > 0) {
-            this.setState({ errors: errors });
+            setErrors(errors);
             return;
         }
 
-        const url = "/api/auth/register";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-            window.location.href = "/";
+        try {
+            await authApi.register(data);
+            window.location.href = "/auth/login";
+        } catch (err) {
+            setErrors(["Lỗi hệ thống"]);
         }
     };
 
-    render() {
-        const { errors } = this.state;
-        return (
-            <div className={styles.form}>
-                <header>ĐĂNG KÝ</header>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaUser />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="name"
-                        autoFocus
-                        type="text"
-                        placeholder="Họ tên"
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaMailBulk />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="Email"
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaPhone />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="phone"
-                        type="text"
-                        placeholder="Điện thoại"
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaTransgender />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="gender"
-                        type="select"
-                        placeholder="Giới tính"
-                        className={styles.borderInputRight}
-                    >
-                        <option value="MALE">Nam</option>
-                        <option value="FEMALE">Nữ</option>
-                        <option value="OTHER">Khác</option>
-                    </Input>
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaBirthdayCake />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        type="date"
-                        id="birthday"
-                        onKeyDown={(e) => {
-                            if (e.keyCode !== 9) {
-                                e.preventDefault();
-                            }
-                        }}
-                        placeholder="Ngày sinh"
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaUser />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        type="text"
-                        id="username"
-                        placeholder="Tài khoản"
-                        maxLength={20}
-                        minLength={6}
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaLock />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="password"
-                        type="password"
-                        placeholder="Mật khẩu"
-                        maxLength={20}
-                        minLength={6}
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                        <InputGroupText className={styles.borderInputLeft}>
-                            <FaLock />
-                        </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                        id="confirm"
-                        type="password"
-                        placeholder="Nhập lại mật khẩu"
-                        maxLength={20}
-                        minLength={6}
-                        className={styles.borderInputRight}
-                    />
-                </InputGroup>
-
-                <Button color="secondary" className={styles.button} onClick={this.register}>
-                    Đăng ký
-                </Button>
-
+    return (
+        <div className={styles.form}>
+            <header>ĐĂNG KÝ</header>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaUser />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="name"
+                    autoFocus
+                    type="text"
+                    placeholder="Họ tên"
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaMailBulk />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaPhone />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="phone"
+                    type="text"
+                    placeholder="Điện thoại"
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaTransgender />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="gender"
+                    type="select"
+                    placeholder="Giới tính"
+                    className={styles.borderInputRight}
+                >
+                    <option value="MALE">Nam</option>
+                    <option value="FEMALE">Nữ</option>
+                    <option value="OTHER">Khác</option>
+                </Input>
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaBirthdayCake />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    type="date"
+                    id="birthday"
+                    onKeyDown={(e) => {
+                        if (e.keyCode !== 9) {
+                            e.preventDefault();
+                        }
+                    }}
+                    placeholder="Ngày sinh"
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaUser />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    type="text"
+                    id="username"
+                    placeholder="Tài khoản"
+                    maxLength={20}
+                    minLength={6}
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaLock />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="password"
+                    type="password"
+                    placeholder="Mật khẩu"
+                    maxLength={20}
+                    minLength={6}
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                    <InputGroupText className={styles.borderInputLeft}>
+                        <FaLock />
+                    </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                    id="confirm"
+                    type="password"
+                    placeholder="Nhập lại mật khẩu"
+                    maxLength={20}
+                    minLength={6}
+                    className={styles.borderInputRight}
+                />
+            </InputGroup>
+            <Button color="secondary" className={styles.button} onClick={register}>
+                Đăng ký
+            </Button>
+            <p>
+                Đã có tài khoản?&nbsp;
+                <Link to="/auth/login">Đăng nhập</Link>
+            </p>
+            {errors.length > 0 ? (
                 <p>
-                    Đã có tài khoản?&nbsp;
-                    <Link to="/auth/login">Đăng nhập</Link>
+                    {errors.map((error) => (
+                        <label className={styles.error}>{error}.</label>
+                    ))}
                 </p>
-
-                {errors.length > 0 ? (
-                    <p>
-                        {errors.map((error) => (
-                            <label className={styles.error}>{error}.</label>
-                        ))}
-                    </p>
-                ) : null}
-            </div>
-        );
-    }
-}
+            ) : null}
+        </div>
+    );
+};
 
 export default RegisterPage;

@@ -32,4 +32,6 @@ public interface LaptopDAO {
     byte[] findImageById(Integer id);
 
     byte[] findThumbnailById(Integer id);
+
+    List<Laptop> findSuggestionsByLaptop(Integer laptopId);
 }

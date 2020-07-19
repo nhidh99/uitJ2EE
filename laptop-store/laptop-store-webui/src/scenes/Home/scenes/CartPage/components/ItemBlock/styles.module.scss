@@ -1,3 +1,17 @@
+.row {
+    padding: 10px 0px 10px 20px !important;
+}
+
+.row:not(:first-of-type) {
+    border-top: 2px solid #eee;
+}
+
+.blockLeft {
+    img {
+        padding: 5px;
+    }
+}
+
 .blockCenter {
     margin-top: 20px;
 }
@@ -10,7 +24,7 @@
 .name {
     font-size: 15px;
     margin-bottom: 2px !important;
-    color:#0000FF;
+    color: #0000ff;
     font-weight: 500;
 }
 
@@ -40,4 +54,9 @@
 .updateQuantity {
     background-color: whitesmoke !important;
     max-width: 30px !important;
+}
+
+.trashIcon {
+    margin-left: 5px;
+    margin-bottom: 5px;
 }

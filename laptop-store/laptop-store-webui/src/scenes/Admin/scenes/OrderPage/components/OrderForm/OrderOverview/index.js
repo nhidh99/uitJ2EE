@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import styles from "./styles.module.scss";
 import {
     Input,
@@ -8,26 +8,22 @@ import {
     ButtonGroup,
     Button,
 } from "reactstrap";
-import { getCookie } from "../../../../../../../services/helper/cookie";
+import orderApi from "../../../../../../../services/api/orderApi";
 
-class OrderOverview extends Component {
-    updateOrderStatus = async (e) => {
-        e.target.disabled = true;
-        const status = document.getElementById("status").value;
-        const response = await fetch(`/api/orders/${this.props.order.id}`, {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${getCookie("access_token")}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ status: status }),
-        });
-        if (response.ok) {
+const OrderOverview = ({ order }) => {
+    const updateOrderStatus = async (e) => {
+        try {
+            e.target.disabled = true;
+            const status = document.getElementById("status").value;
+            const data = { status: status };
+            await orderApi.putOrder(order["id"], data);
             window.location.reload();
+        } catch (err) {
+            console.log("fail");
         }
     };
 
-    buildStatusOptions = (status) => {
+    const buildStatusOptions = (status) => {
         if (!status) return [];
         const options = [
             <option value="PENDING">Chờ xử lí</option>,
@@ -48,130 +44,124 @@ class OrderOverview extends Component {
         return options.slice(index, options.length - (status === "DELIVERED" ? 1 : 0));
     };
 
-    render() {
-        const { order } = this.props;
-        const order_date = order["order_date"];
-        const delivery_date = order["delivery_date"];
+    return (
+        <table className={styles.table}>
+            <tbody>
+                <tr>
+                    <td className={styles.labelCol}>Người nhận:</td>
+                    <td>
+                        <Input readOnly type="text" id="name" value={order["receiver_name"]} />
+                    </td>
+                </tr>
+                <tr>
+                    <td className={styles.labelCol}>Số điện thoại:</td>
+                    <td>
+                        <Input
+                            readOnly
+                            type="text"
+                            id="unit-price"
+                            value={order["receiver_phone"]}
+                        />
+                    </td>
+                </tr>
 
-        return (
-            <table className={styles.table}>
-                <tbody>
-                    <tr>
-                        <td className={styles.labelCol}>Người nhận:</td>
-                        <td>
-                            <Input readOnly type="text" id="name" value={order["receiver_name"]} />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={styles.labelCol}>Số điện thoại:</td>
-                        <td>
+                <tr>
+                    <td className={styles.labelCol}>Địa chỉ nhận:</td>
+                    <td>
+                        <Input
+                            readOnly
+                            type="text"
+                            id="discount-price"
+                            value={[
+                                order["address_num"],
+                                order["street"],
+                                order["ward"],
+                                order["district"],
+                                order["city"],
+                            ].join(", ")}
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td className={styles.labelCol}>Ngày mua:</td>
+                    <td>
+                        <Input
+                            readOnly
+                            type="text"
+                            id="discount-price"
+                            value={`Ngày ${order["order_date"]?.["dayOfMonth"] ?? ""} tháng ${
+                                order["order_date"]?.["monthValue"] ?? ""
+                            } năm ${order["order_date"]?.["year"] ?? ""}`}
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td className={styles.labelCol}>Dự kiến giao:</td>
+                    <td>
+                        <Input
+                            readOnly
+                            type="text"
+                            id="discount-price"
+                            value={`Ngày ${order["delivery_date"]?.["dayOfMonth"] ?? ""} tháng ${
+                                order["delivery_date"]?.["monthValue"] ?? ""
+                            } năm ${order["delivery_date"]?.["year"] ?? ""}`}
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td className={styles.labelCol}>Phí giao hàng:</td>
+                    <td>
+                        <InputGroup>
                             <Input
                                 readOnly
                                 type="text"
-                                id="unit-price"
-                                value={order["receiver_phone"]}
+                                id="actual-price"
+                                value={order["transport_fee"]?.toLocaleString()}
                             />
-                        </td>
-                    </tr>
+                            <InputGroupAddon addonType="append">
+                                <InputGroupText>đ</InputGroupText>
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </td>
+                </tr>
 
-                    <tr>
-                        <td className={styles.labelCol}>Địa chỉ nhận:</td>
-                        <td>
+                <tr>
+                    <td className={styles.labelCol}>Tổng giá trị:</td>
+                    <td>
+                        <InputGroup>
                             <Input
                                 readOnly
                                 type="text"
-                                id="discount-price"
-                                value={[
-                                    order["address_num"],
-                                    order["street"],
-                                    order["ward"],
-                                    order["district"],
-                                    order["city"],
-                                ].join(", ")}
+                                id="actual-price"
+                                value={order["total_price"]?.toLocaleString()}
                             />
-                        </td>
-                    </tr>
+                            <InputGroupAddon addonType="append">
+                                <InputGroupText>đ</InputGroupText>
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </td>
+                </tr>
 
-                    <tr>
-                        <td className={styles.labelCol}>Ngày mua:</td>
-                        <td>
-                            <Input
-                                readOnly
-                                type="text"
-                                id="discount-price"
-                                value={`Ngày ${order_date?.["dayOfMonth"] ?? ""} tháng ${
-                                    order_date?.["monthValue"] ?? ""
-                                } năm ${order_date?.["year"] ?? ""}`}
-                            />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className={styles.labelCol}>Dự kiến giao:</td>
-                        <td>
-                            <Input
-                                readOnly
-                                type="text"
-                                id="discount-price"
-                                value={`Ngày ${delivery_date?.["dayOfMonth"] ?? ""} tháng ${
-                                    delivery_date?.["monthValue"] ?? ""
-                                } năm ${delivery_date?.["year"] ?? ""}`}
-                            />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className={styles.labelCol}>Phí giao hàng:</td>
-                        <td>
-                            <InputGroup>
-                                <Input
-                                    readOnly
-                                    type="text"
-                                    id="actual-price"
-                                    value={order["transport_fee"]?.toLocaleString()}
-                                />
-                                <InputGroupAddon addonType="append">
-                                    <InputGroupText>đ</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className={styles.labelCol}>Tổng giá trị:</td>
-                        <td>
-                            <InputGroup>
-                                <Input
-                                    readOnly
-                                    type="text"
-                                    id="actual-price"
-                                    value={order["total_price"]?.toLocaleString()}
-                                />
-                                <InputGroupAddon addonType="append">
-                                    <InputGroupText>đ</InputGroupText>
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className={styles.labelCol}>Trạng thái:</td>
-                        <td>
-                            <ButtonGroup className={styles.statusBtnGroup}>
-                                <Input type="select" className={styles.statusSelect} id="status">
-                                    {this.buildStatusOptions(order["status"])}
-                                </Input>
-                                <Button color="primary" onClick={this.updateOrderStatus}>
-                                    Cập nhật
-                                </Button>
-                            </ButtonGroup>
-                        </td>
-                    </tr>
-                    <tr />
-                </tbody>
-            </table>
-        );
-    }
-}
+                <tr>
+                    <td className={styles.labelCol}>Trạng thái:</td>
+                    <td>
+                        <ButtonGroup className={styles.statusBtnGroup}>
+                            <Input type="select" className={styles.statusSelect} id="status">
+                                {buildStatusOptions(order["status"])}
+                            </Input>
+                            <Button color="primary" onClick={updateOrderStatus}>
+                                Cập nhật
+                            </Button>
+                        </ButtonGroup>
+                    </td>
+                </tr>
+                <tr />
+            </tbody>
+        </table>
+    );
+};
 
 export default OrderOverview;

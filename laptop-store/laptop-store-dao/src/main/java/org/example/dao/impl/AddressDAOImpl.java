@@ -2,7 +2,6 @@ package org.example.dao.impl;
 
 import org.example.dao.api.AddressDAO;
 import org.example.model.Address;
-import org.example.model.Laptop;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

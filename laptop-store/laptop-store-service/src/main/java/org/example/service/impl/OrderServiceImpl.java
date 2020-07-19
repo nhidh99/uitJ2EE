@@ -244,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @PUT
+    @POST
     @Path("/{id}/cancel")
     @Secured({RoleType.ADMIN, RoleType.USER})
     public Response cancelOrder(@PathParam("id") Integer orderId, @Context SecurityContext securityContext) {

@@ -14,5 +14,17 @@ public interface RatingDAO {
 
     List<Rating> findByProductId(Integer laptopId);
 
-    Float findAvgRatingByProductId(Integer laptopId);
+    List<Rating> findByFilter(String id, String status, Integer page);
+
+    Long findTotalRatingByFilter(String id, String status);
+
+    Long findTotalRatingByProductId(Integer laptopId);
+
+    List<Rating> findByPage(Integer page);
+
+    void delete(Integer id);
+
+    void approve(Integer id);
+
+    void deny(Integer id);
 }

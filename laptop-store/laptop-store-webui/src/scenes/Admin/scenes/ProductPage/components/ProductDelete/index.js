@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import styles from "./styles.module.scss";
+import laptopApi from "../../../../../../services/api/laptopApi";
 
 const ProductDelete = ({ product }) => {
     const [modal, setModal] = useState(false);
@@ -25,11 +26,11 @@ const ProductDelete = ({ product }) => {
     const submit = async (e) => {
         const input = e.target;
         input.disabled = true;
-        const response = await fetch(`/api/laptops/${product["id"]}`, {
-            method: "DELETE",
-        });
-        if (response.ok) {
+        try {
+            await laptopApi.deleteById(product["id"]);
             window.location.reload();
+        } catch (err) {
+            console.log("fail");
         }
     };
 

@@ -1,0 +1,33 @@
+.reply {
+    margin-bottom: 0 !important; 
+}
+
+.blockLeft {
+    text-align: center;
+}
+
+.blockLeft, .blockRight {
+    padding-top: 5px;
+}
+
+.commentRating {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(255, 193, 32);
+}
+
+.commentAuthor {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.commentTitle {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.listGroup {
+    width: 100%;
+}

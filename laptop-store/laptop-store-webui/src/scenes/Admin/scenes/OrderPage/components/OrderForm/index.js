@@ -5,7 +5,9 @@ import styles from "./styles.module.scss";
 import OrderDetail from "./OrderDetail";
 import OrderOverview from "./OrderOverview";
 import Loader from "react-loader-advanced";
-import { getCookie } from "../../../../../../services/helper/cookie";
+import laptopApi from "../../../../../../services/api/laptopApi";
+import promotionApi from "../../../../../../services/api/promotionApi";
+import orderApi from "../../../../../../services/api/orderApi";
 
 const OrderForm = ({ orderId }) => {
     const [loading, setLoading] = useState(true);
@@ -18,13 +20,9 @@ const OrderForm = ({ orderId }) => {
     }, []);
 
     const loadData = async () => {
-        const response = await fetch(`/api/orders/${orderId}`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-
-        if (response.ok) {
-            const order = await response.json();
+        try {
+            const response = await orderApi.getById(orderId);
+            const order = response.data;
             const productIds = order["details"]
                 .filter((detail) => detail["product_type"] === "LAPTOP")
                 .map((detail) => detail["product_id"]);
@@ -42,37 +40,35 @@ const OrderForm = ({ orderId }) => {
             setProductQties(productQties);
             setPromotionQties(promotionQties);
             setLoading(false);
+        } catch (err) {
+            console.log(err);
         }
     };
 
     const loadProducts = async (productIds) => {
-        const params = new URLSearchParams();
-        productIds.forEach((id) => params.append("ids", id));
-        const response = await fetch("/api/laptops?" + params.toString(), {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-        const output = {};
-        if (response.ok) {
-            const products = await response.json();
+        try {
+            const output = {};
+            const response = await laptopApi.getByIds(productIds);
+            const products = response.data;
             products.forEach((product) => (output[product["id"]] = product["quantity"]));
+            return output;
+        } catch (err) {
+            console.log("fail");
+            return {};
         }
-        return output;
     };
 
     const loadPromotions = async (promotionIds) => {
-        const params = new URLSearchParams();
-        promotionIds.forEach((id) => params.append("ids", id));
-        const response = await fetch("/api/promotions?" + params.toString(), {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-        const output = {};
-        if (response.ok) {
-            const products = await response.json();
+        try {
+            const output = {};
+            const response = await promotionApi.getByIds(promotionIds);
+            const products = await response.data;
             products.forEach((product) => (output[product["id"]] = product["quantity"]));
+            return output;
+        } catch (err) {
+            console.log("fail");
+            return {};
         }
-        return output;
     };
 
     const OrderBlock = ({ title, component }) => (

@@ -23,6 +23,7 @@ import java.util.Optional;
 public class LaptopDAOImpl implements LaptopDAO {
     private static final Integer ELEMENT_PER_BLOCK = 8;
     private static final Integer ADMIN_ELEMENT_PER_BLOCK = 5;
+    private static final Integer ELEMENT_PER_SUGGEST = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
@@ -246,5 +247,15 @@ public class LaptopDAOImpl implements LaptopDAO {
         Laptop laptop = em.find(Laptop.class, id);
         if (laptop == null) return null;
         return laptop.getThumbnail();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Laptop> findSuggestionsByLaptop(Integer laptopId) {
+        String query = "CALL laptop_suggest(?, ?)";
+        return em.createNativeQuery(query, Laptop.class)
+                .setParameter(1, laptopId)
+                .setParameter(2, ELEMENT_PER_SUGGEST)
+                .getResultList();
     }
 }

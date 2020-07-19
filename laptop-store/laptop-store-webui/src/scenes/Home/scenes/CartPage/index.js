@@ -1,43 +1,52 @@
-import React, { Component, Fragment } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useState, useEffect } from "react";
 import { Label, Button, Spinner } from "reactstrap";
 import ItemBlock from "./components/ItemBlock";
 import { FaShoppingCart, FaBoxOpen, FaGift, FaMoneyBillWave } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import { getCart, removeFromCart } from "../../../../services/helper/cart";
-import Loader from "react-loader-advanced";
+import { getCart, removeFromCart, updateCartDatabase } from "../../../../services/helper/cart";
 import { withRouter } from "react-router-dom";
+import { getCookie } from "../../../../services/helper/cookie";
+import EmptyBlock from "../../../../components/EmptyBlock";
+import Loader from "react-loader-advanced";
+import laptopApi from "../../../../services/api/laptopApi";
 
-class CartPage extends Component {
-    state = {
-        loading: true,
-        products: [],
-        totalPrice: 0,
-        totalDiscount: 0,
-    };
+const CartPage = (props) => {
+    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [totalDiscount, setTotalDiscount] = useState(0);
+    const cart = getCart();
 
-    componentDidMount() {
-        this.loadData();
-    }
+    useEffect(() => {
+        loadData();
+    }, [loading]);
 
-    loadData = async () => {
-        const cart = getCart();
-        if (Object.keys(cart).length === 0) {
-            this.setState({ loading: false });
+    const toggleLoading = () => setLoading(true);
+
+    const loadData = async () => {
+        if (!loading) return;
+        const ids = Object.keys(cart);
+
+        if (ids.length === 0) {
+            setProducts([]);
+            setTotalPrice(0);
+            setTotalDiscount(0);
+            setLoading(false);
             return;
         }
 
-        const params = new URLSearchParams();
-        Object.keys(cart).forEach((id) => params.append("ids", id));
-        const response = await fetch("/api/laptops?" + params.toString());
-
-        if (response.ok) {
-            const products = await response.json();
-            this.loadCart(products);
+        try {
+            await updateCartDatabase(cart);
+            const response = await laptopApi.getByIds(ids);
+            const products = response.data;
+            loadCart(products);
+        } catch (err) {
+            console.log("fail");
         }
     };
 
-    loadCart = (products) => {
-        const cart = getCart();
+    const loadCart = (products) => {
         let totalPrice = 0;
         let totalDiscount = 0;
 
@@ -54,89 +63,89 @@ class CartPage extends Component {
             .filter((id) => !productIds.includes(id))
             .forEach((id) => removeFromCart(id));
 
-        this.setState({
-            products: products,
-            totalPrice: totalPrice,
-            totalDiscount: totalDiscount,
-            loading: false,
-        });
+        setProducts(products);
+        setTotalPrice(totalPrice);
+        setTotalDiscount(totalDiscount);
+        setLoading(false);
     };
 
-    redirectToPayment = () => {
-        this.props.history.push("/payment");
+    const redirectToPayment = () => {
+        const url = getCookie("access_token") ? "/payment" : "/auth/login";
+        props.history.push(url);
+        window.scroll(0, 0);
     };
 
-    render() {
-        const { products, totalPrice, totalDiscount, loading } = this.state;
-        const cart = getCart();
+    const SummaryBlock = () => (
+        <div className={styles.summary}>
+            <span>
+                <b>
+                    <FaBoxOpen />
+                    &nbsp; Số lượng:&nbsp;&nbsp;
+                </b>
+                {Object.values(cart).reduce((a, b) => a + b, 0)}
+            </span>
 
-        return (
-            <Fragment>
-                <div className={styles.title}>
-                    <Label className={styles.pageTitle}>Giỏ hàng của tôi</Label>
-                    <Button
-                        onClick={this.redirectToPayment}
-                        className={styles.btn}
-                        color="success"
-                        disabled={products.length === 0}
-                    >
-                        <FaShoppingCart className={styles.icon} /> Tiến hành đặt hàng
-                    </Button>
+            <span>
+                <b>
+                    <FaGift />
+                    &nbsp; Tổng giảm giá:&nbsp;&nbsp;
+                </b>
+                {totalDiscount.toLocaleString()}
+                <sup>đ</sup>
+            </span>
+
+            <span>
+                <b>
+                    <FaMoneyBillWave />
+                    &nbsp; Tạm tính:&nbsp;&nbsp;
+                </b>
+                {totalPrice.toLocaleString()}
+                <sup>đ</sup>
+            </span>
+        </div>
+    );
+
+    return (
+        <Fragment>
+            <div className={styles.title}>
+                <Label className={styles.pageTitle}>Giỏ hàng của tôi</Label>
+                <Button
+                    onClick={redirectToPayment}
+                    className={styles.btn}
+                    color="success"
+                    disabled={products.length === 0 || loading}
+                >
+                    <FaShoppingCart className={styles.icon} /> Tiến hành đặt hàng
+                </Button>
+            </div>
+
+            <Loader show={loading && products.length !== 0} message={<Spinner />}>
+                <div className={styles.list}>
+                    {products.length === 0 ? (
+                        <EmptyBlock
+                            loading={loading}
+                            backToHome={!loading}
+                            icon={<FaBoxOpen />}
+                            loadingText="Đang tải giỏ hàng..."
+                            emptyText="Giỏ hàng trống"
+                            borderless
+                        />
+                    ) : (
+                        <Fragment>
+                            <SummaryBlock />
+                            {products.map((product) => (
+                                <ItemBlock
+                                    product={product}
+                                    quantity={cart[product["id"]]}
+                                    toggleLoading={toggleLoading}
+                                />
+                            ))}
+                        </Fragment>
+                    )}
                 </div>
-
-                <Loader show={loading} message={<Spinner />}>
-                    <div className={styles.total}>
-                        <span>
-                            <b>
-                                <FaBoxOpen />
-                                &nbsp; Số lượng:&nbsp;&nbsp;
-                            </b>
-                            {Object.values(cart).reduce((a, b) => a + b, 0)}
-                        </span>
-                        <span>
-                            <b>
-                                <FaGift />
-                                &nbsp; Tổng giảm giá:&nbsp;&nbsp;
-                            </b>
-                            {totalDiscount.toLocaleString()}
-                            <sup>đ</sup>
-                        </span>
-                        <span>
-                            <b>
-                                <FaMoneyBillWave />
-                                &nbsp; Tạm tính:&nbsp;&nbsp;
-                            </b>
-                            {totalPrice.toLocaleString()}
-                            <sup>đ</sup>
-                        </span>
-                    </div>
-
-                    <div className={styles.list}>
-                        {products.length === 0 ? (
-                            <div className={styles.emptyCart}>
-                                <FaBoxOpen size={80} />
-                                <br />
-                                {loading ? (
-                                    <h5>Đang tải giỏ hàng...</h5>
-                                ) : (
-                                    <Fragment>
-                                        <h4>Giỏ hàng trống</h4>
-                                        <Button size="lg" color="warning" type="a" href="/">
-                                            Quay lại trang mua sắm
-                                        </Button>
-                                    </Fragment>
-                                )}
-                            </div>
-                        ) : (
-                            products.map((product) => (
-                                <ItemBlock product={product} quantity={cart[product["id"]]} />
-                            ))
-                        )}
-                    </div>
-                </Loader>
-            </Fragment>
-        );
-    }
-}
+            </Loader>
+        </Fragment>
+    );
+};
 
 export default withRouter(CartPage);

@@ -23,6 +23,6 @@ public class AddressInput {
     @JsonProperty("street")
     private String street;
 
-    @JsonProperty("address_num")
+    @JsonProperty("addressNum")
     private String addressNum;
 }

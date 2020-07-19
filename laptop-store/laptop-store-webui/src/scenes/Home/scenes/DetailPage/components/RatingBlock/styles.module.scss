@@ -2,6 +2,7 @@
     display: inline-block;
     margin: 0 !important;
     width: fit-content !important;
+    font-size: 14px;
 
     td,
     th {
@@ -16,15 +17,25 @@
 }
 
 .blockLeft, .blockRight {
-    padding: 20px 0 10px 0;
+    font-size: 16px;
 }
 
 .blockLeft {
+    padding: 20px 0 10px 0;
     text-align: center;
 }
 
 .blockRight {
+    padding: 20px 20px 20px 30px !important;
     border-left: 1px solid lightgray;
+
+    input, textarea {
+        font-size: 14px !important;
+    }
+
+    div:not(:first-of-type) {
+        margin-top: 10px;
+    }
 }
 
 .startLabel {
@@ -60,4 +71,6 @@
 
 .submitButton {
     float: right;
+    font-size: 14px !important;
+    width: 150px;
 }

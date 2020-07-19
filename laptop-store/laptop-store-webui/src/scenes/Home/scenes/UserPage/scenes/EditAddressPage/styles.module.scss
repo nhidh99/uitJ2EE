@@ -8,8 +8,9 @@
     padding: 10px;
 
     input,
+    select,
     textarea {
-        font-size: 16px;
+        font-size: 16px !important;
         width: 100% !important;
         margin: 0 !important;
     }
@@ -25,9 +26,15 @@
     font-weight: 600;
 }
 
-.button {
+.buttons {
     float: right;
-    width: 120px;
+
+    button {
+        font-size: 14px !important;
+        margin-left: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 }
 
 .error {

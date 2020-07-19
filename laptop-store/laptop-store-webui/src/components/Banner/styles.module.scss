@@ -2,10 +2,11 @@
     background-color: #454545;
     padding: 4px 15px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .banner {
-    width: 1000px;
+    width: 1200px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -15,6 +16,14 @@
 .bannerLeft {
     display: flex;
     align-items: center;
+}
+
+.bannerCategory {
+    cursor: pointer;
+}
+
+.bannerCategory:hover {
+    font-weight: bold;
 }
 
 .logo {
@@ -36,10 +45,17 @@
 }
 
 .searchBar {
-    width: 300px;
+    width: 350px;
     display: inline-block;
+    background-color: white;
+    border-radius: 5px;
 }
 
+.searchInput:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: 1px solid #ced4da !important;
+}
 
 .category {
     text-align: center;

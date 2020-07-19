@@ -1,0 +1,54 @@
+.table {
+    background-color: white;
+    table-layout: fixed;
+    font-size: 14px;
+
+    td,
+    th {
+        word-wrap: break-word;
+        text-align: center;
+        vertical-align: middle !important;
+    }
+}
+
+.idCol {
+    width: 12%;
+}
+
+.nameCol {
+    width: 15%;
+}
+td.nameCol {
+    text-align: left;
+}
+
+.ratingCol {
+    width: 10%;
+}
+
+.detailCol {
+    width: 30%;
+}
+
+.titleCol {
+    width: 15%;
+}
+
+.statusCol {
+    width: 10%;
+}
+
+.actionCol {
+    width: 15%;
+}
+
+.modal {
+    min-width: 1200px !important;
+    max-width: 1200px !important;
+}
+
+.pagination {
+    float: right !important;
+    font-size: 14px;
+    font-weight: 600;
+}

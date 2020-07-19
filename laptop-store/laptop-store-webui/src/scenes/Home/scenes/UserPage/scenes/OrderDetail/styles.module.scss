@@ -28,7 +28,7 @@
 
 .productsCol {
     width: 50%;
-    text-align: justify;
+    text-align: left;
 }
 
 .unitPriceCol {
@@ -46,10 +46,6 @@
     text-align: center;
 }
 
-.img {
-    margin-right: 15px;
-}
-
 .progress {
     margin-bottom: 15px !important;
 }
@@ -63,4 +59,11 @@
 .canceled {
     font-weight: 600;
     color: red;
+}
+
+.productName {
+    width: 100%;
+    td:first-child {
+        width: 20%;
+    }
 }

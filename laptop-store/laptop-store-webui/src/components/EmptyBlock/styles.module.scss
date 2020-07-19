@@ -1,0 +1,33 @@
+.loader {
+    width: 100%;
+}
+
+.block {
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    border: 2px dashed gray;
+}
+
+.borderless {
+    border: none !important;
+}
+
+.icon {
+    svg {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0 !important;
+    margin-top: 5px;
+}
+
+.btn {
+    margin-top: 10px !important;
+}

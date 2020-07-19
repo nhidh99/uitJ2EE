@@ -1,43 +1,60 @@
-
-.top {
-    position: relative;
-    display: flex;
-    width: 1000px;
-    margin: 0 auto;
+.category {
+    margin-bottom: 30px;
 }
 
-.container {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    width: 1000px;
-    margin: 0 auto;
-}
-
-.leftside {
-    margin-top: 5px;
-    position: relative;
-    width: 200px;    
-    max-height: 1500px;
-    margin-bottom: 20px;
-}
-
-.rightside {
-    left: 200px;
-    margin-left: 10px;
-    width: 800px;
-}
-
-.block {
-    margin-top: 25px;
-}
-
-.title {
+.categoryHeader {
     font-size: 18px;
-    padding-left: 10px;
-    color: #3d3d3d;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
-.component {
+.icon {
+    margin-bottom: 3px;
+}
+
+.itemRating {
+    color: darkorange;
+}
+
+.itemInfo {
+    font-size: 13.5px;
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: -2px;
+}
+
+.itemName {
+    font-size: 14px;
+    font-weight: 550;
+}
+
+.itemImg {
+    width: 90%;
+    display: block;
+    margin: 0 auto;
+}
+
+.itemUnitPrice {
+    color: red;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.itemOriginPrice {
+    text-decoration: line-through;
+}
+
+.moreBtn {
+    width: 100%;
+    color: #52a2e1;
     background-color: white;
+    border: 1px solid lightgray;
+    border-top: none;
+    padding: 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.moreBtn:focus {
+    outline: 0;
 }

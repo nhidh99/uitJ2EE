@@ -1,75 +1,104 @@
-import React, { Component } from "react";
-import styles from './styles.module.scss';
-import FilterProductBlock from "../HomePage/components/ProductBlock/FilterProductBlock/FilterProductBlock";
-import SlideShow from "../HomePage/components/SlideShow/SlideShow";
-import DemandFilterBlock from "../HomePage/components/FilterBlock/DemandFilterBlock/DemandFIlterBlock";
-import BrandFilterBlock from "../HomePage/components/FilterBlock/BrandFilterBlock/BrandFilterBlock";
-import PriceFilterBlock from "../HomePage/components/FilterBlock/PriceFilterBlock/PriceFilterBlock";
-import CPUFilterBlock from "../HomePage/components/FilterBlock/CPUFilterBlock/CPUFilterBlock";
-import RamFilterBlock from "../HomePage/components/FilterBlock/RamFilterBlock/RamFilterBlock";
-import HardDriveFilterBlock from "../HomePage/components/FilterBlock/HardDriveFilterBlock/HardDriveFilterBlock";
-import ScreenFilterBlock from "../HomePage/components/FilterBlock/ScreenFilterBlock/ScreenFilterBlock";
-import BrandFilter from "../HomePage/components/BrandFilter/BrandFilter";
-import { Label, Row } from "reactstrap";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
+import styles from "./styles.module.scss";
+import { FaStar, FaSearch } from "react-icons/fa";
+import { withRouter, Link } from "react-router-dom";
+import LazyLoad from "react-lazyload";
+import "react-placeholder/lib/reactPlaceholder.css";
+import EmptyBlock from "../../../../components/EmptyBlock";
+import queryString from "query-string";
+import laptopApi from "../../../../services/api/laptopApi";
 
-class ResultPage extends Component {
+const ResultPage = (props) => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    constructor(props){
-        super(props);
-        this.state = {
-            isLoading: true,
-            brands: []
+    useEffect(() => {
+        setFilterBar();
+        setProducts([]);
+        setLoading(true);
+        loadData();
+    }, [props.location.search]);
+
+    const setFilterBar = () => {
+        const filter = queryString.parse(props.location.search);
+        if ("name" in filter) {
+            const searchInput = document.getElementById("btn-search");
+            searchInput.value = filter["name"];
         }
-    }
+    };
 
-    async componentDidMount() {
-        await fetch('/api/brands')
-        .then(response => response.json())
-        .then(data => this.setState({
-            isLoading: false,
-            brands: data
-        }))
-    }
+    const loadData = async () => {
+        try {
+            const filter = queryString.parse(props.location.search);
+            const response = await laptopApi.getByFilter(filter);
+            setProducts(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.log("fail");
+        }
+    };
 
-    render() {
-        
-        let brands = this.state.brands;
-
-        const Block = ({title, component})=>(
-            <div className={styles.block}>
-                <Label className={styles.title}>
-                    {title}
-                </Label>
-                <Row className={styles.component}>
-                    <td>{component}</td>
-                </Row>
-            </div>
-        )
-
+    const Item = ({ product }) => {
         return (
-            <div className={styles.slideshow}>
-                <div className={styles.top}>
-                    <SlideShow></SlideShow>
-                </div>
-                <div className={styles.container}>
-                    <div className={styles.leftside}>
-                        <DemandFilterBlock/>
-                        <BrandFilterBlock/>
-                        <PriceFilterBlock/>
-                        <CPUFilterBlock/>
-                        <RamFilterBlock/>
-                        <HardDriveFilterBlock/>
-                        <ScreenFilterBlock/>
-                    </div>
-                    <div className={styles.rightside}>
-                        <BrandFilter items={brands}></BrandFilter>
-                        <Block title="SẢN PHẨM PHÙ HỢP" component={<FilterProductBlock/>}>
-                        </Block>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-}
+            <Link to={`/product/${product["alt"]}/${product["id"]}`} className={styles.itemBlock}>
+                <LazyLoad height={200} offset={400} once>
+                    <img
+                        width={200}
+                        height={200}
+                        className={styles.itemImg}
+                        src={`/api/images/400/laptops/${product["id"]}/${product["alt"]}.jpg`}
+                        alt="Laptop"
+                    />
+                </LazyLoad>
 
-export default ResultPage;
+                <label className={styles.itemInfo}>
+                    <label className={styles.itemRating}>
+                        {product["avg_rating"].toFixed(1)}{" "}
+                        <FaStar className={styles.icon} size={10} />
+                    </label>{" "}
+                    - RAM {product["ram"]["size"]}GB - {product["hard_drive"]["type"]}{" "}
+                    {product["hard_drive"]["size"] === 1024
+                        ? "1TB"
+                        : `${product["hard_drive"]["size"]}GB`}
+                </label>
+                <br />
+
+                <label className={styles.itemName}>{product["name"]}</label>
+                <br />
+
+                <label className={styles.itemUnitPrice}>
+                    {product["unit_price"].toLocaleString()}
+                    <sup>đ</sup>
+                </label>
+
+                <label className={styles.itemOriginPrice}>
+                    {(product["unit_price"] + product["discount_price"]).toLocaleString()}
+                    <sup>đ</sup>
+                </label>
+                <br />
+            </Link>
+        );
+    };
+
+    return (
+        <div className={styles.category}>
+            <header className={styles.categoryHeader}>Kết quả tìm kiếm</header>
+            <div className={styles.itemList}>
+                {products.length === 0 ? (
+                    <EmptyBlock
+                        loading={loading}
+                        icon={<FaSearch />}
+                        loadingText="Đang tìm kiếm laptop"
+                        emptyText="Không tìm thấy sản phẩm phù hợp"
+                        borderless
+                    />
+                ) : (
+                    products.map((product) => <Item product={product} />)
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default withRouter(ResultPage);

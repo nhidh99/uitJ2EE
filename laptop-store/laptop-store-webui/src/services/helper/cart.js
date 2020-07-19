@@ -1,36 +1,37 @@
 import { MAXIMUM_QUANTITY_PER_PRODUCT } from "../../constants";
 import { getCookie } from "./cookie";
+import userApi from "../api/userApi";
 
 export const getCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart"));
     return cart ? cart : {};
 };
 
-export const addToCart = (productId, quantity) => {
+export const addToCart = async (productId, quantity) => {
     let cart = JSON.parse(localStorage.getItem("cart"));
     if (!cart) cart = {};
     quantity += productId in cart ? cart[productId] : 0;
 
     if (quantity <= MAXIMUM_QUANTITY_PER_PRODUCT) {
         cart[productId] = quantity;
-        updateCart(cart);
+        await updateCart(cart);
         return true;
     } else {
         return false;
     }
 };
 
-export const removeFromCart = (productId) => {
+export const removeFromCart = async (productId) => {
     let cart = JSON.parse(localStorage.getItem("cart"));
     if (cart && productId in cart) {
         delete cart[productId];
-        updateCart(cart);
+        await updateCart(cart);
     }
 };
 
-export const updateCart = (cart) => {
+export const updateCart = async (cart) => {
+    await updateCartDatabase(cart);
     updateCartQuantity(cart);
-    updateCartDatabase(cart);
 };
 
 export const updateCartQuantity = (cart) => {
@@ -43,10 +44,9 @@ export const updateCartQuantity = (cart) => {
 export const updateCartDatabase = async (cart) => {
     const token = getCookie("access_token");
     if (!token) return;
-
-    await fetch("/api/users/me/carts", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: JSON.stringify(cart),
-    });
+    try {
+        await userApi.putCurrentUserCart(cart);
+    } catch (err) {
+        console.log("err");
+    }
 };

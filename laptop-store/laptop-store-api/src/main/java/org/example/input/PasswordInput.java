@@ -10,4 +10,7 @@ public class PasswordInput {
 
     @JsonProperty("newPassword")
     private String newPassword;
+
+    @JsonProperty("confirmPassword")
+    private String confirmPassword;
 }

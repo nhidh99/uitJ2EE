@@ -43,6 +43,27 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findAddressById(@PathParam("id") Integer id,
+                                    @Context SecurityContext securityContext) {
+        try {
+            Principal principal = securityContext.getUserPrincipal();
+            Integer userId = Integer.parseInt(principal.getName());
+            Address address = addressDAO.findById(id).orElseThrow(Exception::new);
+            ObjectMapper om = new ObjectMapper();
+            String addressJSON = om.writeValueAsString(address);
+            boolean isValidRequest = address.getUser().getId().equals(userId);
+            return isValidRequest
+                    ? Response.ok(addressJSON).build()
+                    : Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)

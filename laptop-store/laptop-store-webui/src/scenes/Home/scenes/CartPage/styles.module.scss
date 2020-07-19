@@ -16,14 +16,12 @@
 
 .list {
     background-color: white;
-    padding: 10px 10px 20px 10px;
 }
 
-.total {
+.summary {
     background-color: white;
     font-size: 16px;
     text-align: end;
-    border-bottom: 1.5px solid #eee;
     padding: 10px 40px;
     display: flex;
     justify-content: space-between;
@@ -36,13 +34,4 @@
 .price {
     color: red;
     font-weight: bold;
-}
-
-.emptyCart {
-    text-align: center;
-    padding: 20px 0;
-
-    h4 {
-        margin-bottom: 10px;
-    }
 }

@@ -1,36 +1,30 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.scss";
 import { Input, InputGroup, InputGroupAddon, InputGroupText, Button } from "reactstrap";
 import { FaUser, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { createCookie } from "../../../../services/helper/cookie";
+import authApi from "../../../../services/api/authApi";
 
-class LoginPage extends Component {
-    state = {
-        error: null,
-        submitted: false,
-    };
+const LoginPage = () => {
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    login = async () => {
-        this.setState({ error: null, submitted: true });
+    const login = async () => {
+        setError(null);
+        setLoading(true);
+
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            }),
-        });
 
-        if (response.ok) {
-            const token = await response.text();
+        try {
+            const response = await authApi.login(username, password);
+            const token = response.data;
             createCookie("access_token", token, 1);
             window.location.href = "/";
-        } else {
+        } catch (err) {
             let error = null;
-            switch (response.status) {
+            switch (err.response.status) {
                 case 401:
                     error = "Tài khoản hoặc mật khẩu không chính xác";
                     break;
@@ -38,15 +32,14 @@ class LoginPage extends Component {
                     error = "Lỗi hệ thống";
                     break;
             }
-            this.setState({ error: error, submitted: false });
+            setError(error);
+            setLoading(false);
         }
     };
 
-    render() {
-        const { error, submitted } = this.state;
-
-        return (
-            <div className={styles.form}>
+    return (
+        <div className={styles.form}>
+            <div className={styles.loginForm}>
                 <header>ĐĂNG NHẬP</header>
                 <InputGroup>
                     <InputGroupAddon addonType="prepend">
@@ -55,14 +48,12 @@ class LoginPage extends Component {
                         </InputGroupText>
                     </InputGroupAddon>
                     <Input
-                        autoFocus
                         id="username"
                         type="text"
                         placeholder="Tài khoản"
                         className={styles.borderInputRight}
                     />
                 </InputGroup>
-
                 <InputGroup>
                     <InputGroupAddon addonType="prepend">
                         <InputGroupText className={styles.borderInputLeft}>
@@ -80,8 +71,8 @@ class LoginPage extends Component {
                 <Button
                     color="secondary"
                     className={styles.button}
-                    onClick={this.login}
-                    disabled={submitted}
+                    onClick={login}
+                    disabled={loading}
                 >
                     Đăng nhập
                 </Button>
@@ -95,8 +86,8 @@ class LoginPage extends Component {
 
                 {error ? <p className={styles.error}>{error}</p> : null}
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default LoginPage;

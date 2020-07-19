@@ -8,12 +8,25 @@
     margin-bottom: 20px;
 }
 
+.table {
+    border: 1px solid lightgrey;
+    font-size: 14px;
+
+    th {
+        font-size: 14px;
+        background-color: #eee;
+    }
+
+    td {
+        padding-top: 25px !important;
+        padding-bottom: 25px !important;
+        vertical-align: middle !important;
+    }
+}
+
 .pageHeader {
     padding-bottom: 9px;
     margin: 40px 0 20px;
-}
-.orderTable {
-    border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .orderRow:hover {
@@ -42,21 +55,6 @@
 .statusCol {
     width: 17%;
     text-align: center;
-}
-
-.table {
-    border: 1px solid lightgrey;
-
-    th {
-        font-size: 14px;
-        background-color: #eee;
-    }
-
-    td {
-        padding-top: 25px !important;
-        padding-bottom: 25px !important;
-        vertical-align: middle !important;
-    }
 }
 
 .pagination {

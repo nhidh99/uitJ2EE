@@ -8,9 +8,9 @@ public class RatingInput {
     @JsonProperty("rating")
     private Integer rating;
 
-    @JsonProperty("comment_title")
-    private String commentTitle;
+    @JsonProperty("title")
+    private String title;
 
-    @JsonProperty("comment_detail")
-    private String commentDetail;
+    @JsonProperty("detail")
+    private String detail;
 }

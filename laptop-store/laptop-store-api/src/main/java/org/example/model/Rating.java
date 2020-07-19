@@ -49,6 +49,10 @@ public class Rating {
     @JsonProperty("rating_date")
     private LocalDate ratingDate;
 
+    @Column(name = "approve_status")
+    @JsonProperty("approve_status")
+    private boolean approveStatus;
+
     @OneToMany(mappedBy = "rating", fetch = FetchType.EAGER)
     @JsonProperty("replies")
     private List<RatingReply> replies;

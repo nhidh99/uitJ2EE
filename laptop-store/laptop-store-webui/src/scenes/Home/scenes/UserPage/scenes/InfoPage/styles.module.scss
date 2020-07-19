@@ -19,7 +19,7 @@
 
 .table {
     width: 100%;
-    border-spacing: 10px;    
+    border-spacing: 10px;
     border-collapse: separate;
     padding: 15px 10px;
     border: 1.5px dashed darkgray;
@@ -41,16 +41,38 @@
     font-size: 16px !important;
 }
 
-.submit {
+.buttons {
     float: right;
+
+    button {
+        font-size: 14px;
+    }
+}
+
+.syncFacebook {
+    margin-right: 10px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    background-color: #3b5998 !important;
+}
+
+.syncGoogle {
+    margin-right: 10px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    background-color: #db4a39 !important;
+    border: none !important;
+}
+
+.icon {
+    margin-right: 3px;
+    margin-bottom: 2px;
+    font-size: 16px;
+}
+
+.submit {
     width: 100px;
 }
-
-.loader {
-    width: 100%;
-    height: 100%;
-}
-
 
 .err {
     display: block;

@@ -36,7 +36,7 @@ const ProductEdit = ({ product }) => {
                 </ModalHeader>
 
                 <ModalBody>
-                    <ProductForm product={product} />
+                    <ProductForm product={product} toggle={toggle} />
                 </ModalBody>
             </Modal>
         </Fragment>
@@ -47,8 +47,8 @@ const ProductEdit = ({ product }) => {
                 &nbsp;&nbsp;Thêm sản phẩm
             </Button>
 
-            <Modal isOpen={modal} toggle={toggle} className={styles.modal}>
-                <ModalHeader toggle={toggle}>
+            <Modal isOpen={modal} className={styles.modal} external={externalCloseBtn}>
+                <ModalHeader>
                     <FaBox />
                     &nbsp;&nbsp;Thêm sản phẩm
                 </ModalHeader>
