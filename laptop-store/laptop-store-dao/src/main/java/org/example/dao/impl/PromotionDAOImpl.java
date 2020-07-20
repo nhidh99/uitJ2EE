@@ -32,15 +32,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     @Resource(name = "jdbc/laptop-store")
     private DataSource ds;
 
-    private Promotion buildPromotionFromResultSet(ResultSet rs) throws SQLException {
-        return Promotion.builder()
-                .id(rs.getInt("id"))
-                .name(rs.getString("name"))
-                .price(rs.getLong("price"))
-                .quantity(rs.getInt("quantity"))
-                .alt(rs.getString("alt")).build();
-    }
-
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findAll() throws SQLException {
@@ -53,7 +44,7 @@ public class PromotionDAOImpl implements PromotionDAO {
             List<Promotion> promotions = new LinkedList<>();
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()) {
-                Promotion promotion = buildPromotionFromResultSet(rs);
+                Promotion promotion = Promotion.fromResultSet(rs);
                 promotions.add(promotion);
             }
             return promotions;
@@ -85,17 +76,17 @@ public class PromotionDAOImpl implements PromotionDAO {
     public List<Promotion> findByFilter(String filter, Integer page) {
         String query = "SELECT * FROM Promotion p WHERE p.id = ? OR p.name LIKE CONCAT('%',?,'%') AND p.record_status = true";
         return em.createNativeQuery(query, Promotion.class)
-            .setParameter(1, filter)
-            .setParameter(2, filter)
-            .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-            .setMaxResults(ELEMENT_PER_BLOCK)
-            .getResultList();
+                .setParameter(1, filter)
+                .setParameter(2, filter)
+                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
+                .setMaxResults(ELEMENT_PER_BLOCK)
+                .getResultList();
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public Long findTotalPromotions(String filter) {
-        if(filter == null) {
+        if (filter == null) {
             String query = "SELECT COUNT(p) FROM Promotion p WHERE p.recordStatus = true";
             return em.createQuery(query, Long.class).getSingleResult();
         } else {

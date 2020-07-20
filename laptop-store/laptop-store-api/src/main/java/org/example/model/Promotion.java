@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Data
@@ -53,4 +55,13 @@ public class Promotion {
     @ToString.Exclude
     @JsonIgnore
     private List<Laptop> laptops;
+
+    public static Promotion fromResultSet(ResultSet rs) throws SQLException {
+        return Promotion.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .price(rs.getLong("price"))
+                .quantity(rs.getInt("quantity"))
+                .alt(rs.getString("alt")).build();
+    }
 }
