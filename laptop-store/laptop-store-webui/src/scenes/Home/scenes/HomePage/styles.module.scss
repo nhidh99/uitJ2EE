@@ -1,60 +1,43 @@
-.category {
-    margin-bottom: 30px;
-}
 
-.categoryHeader {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.icon {
-    margin-bottom: 3px;
-}
-
-.itemRating {
-    color: darkorange;
-}
-
-.itemInfo {
-    font-size: 13.5px;
-    color: #007bff;
-    font-weight: 600;
-    margin-bottom: -2px;
-}
-
-.itemName {
-    font-size: 14px;
-    font-weight: 550;
-}
-
-.itemImg {
-    width: 90%;
-    display: block;
+.top {
+    position: relative;
+    display: flex;
+    width: 1200px;
     margin: 0 auto;
 }
 
-.itemUnitPrice {
-    color: red;
-    font-weight: bold;
-    margin-right: 10px;
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 1200px;
+    margin: 0 auto;
 }
 
-.itemOriginPrice {
-    text-decoration: line-through;
+.leftside {
+    margin-top: 5px;
+    position: relative;
+    width: 200px;    
+    max-height: 1500px;
+    margin-bottom: 20px;
 }
 
-.moreBtn {
-    width: 100%;
-    color: #52a2e1;
+.rightside {
+    left: 200px;
+    margin-left: 10px;
+    width: 1000px;
+}
+
+.block {
+    margin-top: 25px;
+}
+
+.title {
+    font-size: 18px;
+    padding-left: 10px;
+    color: #3d3d3d;
+}
+
+.component {
     background-color: white;
-    border: 1px solid lightgray;
-    border-top: none;
-    padding: 5px 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.moreBtn:focus {
-    outline: 0;
 }

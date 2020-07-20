@@ -69,8 +69,6 @@ const Banner = (props) => {
                         <tr>
                             <BannerCategory href="/" icon={<FaInfoCircle />} title="Thông tin" />
 
-                            <BannerCategory icon={<FaSearch />} title="Tìm kiếm" toggle />
-
                             {role === ROLE_ADMIN ? (
                                 <BannerCategory
                                     href="/admin/orders"

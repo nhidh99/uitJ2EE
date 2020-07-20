@@ -17,11 +17,11 @@ const Home = () => (
         />
         <Route exact component={HomePage} path="/" />
 
-        <Route exact component={ResultPage} path="/search" />
-
         <Route exact component={CartPage} path="/cart" />
 
         <Route exact component={PaymentPage} path="/payment" />
+
+        <Route exact component={ResultPage} path="/result" />
 
         <Route exact component={ComparePage} path="/product/compare/:alt/:id1/:id2" />
 
@@ -31,7 +31,7 @@ const Home = () => (
             path={[
                 "/user/address/:id",
                 "/user/order/:orderId",
-                "/user/(info|password|address|order|payment|wish-list|reward)",
+                "/user/(info|password|address|order|payment)",
             ]}
         />
     </Switch>

@@ -104,7 +104,6 @@ public class LaptopServiceImpl implements LaptopService {
         }
     }
 
-
     @Override
     @GET
     @Path("/result")

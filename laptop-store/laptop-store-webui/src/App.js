@@ -10,7 +10,6 @@ import Banner from "./components/Banner";
 import { getCookie, createCookie, removeCookie } from "./services/helper/cookie";
 import { ROLE_GUEST, ROLE_USER, ROLE_ADMIN, REFRESH_TOKENS_TIMESPAN } from "./constants";
 import { getCart, updateCartDatabase } from "./services/helper/cart";
-import Filter from "./components/Filter";
 import ConfirmModal from "./components/ConfirmModal";
 import store from "./services/redux/store";
 import { setDefaultAddressId } from "./services/redux/actions";
@@ -119,9 +118,9 @@ const App = (props) => {
                 component={Home}
                 path={[
                     "/",
-                    "/search",
                     "/user",
                     "/cart",
+                    "/result",
                     "/product/:id",
                     "/product/:alt/:id",
                     "/product/compare/:alt/:id1/:id2",
@@ -137,14 +136,14 @@ const App = (props) => {
             component={Home}
             path={[
                 "/",
-                "/search",
                 "/user",
                 "/cart",
                 "/payment",
+                "/result",
                 "/product/:id",
                 "/product/:alt/:id",
                 "/product/compare/:alt/:id1/:id2",
-                "/user/(info|password|address|order|wish-list|reward)",
+                "/user/(info|password|address|order)",
                 "/user/address/:id",
                 "/user/order/:orderId",
             ]}
@@ -158,14 +157,14 @@ const App = (props) => {
                 component={Home}
                 path={[
                     "/",
-                    "/search",
                     "/user",
                     "/cart",
                     "/payment",
+                    "/result",
                     "/product/:id",
                     "/product/:alt/:id",
                     "/product/compare/:alt/:id1/:id2",
-                    "/user/(info|password|address|order|wish-list|reward)",
+                    "/user/(info|password|address|order)",
                     "/user/address/:id",
                     "/user/order/:orderId",
                 ]}
@@ -174,7 +173,7 @@ const App = (props) => {
                 exact
                 component={Admin}
                 path={[
-                    "/admin/(|products|orders|promotions|ratings|comments)",
+                    "/admin/(|products|orders|promotions|ratings)",
                     "/admin/products/search",
                     "/admin/orders/search",
                     "/admin/promotions/search",
@@ -189,7 +188,6 @@ const App = (props) => {
         <Fragment>
             <Banner role={role} />
             <ConfirmModal />
-            <Filter />
             <div className="container">
                 <Switch>{buildRoutes(role)}</Switch>
             </div>
