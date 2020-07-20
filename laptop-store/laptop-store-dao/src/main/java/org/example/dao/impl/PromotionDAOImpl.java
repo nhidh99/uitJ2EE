@@ -4,13 +4,20 @@ import org.example.dao.api.PromotionDAO;
 import org.example.model.Laptop;
 import org.example.model.Promotion;
 
+import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +29,35 @@ public class PromotionDAOImpl implements PromotionDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
+    @Resource(name = "jdbc/laptop-store")
+    private DataSource ds;
+
+    private Promotion buildPromotionFromResultSet(ResultSet rs) throws SQLException {
+        return Promotion.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .price(rs.getLong("price"))
+                .quantity(rs.getInt("quantity"))
+                .alt(rs.getString("alt")).build();
+    }
+
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
-    public List<Promotion> findAll() {
-        String query = "SELECT p FROM Promotion p WHERE p.recordStatus = true ORDER BY p.id DESC";
-        return em.createQuery(query, Promotion.class).getResultList();
+    public List<Promotion> findAll() throws SQLException {
+        String sql = "SELECT id, name, price, alt, quantity " +
+                "FROM promotion p " +
+                "WHERE p.record_status = true " +
+                "ORDER BY p.id DESC";
+
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            List<Promotion> promotions = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                Promotion promotion = buildPromotionFromResultSet(rs);
+                promotions.add(promotion);
+            }
+            return promotions;
+        }
     }
 
     @Override
