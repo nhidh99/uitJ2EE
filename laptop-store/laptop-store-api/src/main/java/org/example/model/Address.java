@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Entity
 @Data
@@ -61,5 +63,17 @@ public class Address {
     @JsonIgnore
     private boolean recordStatus;
 
+    public static Address fromResultSet(ResultSet rs) throws SQLException {
+        return  Address.builder()
+                .id(rs.getInt("id"))
+                .addressNum(rs.getString("address_num"))
+                .city(rs.getString("city"))
+                .district(rs.getString("district"))
+                .ward(rs.getString("ward"))
+                .street(rs.getString("street"))
+                .receiverName(rs.getString("receiver_name"))
+                .receiverPhone(rs.getString("receiver_phone"))
+                .build();
+    }
 
 }

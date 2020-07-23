@@ -7,6 +7,9 @@ import lombok.*;
 import org.example.type.BrandType;
 
 import javax.persistence.*;
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Data
@@ -127,4 +130,34 @@ public class Laptop {
     @ToString.Exclude
     @JsonIgnore
     private List<Promotion> promotions;
+
+    public static Laptop fromResultSet(ResultSet rs) throws SQLException {
+        byte []image = null;
+        byte []thumbnail = null;
+        Blob blob = rs.getBlob("image");
+        int blobLength = (int) blob.length();
+        image = blob.getBytes(1, blobLength);
+        Blob thumbn = rs.getBlob("thumbnail");
+        int thumbnlenght = (int) thumbn.length();
+        thumbnail = thumbn.getBytes(1, thumbnlenght);
+
+        return Laptop.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .brand(BrandType.valueOf(rs.getString("brand")))
+                .unitPrice(rs.getLong("unit_price"))
+                .discountPrice(rs.getLong("discount_price"))
+                .quantity(rs.getInt("quantity"))
+                .avgRating(rs.getFloat("avg_rating"))
+                .alt(rs.getString("alt"))
+                .graphisCard(rs.getString("graphics_card"))
+                .ports(rs.getString("ports"))
+                .os(rs.getString("os"))
+                .design(rs.getString("design"))
+                .thickness(rs.getFloat("thickness"))
+                .weight(rs.getFloat("weight"))
+                .image(image)
+                .thumbnail(thumbnail)
+                .build();
+    }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -57,11 +58,16 @@ public class Promotion {
     private List<Laptop> laptops;
 
     public static Promotion fromResultSet(ResultSet rs) throws SQLException {
+        byte []image = null;
+        Blob blob = rs.getBlob("image");
+        int blobLength = (int) blob.length();
+        image = blob.getBytes(1, blobLength);
         return Promotion.builder()
                 .id(rs.getInt("id"))
                 .name(rs.getString("name"))
                 .price(rs.getLong("price"))
                 .quantity(rs.getInt("quantity"))
+                .image(image)
                 .alt(rs.getString("alt")).build();
     }
 }

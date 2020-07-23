@@ -7,8 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.type.CPUType;
+import org.example.type.GenderType;
+import org.example.type.RoleType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -39,5 +44,15 @@ public class CPU {
     @Column(name = "max_speed")
     @JsonProperty("max_speed")
     private Float maxSpeed;
+
+    public static CPU fromResultSet(ResultSet rs) throws SQLException {
+        return CPU.builder()
+                .id(rs.getInt("id"))
+                .type(CPUType.valueOf(rs.getString("type")))
+                .detail(rs.getString("detail"))
+                .speed(rs.getFloat("speed"))
+                .maxSpeed(rs.getFloat("max_speed"))
+                .build();
+    }
 }
 

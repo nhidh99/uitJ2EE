@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Local
 public interface PromotionDAO {
-    List<Promotion> findAll() throws SQLException;
+    List<Promotion> findAll();
 
     List<Promotion> findByPage(Integer page);
 
