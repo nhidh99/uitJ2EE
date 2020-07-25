@@ -60,6 +60,4 @@ public class Address {
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
     private boolean recordStatus;
-
-
 }

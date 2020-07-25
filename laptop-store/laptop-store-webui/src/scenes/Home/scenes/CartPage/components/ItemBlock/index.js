@@ -66,13 +66,12 @@ const ItemBlock = ({ product, quantity, toggleLoading }) => {
         if (productId in cart && cart[productId] !== quantity) {
             cart[productId] = quantity;
             updateCartQuantity(cart);
-            // await updateCart(cart);
             setQty(quantity);
         }
     };
 
     const removeProduct = async (productId) => {
-        removeFromCart(productId);
+        await removeFromCart(productId);
         toggleLoading();
     };
 

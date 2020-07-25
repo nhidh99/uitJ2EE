@@ -12,7 +12,7 @@ public enum BrandType {
     MAC,
     MSI;
 
-    public static  BrandType getBrandByName (String name) {
+    public static BrandType getBrandByName(String name) {
         switch (name) {
             case "ACER": {
                 return ACER;
@@ -45,7 +45,7 @@ public enum BrandType {
 
         @Override
         public String convertToDatabaseColumn(BrandType brandType) {
-            if(brandType == null)
+            if (brandType == null)
                 return null;
             switch (brandType) {
                 case ACER:
@@ -69,7 +69,7 @@ public enum BrandType {
 
         @Override
         public BrandType convertToEntityAttribute(String s) {
-            if(s == null) {
+            if (s == null) {
                 return null;
             }
             switch (s) {

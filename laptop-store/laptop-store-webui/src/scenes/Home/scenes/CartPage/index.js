@@ -19,7 +19,9 @@ const CartPage = (props) => {
     const cart = getCart();
 
     useEffect(() => {
-        loadData();
+        if (loading) {
+            loadData();
+        }
     }, [loading]);
 
     const toggleLoading = () => setLoading(true);
@@ -119,7 +121,10 @@ const CartPage = (props) => {
                 </Button>
             </div>
 
-            <Loader show={loading && products.length !== 0} message={<Spinner />}>
+            <Loader
+                show={(loading && products.length !== 0)}
+                message={<Spinner />}
+            >
                 <div className={styles.list}>
                     {products.length === 0 ? (
                         <EmptyBlock

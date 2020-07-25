@@ -1,6 +1,5 @@
 package org.example.filter;
 
-import lombok.Builder;
 import lombok.Data;
 
 import javax.ws.rs.DefaultValue;
