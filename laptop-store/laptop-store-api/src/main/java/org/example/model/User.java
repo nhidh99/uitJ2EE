@@ -7,6 +7,8 @@ import org.example.type.GenderType;
 import org.example.type.RoleType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -68,4 +70,19 @@ public class User {
     @Column(name = "cart")
     @JsonProperty("cart")
     private String cart;
+
+    public static User fromResultSet(ResultSet rs) throws SQLException {
+        return User.builder()
+                .id(rs.getInt("id"))
+                .username(rs.getString("username"))
+                .password(rs.getString("password"))
+                .email(rs.getString("email"))
+                .name(rs.getString("name"))
+                .phone(rs.getString("phone"))
+                .role(RoleType.valueOf(rs.getString("role")))
+                .gender(GenderType.valueOf(rs.getString("gender")))
+                .birthday(rs.getObject("birthday", LocalDate.class))
+                .cart(rs.getString("cart"))
+                .build();
+    }
 }

@@ -1,3 +1,81 @@
-.suggestItem {
-    padding-bottom: 10px;
+.block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cell {
+    flex: 1 1 0px;
+    text-align: left;
+    padding: 10px 20px 15px 20px;
+}
+
+.cell:hover {
+    img {
+        transform: translateY(-15px);
+    }
+    text-decoration: none;
+    box-shadow: 0 0 5px 5px #ccc;
+}
+
+.cell:not(:first-of-type) {
+    border-left: 1px solid lightgray;
+}
+
+.cell:not(:last-of-type) {
+    border-right: none;
+}
+
+.name {
+    font-size: 16px;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+}
+
+.img {
+    padding: 5px;
+    text-align: center;
+}
+
+.unitPrice {
+    font-size: 14px;
+    color:red;
+    font-weight: 600;
+}
+
+.originPrice {
+    color: gray;
+    text-decoration: line-through;
+}
+
+.suggest {
+    font-size: 16px;
+}
+
+.icon {
+    margin-bottom: 3px;
+}
+
+.itemRating {
+    color: darkorange;
+}
+
+.itemInfo {
+    color: #007bff;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: -2px;
+    cursor: pointer;
+}
+
+.redirect {
+    margin: 0 -20px;
+    > * {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
 }

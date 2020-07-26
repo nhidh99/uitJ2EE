@@ -176,11 +176,12 @@ public class OrderServiceImpl implements OrderService {
             }
             return Response.status(Response.Status.FORBIDDEN).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.serverError().build();
         }
     }
 
-    private String buildOrderJSON(Order order) throws JsonProcessingException {
+    private String buildOrderJSON(Order order) throws JsonProcessingException, SQLException {
         List<OrderDetail> orderDetails = orderDetailDAO.findByOrderId(order.getId());
         ObjectMapper om = new ObjectMapper();
         String orderJSON = om.writeValueAsString(order);
@@ -222,6 +223,7 @@ public class OrderServiceImpl implements OrderService {
             String overviewsJSON = om.writeValueAsString(orderOverviews);
             return Response.ok(overviewsJSON).header("X-Total-Count", orderCount).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.serverError().build();
         }
     }
@@ -244,7 +246,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @PUT
+    @POST
     @Path("/{id}/cancel")
     @Secured({RoleType.ADMIN, RoleType.USER})
     public Response cancelOrder(@PathParam("id") Integer orderId, @Context SecurityContext securityContext) {

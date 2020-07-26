@@ -1,7 +1,8 @@
-import React, { Component, Fragment } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useState, useEffect } from "react";
 import "./App.scss";
 import { createHeart, killHeart } from "heartbeats";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import Home from "./scenes/Home";
 import Auth from "./scenes/Auth";
 import Admin from "./scenes/Admin";
@@ -9,27 +10,36 @@ import Banner from "./components/Banner";
 import { getCookie, createCookie, removeCookie } from "./services/helper/cookie";
 import { ROLE_GUEST, ROLE_USER, ROLE_ADMIN, REFRESH_TOKENS_TIMESPAN } from "./constants";
 import { getCart, updateCartDatabase } from "./services/helper/cart";
+import ConfirmModal from "./components/ConfirmModal";
+import store from "./services/redux/store";
+import { setDefaultAddressId } from "./services/redux/actions";
+import userApi from "./services/api/userApi";
+import authApi from "./services/api/authApi";
 
-class App extends Component {
-    state = {
-        loading: true,
-        roles: null,
+const App = (props) => {
+    const [loading, setLoading] = useState(true);
+    const [role, setRole] = useState(null);
+
+    useEffect(() => loadData(), []);
+
+    useEffect(() => {
+        if (role === ROLE_GUEST) {
+            localStorage.setItem("cart", null);
+            localStorage.setItem("wish-list", null);
+        }
+    }, [role]);
+
+    const fetchToken = async () => {
+        try {
+            const response = await authApi.refreshToken();
+            return response.data;
+        } catch (err) {
+            console.log("fail");
+            return null;
+        }
     };
 
-    componentDidMount() {
-        this.loadData();
-    }
-
-    fetchToken = async () => {
-        const token = getCookie("access_token");
-        const response = await fetch("/api/auth/token", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        return response.ok ? await response.text() : null;
-    };
-
-    syncUserCart = (userCart) => {
+    const syncUserCart = (userCart) => {
         const cart = getCart();
         if (JSON.stringify(cart) === userCart) return;
         Object.keys(cart).length === 0
@@ -37,10 +47,14 @@ class App extends Component {
             : updateCartDatabase(cart);
     };
 
-    createRefreshTokenHeart = () => {
+    const syncUserWishList = (userWishList) => {
+        localStorage.setItem("wish-list", userWishList);
+    };
+
+    const createRefreshTokenHeart = () => {
         const heart = createHeart(REFRESH_TOKENS_TIMESPAN, "refresh_token");
         heart.createEvent(1, async () => {
-            const token = await this.fetchToken();
+            const token = await fetchToken();
             if (token) {
                 createCookie("access_token", token);
             } else {
@@ -51,121 +65,134 @@ class App extends Component {
         });
     };
 
-    loadData = async () => {
+    const loadData = async () => {
         if (getCookie("access_token") === null) {
-            this.setState({ role: ROLE_GUEST, loading: false });
-            return;
+            setRole(ROLE_GUEST);
+            setLoading(true);
         }
 
-        const token = await this.fetchToken();
+        const token = await fetchToken();
         if (token) {
             createCookie("access_token", token);
-            const response = await fetch("/api/users/me", {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.ok) {
-                const user = await response.json();
-                this.createRefreshTokenHeart();
-                this.syncUserCart(user["cart"]);
-                this.setState({ role: user["role"] });
+            createRefreshTokenHeart();
+            try {
+                const response = await userApi.getCurrentUser();
+                const user = response.data;
+                syncUserCart(user["cart"]);
+                syncUserWishList(user["wish_list"]);
+                setRole(user["role"]);
+
+                store.dispatch(
+                    setDefaultAddressId({
+                        "default-id": user["default_address"]?.["id"],
+                    })
+                );
+            } catch (err) {
+                console.log("fail");
             }
         } else {
             removeCookie("access_token");
             killHeart("refresh_token");
-            this.setState({ role: ROLE_GUEST });
+            setRole(ROLE_GUEST);
         }
-        this.setState({ loading: false });
+        setLoading(false);
     };
 
-    buildRoutes = (role) => {
+    const buildRoutes = (role) => {
         switch (role) {
             case ROLE_GUEST:
-                return this.guestRoutes();
+                return guestRoutes();
             case ROLE_USER:
-                return this.userRoutes();
+                return userRoutes();
             case ROLE_ADMIN:
-                return this.adminRoutes();
+                return adminRoutes();
             default:
                 return null;
         }
     };
 
-    guestRoutes = () => (
-        <Fragment>
-            <Route
-                exact
-                component={Home}
-                path={["/", "/result", "/search", "/user", "/cart", "/product/:id", "/product/:alt/:id"]}
-            />
-            <Route exact component={Auth} path="/auth/(forgot|login|register)" />
-        </Fragment>
-    );
-
-    userRoutes = () => (
-        <Route
-            exact
-            component={Home}
-            path={[
-                "/",
-                "/result",
-                "/search",
-                "/user",
-                "/cart",
-                "/payment",
-                "/product/:id",
-                "/product/:alt/:id",
-                "/user/(info|password|address|order)",
-                "/user/address/(edit|create)",
-                "/user/address/:id",
-            ]}
-        />
-    );
-
-    adminRoutes = () => (
+    const guestRoutes = () => (
         <Fragment>
             <Route
                 exact
                 component={Home}
                 path={[
                     "/",
-                    "/result",
-                    "/search",
                     "/user",
                     "/cart",
-                    "/payment",
+                    "/result",
                     "/product/:id",
                     "/product/:alt/:id",
-                    "/user/(info|password|address|order)",
-                    "/user/address/(edit|create)",
-                    "/user/order/:orderId",
+                    "/product/compare/:alt/:id1/:id2",
                 ]}
             />
-            <Route 
-                exact 
-                component={Admin} 
-                path={[
-                    "/admin/(|products|orders|promotions)",
-                    "/admin/products/search",
-                    "/admin/promotions/search",
-                    "/admin/orders/search",
-                    ]} />
+            <Route exact component={Auth} path="/auth/(forgot|login|register)" />
         </Fragment>
     );
 
-    render() {
-        const { loading, role } = this.state;
-        const routes = this.buildRoutes(role);
+    const userRoutes = () => (
+        <Route
+            exact
+            component={Home}
+            path={[
+                "/",
+                "/user",
+                "/cart",
+                "/payment",
+                "/result",
+                "/product/:id",
+                "/product/:alt/:id",
+                "/product/compare/:alt/:id1/:id2",
+                "/user/(info|password|address|order)",
+                "/user/address/:id",
+                "/user/order/:orderId",
+            ]}
+        />
+    );
 
-        return loading ? null : (
-            <BrowserRouter>
-                <Banner role={role} />
-                <div className="container">
-                    <Switch>{routes}</Switch>
-                </div>
-            </BrowserRouter>
-        );
-    }
-}
+    const adminRoutes = () => (
+        <Fragment>
+            <Route
+                exact
+                component={Home}
+                path={[
+                    "/",
+                    "/user",
+                    "/cart",
+                    "/payment",
+                    "/result",
+                    "/product/:id",
+                    "/product/:alt/:id",
+                    "/product/compare/:alt/:id1/:id2",
+                    "/user/(info|password|address|order)",
+                    "/user/address/:id",
+                    "/user/order/:orderId",
+                ]}
+            />
+            <Route
+                exact
+                component={Admin}
+                path={[
+                    "/admin/(|products|orders|promotions|ratings)",
+                    "/admin/products/search",
+                    "/admin/orders/search",
+                    "/admin/promotions/search",
+                    "/admin/ratings/search",
+                    "/admin/comments/search",
+                ]}
+            />
+        </Fragment>
+    );
+
+    return loading ? null : (
+        <Fragment>
+            <Banner role={role} />
+            <ConfirmModal />
+            <div className="container">
+                <Switch>{buildRoutes(role)}</Switch>
+            </div>
+        </Fragment>
+    );
+};
 
 export default App;

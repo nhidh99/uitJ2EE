@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 import {ALL, DEMANDFILTERTITLE, BRANDFILTERTITLE, PRICEFILTERTITLE, RAMFILTERTITLE,
     CPUFILTERTITLE, HARDDRIVEFILTERTITLE, SCREENFILTERTITLE, PRICE_15, PRICE15_20, 
     PRICE20_25, PRICE25_35, RAM4, RAM8, RAM12, RAM16, RAM32_, HARDDRIVE128, HARDDRIVE256, 
-    HARDDRIVE512, HARDDRIVE1TB_, SCREEN_14, SCREEN14_16, SCREEN16_, PRICE35_ } from '../../../../../../constants';
+    HARDDRIVE512, HARDDRIVE1TB_, SCREEN_14, SCREEN14_16, SCREEN16_, PRICE35_, CPUI3, CPUI5, CPUI7, CPUCELERON, CPUAMD, CUPPENTIUM } from '../../../../../../constants';
 
 class FilterBlock extends Component {
     constructor(props){
@@ -58,6 +58,26 @@ class FilterBlock extends Component {
 
 function convertFilterValueToValue(filterTitle, filterValue) {
     switch(filterTitle) {
+        case CPUFILTERTITLE: {
+            switch(filterValue) {
+                case ALL: 
+                    return "";
+                case CPUI3:
+                    return "INTEL_CORE_I3";
+                case CPUI5:
+                    return "INTEL_CORE_I5";
+                case CPUI7:
+                    return "INTEL_CORE_I7";
+                case CPUCELERON:
+                    return "INTEL_CELERON";
+                case CPUAMD:
+                    return "AMD";
+                case CUPPENTIUM:
+                    return "INTEL_PENTIUM";
+                default:
+                    return "";
+            }
+        }
         case PRICEFILTERTITLE: {
             switch(filterValue) {
                 case ALL:

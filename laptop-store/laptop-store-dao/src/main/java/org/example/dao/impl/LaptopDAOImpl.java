@@ -3,18 +3,22 @@ package org.example.dao.impl;
 import org.example.dao.api.LaptopDAO;
 import org.example.dao.api.TagDAO;
 import org.example.filter.SearchFilter;
-import org.example.model.Laptop;
+import org.example.model.*;
 import org.example.type.BrandType;
 import org.example.type.CPUType;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +27,16 @@ import java.util.Optional;
 public class LaptopDAOImpl implements LaptopDAO {
     private static final Integer ELEMENT_PER_BLOCK = 8;
     private static final Integer ADMIN_ELEMENT_PER_BLOCK = 5;
+    private static final Integer ELEMENT_PER_SUGGEST = 5;
 
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
     @EJB(mappedName = "TagDAOImpl")
     private TagDAO tagDAO;
+
+    @Resource(name = "jdbc/laptop-store")
+    private DataSource ds;
 
     @Override
     @Transactional(Transactional.TxType.REQUIRES_NEW)
@@ -37,6 +45,78 @@ public class LaptopDAOImpl implements LaptopDAO {
             insert(laptop);
         } else {
             update(laptop);
+        }
+    }
+
+    private int insertCPU(Laptop laptop) {
+        String query = String.format("INSERT INTO cpu VALUES(%s, '%s', '%s', '%s', '%s'"
+                    , 0, laptop.getCpu().getType(), laptop.getCpu().getDetail()
+                    , laptop.getCpu().getSpeed(), laptop.getCpu().getMaxSpeed());
+        String getLastestCpu = "SELECT id FROM cpu ORDER BY id DESC LIMIT 1";
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
+        }
+        catch (SQLException sqlException) {
+            return -1;
+        }
+    }
+
+    private int insertRAM(Laptop laptop) {
+        String query = String.format("INSERT INTO ram VALUES(%s, '%s', '%s', '%s', '%s'"
+                , 0, laptop.getRam().getSize(), laptop.getRam().getType()
+                , laptop.getRam().getBus(), laptop.getRam().getExtraSlot());
+        String getLastestCpu = "SELECT id FROM ram ORDER BY id DESC LIMIT 1";
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
+        }
+        catch (SQLException sqlException) {
+            return -1;
+        }
+    }
+
+    private int insertMonitor(Laptop laptop) {
+        String query = String.format("INSERT INTO monitor VALUES(%s, '%s', '%s', '%s', '%s'"
+                , 0, laptop.getMonitor().getSize(), laptop.getMonitor().getResolutionType()
+                , laptop.getMonitor().getResolutionWidth(), laptop.getMonitor().getResolutionHeight());
+        String getLastestCpu = "SELECT id FROM monitor ORDER BY id DESC LIMIT 1";
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
+        }
+        catch (SQLException sqlException) {
+            return -1;
+        }
+    }
+
+    private int insertHardDrive(Laptop laptop) {
+        String query = String.format("INSERT INTO hard_drive VALUES(%s, '%s', '%s', '%s'"
+                , 0, laptop.getHardDrive().getType()
+                , laptop.getHardDrive().getSize(), laptop.getHardDrive().getDetail());
+        String getLastestCpu = "SELECT id FROM hard_drive ORDER BY id DESC LIMIT 1";
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
+        }
+        catch (SQLException sqlException) {
+            return -1;
         }
     }
 
@@ -60,11 +140,27 @@ public class LaptopDAOImpl implements LaptopDAO {
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByPage(Integer page) {
-        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true ORDER BY l.id DESC";
-        return em.createQuery(query, Laptop.class)
-                .setFirstResult(ADMIN_ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ADMIN_ELEMENT_PER_BLOCK)
-                .getResultList();
+        String query = String.format("SELECT * FROM laptop l " +
+                        "WHERE l.record_status = true ORDER BY l.id DESC LIMIT %s, %s"
+                , ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
+
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            LinkedList<Laptop> laptops = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return laptops;
+        }
+        catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
     }
 
     @Override
@@ -72,114 +168,161 @@ public class LaptopDAOImpl implements LaptopDAO {
     public void delete(Integer id) {
         Laptop laptop = em.find(Laptop.class, id);
         if (laptop == null) throw new BadRequestException();
-        laptop.setRecordStatus(false);
-        em.merge(laptop);
+        String query = String.format("UPDATE laptop l SET record_status = 0 WHERE id = %s", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.executeQuery(query);
+        }
+        catch (SQLException sqlException) {
+
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<Laptop> findById(Integer id) {
-        Laptop laptop = em.find(Laptop.class, id);
-        return Optional.of(laptop);
+        String query = String.format("SELECT * FROM laptop l " +
+                "WHERE l.id = %s ", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(query);
+            Laptop laptop = null;
+            while (rs.next()) {
+                laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+            }
+            return Optional.of(laptop);
+        } catch (SQLException sqlException) {
+            return Optional.of(new Laptop());
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByCondition(SearchFilter filter) {
-        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true";
+        String query = String.format("SELECT * FROM laptop l WHERE l.record_status = true LIMIT %s, %s"
+        , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
 
         if (filter.getBrand() != null && !filter.getBrand().equals("")) {
-            BrandType[] brandTypes = BrandType.values();
-            BrandType types = BrandType.MAC;
-            for (BrandType brandType : brandTypes) {
-                if (brandType.name().contains(filter.getBrand().toUpperCase()))
-                    types = brandType;
-            }
-            query = "SELECT l FROM Laptop l WHERE l.brand IN (:types) AND l.recordStatus = true";
-            return em.createQuery(query)
-                    .setParameter("types", types)
-                    .setFirstResult(ELEMENT_PER_BLOCK * (filter.getPage() - 1))
-                    .setMaxResults(ELEMENT_PER_BLOCK)
-                    .getResultList();
+            query = String.format("SELECT * FROM laptop l " +
+                            "WHERE l.brand = '%s' AND l.record_status = true LIMIT %s, %s"
+                    , filter.getBrand(), ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getCpu() != null && !filter.getCpu().equals("")) {
-            CPUType[] cpuTypes = CPUType.values();
-            CPUType types = CPUType.INTEL_CORE_I3;
-            for (CPUType cpuType : cpuTypes) {
-                if (cpuType.name().contains(filter.getCpu().toUpperCase().replace(" ", "_")))
-                    types = cpuType;
-            }
-            query = "SELECT l FROM Laptop l INNER JOIN l.cpu cpu ON cpu.id = l.cpu.id " +
-                    "WHERE cpu.type IN (:types) AND l.recordStatus = true";
 
-            return em.createQuery(query)
-                    .setParameter("types", types)
-                    .setFirstResult(ELEMENT_PER_BLOCK * (filter.getPage() - 1))
-                    .setMaxResults(ELEMENT_PER_BLOCK)
-                    .getResultList();
+            query = String.format("SELECT l.* FROM laptop l INNER JOIN cpu c " +
+                            "ON l.cpu_id = c.id WHERE c.type = '%s' AND l.record_status = true LIMIT %s, %s"
+                    , filter.getCpu(), ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getHardDrive() != null) {
-            query = "SELECT l FROM Laptop l INNER JOIN l.hardDrive hardDrive ON hardDrive.id = l.hardDrive.id " +
-                    "WHERE hardDrive.size >= " + filter.getHardDrive() + " AND l.recordStatus = true " +
-                    "ORDER BY hardDrive.size ASC";
+            query = String.format("SELECT l.* FROM laptop l INNER JOIN hard_drive hd ON hd.id = l.hard_drive_id " +
+                    "WHERE hd.size >= " + filter.getHardDrive() + " AND l.record_status = true " +
+                    "ORDER BY hd.size ASC LIMIT %s, %s"
+                    , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getMonitor() != null) {
-            query = "SELECT l FROM Laptop l INNER JOIN l.monitor monitor ON monitor.id = l.monitor.id " +
-                    "WHERE monitor.size >= " + filter.getMonitor() + " AND l.recordStatus = true " +
-                    "ORDER BY monitor.size ASC";
+            query = String.format("SELECT l.* FROM laptop l INNER JOIN monitor m ON m.id = l.monitor_id " +
+                    "WHERE m.size >= " + filter.getMonitor() + " AND l.record_status = true " +
+                    "ORDER BY m.size ASC LIMIT %s, %s"
+                    , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getPrice() != null) {
-            query = "SELECT l FROM Laptop l WHERE l.unitPrice >= " + filter.getPrice() + " AND l.recordStatus = true " +
-                    "ORDER BY l.unitPrice ASC";
+            query = String.format("SELECT l.* FROM laptop l " +
+                    "WHERE l.unit_price >= " + filter.getPrice() + " AND l.record_status = true " +
+                    "ORDER BY l.unit_price ASC LIMIT %s, %s"
+                    , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getRam() != null) {
-            query = "SELECT l FROM Laptop l INNER JOIN l.ram ram " +
-                    "WHERE ram.size >= " + filter.getRam() + " AND l.recordStatus = true ORDER BY ram.size ASC";
+            query = String.format("SELECT l.* FROM laptop l INNER JOIN ram r ON r.id = l.ram_id " +
+                    "WHERE r.size >= " + filter.getRam() +
+                    " AND l.record_status = true ORDER BY r.size ASC LIMIT %s, %s"
+                    , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
         }
 
         if (filter.getDemand() != null && !filter.getDemand().equals("")) {
-            query = "SELECT l FROM Laptop l INNER JOIN l.tags t WHERE t.name = '" + filter.getDemand() + "'";
+            query = String.format("SELECT l.* FROM laptop l JOIN laptop_tag lt JOIN tag t " +
+                    "ON lt.laptop_id = l.id AND t.id = lt.tag_id " +
+                    "WHERE t.name = '" + filter.getDemand() + "'");
         }
 
         if (filter.getName() != null && !filter.getName().equals("")) {
-            query = "SELECT l FROM Laptop l WHERE l.name LIKE concat('%','" + filter.getName() + "','%')";
+            query = String.format("SELECT l.* FROM laptop l WHERE l.name LIKE concat('%','" + filter.getName() + "','%')");
         }
 
-        return em.createQuery(query)
-                .setFirstResult(ELEMENT_PER_BLOCK * (filter.getPage() - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
-                .getResultList();
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            List<Laptop> laptops = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return  laptops;
+        }
+        catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByFilter(String filter, Integer page) {
-        String query = "SELECT * FROM Laptop l WHERE l.id = ? OR l.name LIKE CONCAT('%',?,'%') AND l.record_status = true";
-        return em.createNativeQuery(query, Laptop.class)
-                .setParameter(1, filter)
-                .setParameter(2, filter)
-                .setFirstResult(ADMIN_ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ADMIN_ELEMENT_PER_BLOCK)
-                .getResultList();
+        String query = String.format("SELECT * FROM laptop l " +
+                        "WHERE l.id = '%s' OR l.name LIKE CONCAT('%','%s','%') " +
+                        "AND p.record_status = true " +
+                        "ORDER BY p.id DESC LIMIT %s, %s"
+                , filter, filter, ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
+
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            List<Laptop> laptops = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return  laptops;
+        }
+        catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public Long findTotalLaptops(String filter) {
+        String query = "";
         if (filter == null) {
-            String query = "SELECT COUNT(l) FROM Laptop l WHERE l.recordStatus = true";
-            return em.createQuery(query, Long.class).getSingleResult();
+            query = "SELECT COUNT(l) as counts FROM laptop l WHERE l.recordStatus = true";
         } else {
-            String query = "SELECT COUNT(*) FROM Laptop l WHERE l.id = ? OR l.name LIKE CONCAT('%',?,'%') AND l.record_status = true";
-            return ((Number) em.createNativeQuery(query)
-                    .setParameter(1, filter)
-                    .setParameter(2, filter)
-                    .getSingleResult()).longValue();
+            query = String.format("SELECT COUNT(*) AS count_laptop FROM laptop l WHERE l.id = '%s' " +
+                    "OR l.name LIKE CONCAT('%','%s','%') AND l.record_status = true"
+                    , filter, filter);
+        }
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                return Long.parseLong(rs.getString("count_laptop"));
+            }
+            return 0l;
+        }
+        catch (SQLException sqlException) {
+            return  0l;
         }
     }
 
@@ -189,47 +332,106 @@ public class LaptopDAOImpl implements LaptopDAO {
         String query = "";
         switch (type) {
             case "new": {
-                query = "SELECT l FROM Laptop l WHERE l.recordStatus = true ORDER BY l.id DESC";
+                query = String.format("SELECT * FROM laptop l WHERE l.record_status = true " +
+                        "ORDER BY l.id DESC LIMIT %s, %s"
+                        , ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
                 break;
             }
             case "cheap": {
-                query = "SELECT l FROM Laptop l WHERE l.recordStatus = true ORDER BY l.unitPrice ASC";
+                query = String.format("SELECT * FROM laptop l WHERE l.record_status = true " +
+                        "ORDER BY l.unit_price ASC LIMIT %s, %s"
+                        , ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
                 break;
             }
             case "top-selling": {
-                query = "SELECT l FROM Laptop l JOIN OrderDetail od ON l.id = od.productId " +
-                        "WHERE l.recordStatus = true GROUP BY l.id ORDER BY COUNT(od.productId) DESC";
+                query = String.format("SELECT * FROM laptop l JOIN order_detail od ON l.id = od.product_id " +
+                        "WHERE l.record_status = true GROUP BY l.id ORDER BY COUNT(od.product_id) DESC LIMIT %s, %s"
+                        , ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
                 break;
             }
             case "common":
             default:
-                query = "SELECT l FROM Laptop l WHERE l.recordStatus = true";
+                query = String.format("SELECT * FROM laptop l WHERE l.record_status = true LIMIT %s, %s"
+                        , ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
         }
-        return em.createQuery(query, Laptop.class)
-                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
-                .getResultList();
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            List<Laptop> laptops = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return  laptops;
+        }
+        catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByIds(List<Integer> ids) {
         if (ids.isEmpty()) return new ArrayList<>();
-        String query = "SELECT l FROM Laptop l WHERE l.id IN :ids AND l.recordStatus = true";
-        return em.createQuery(query, Laptop.class)
-                .setParameter("ids", ids)
-                .getResultList();
+        String idsFormatted = "";
+        for(int i = 0 ; i< ids.size(); i++) {
+            if(i == ids.size() - 1) {
+                idsFormatted += String.format("%s", ids.get(i));
+            }
+            else {
+                idsFormatted += String.format("%s, ", ids.get(i));
+            }
+        }
+        String query = String.format("SELECT * FROM laptop l WHERE " +
+                        "l.id IN (%s) AND l.record_status = true",
+                idsFormatted);
+
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            List<Laptop> laptops = new LinkedList<>();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return laptops;
+        }
+        catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
     }
 
     @Override
     @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByName(String name, Integer page) {
-        String query = "SELECT l FROM Laptop l WHERE l.recordStatus = true AND l.name LIKE CONCAT('%',?1,'%')";
-        return em.createQuery(query, Laptop.class)
-                .setParameter(1, name)
-                .setFirstResult(ELEMENT_PER_BLOCK * (page - 1))
-                .setMaxResults(ELEMENT_PER_BLOCK)
-                .getResultList();
+        String query = String.format("SELECT * FROM laptop l WHERE l.record_status = true " +
+                "AND l.name LIKE CONCAT('%','%s','%') LIMIT %s, %s"
+                , name, ELEMENT_PER_BLOCK * (page - 1), ELEMENT_PER_BLOCK);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(query);
+            LinkedList<Laptop> laptops = new LinkedList<>();
+            while (rs.next()) {
+                Laptop laptop = Laptop.fromResultSet(rs);
+                laptop.setCpu(getCPUById(rs.getInt("cpu_id")));
+                laptop.setRam(getRAMById(rs.getInt("ram_id")));
+                laptop.setHardDrive(getHardDriveById(rs.getInt("hard_drive_id")));
+                laptop.setMonitor(getMonitorById(rs.getInt("monitor_id")));
+                laptop.setRecordStatus(rs.getBoolean("record_status"));
+                laptops.add(laptop);
+            }
+            return laptops;
+        } catch (SQLException sqlException) {
+            return  new LinkedList<>();
+        }
+
     }
 
     @Override
@@ -246,5 +448,75 @@ public class LaptopDAOImpl implements LaptopDAO {
         Laptop laptop = em.find(Laptop.class, id);
         if (laptop == null) return null;
         return laptop.getThumbnail();
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<Laptop> findSuggestionsByLaptop(Integer laptopId) {
+        String query = "CALL laptop_suggest(?, ?)";
+        return em.createNativeQuery(query, Laptop.class)
+                .setParameter(1, laptopId)
+                .setParameter(2, ELEMENT_PER_SUGGEST)
+                .getResultList();
+    }
+
+    private CPU getCPUById(int id) {
+        String query = String.format("SELECT * FROM cpu WHERE id = '%s'", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            CPU  cpu = null;
+            ResultSet rs = statement.executeQuery(query);
+            while(rs.next()) {
+                cpu = CPU.fromResultSet(rs);
+            }
+            return cpu;
+        }
+        catch (SQLException sqlException) {
+            return  null;
+        }
+    }
+
+    private RAM getRAMById(int id) {
+        String query = String.format("SELECT * FROM ram WHERE id = '%s'", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            RAM  ram = null;
+            ResultSet rs = statement.executeQuery(query);
+            while(rs.next()) {
+                ram = RAM.fromResultSet(rs);
+            }
+            return ram;
+        }
+        catch (SQLException sqlException) {
+            return  null;
+        }
+    }
+
+    private Monitor getMonitorById(int id) {
+        String query = String.format("SELECT * FROM monitor WHERE id = '%s'", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            Monitor  monitor = null;
+            ResultSet rs = statement.executeQuery(query);
+            while(rs.next()) {
+                monitor = Monitor.fromResultSet(rs);
+            }
+            return monitor;
+        }
+        catch (SQLException sqlException) {
+            return  null;
+        }
+    }
+
+    private HardDrive getHardDriveById(int id) {
+        String query = String.format("SELECT * FROM hard_drive WHERE id = '%s'", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            HardDrive  hardDrive = null;
+            ResultSet rs = statement.executeQuery(query);
+            while(rs.next()) {
+                hardDrive = HardDrive.fromResultSet(rs);
+            }
+            return hardDrive;
+        }
+        catch (SQLException sqlException) {
+            return  null;
+        }
     }
 }

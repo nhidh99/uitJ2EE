@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -49,7 +51,21 @@ public class Rating {
     @JsonProperty("rating_date")
     private LocalDate ratingDate;
 
+    @Column(name = "approve_status")
+    @JsonProperty("approve_status")
+    private boolean approveStatus;
+
     @OneToMany(mappedBy = "rating", fetch = FetchType.EAGER)
     @JsonProperty("replies")
     private List<RatingReply> replies;
+
+    public static Rating fromResultSet(ResultSet rs) throws SQLException {
+        return Rating.builder()
+                .id(rs.getInt("id"))
+                .rating(rs.getInt("rating"))
+                .commentTitle(rs.getString("comment_title"))
+                .commentDetail(rs.getString("comment_detail"))
+                .ratingDate(rs.getDate("rating_date").toLocalDate())
+                .approveStatus(rs.getBoolean("approve_status")).build();
+    }
 }

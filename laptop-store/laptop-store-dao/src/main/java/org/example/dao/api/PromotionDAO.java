@@ -3,6 +3,7 @@ package org.example.dao.api;
 import org.example.model.Promotion;
 
 import javax.ejb.Local;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 

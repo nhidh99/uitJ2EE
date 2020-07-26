@@ -1,37 +1,36 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useState, useEffect } from "react";
 import { Table, Spinner } from "reactstrap";
 import { FaBoxes } from "react-icons/fa";
 import styles from "./styles.module.scss";
-import { getCookie } from "../../../../../../services/helper/cookie";
 import "react-step-progress-bar/styles.css";
 import OrderProgress from "./components/OrderProgress";
 import Loader from "react-loader-advanced";
 import OrderCancel from "./components/OrderCancel";
+import { useParams } from "react-router-dom";
+import orderApi from "../../../../../../services/api/orderApi";
 
 const OrderDetail = (props) => {
     const [order, setOrder] = useState(null);
     const [details, setDetails] = useState([]);
     const [deliveryDate, setDeliveryDate] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { orderId } = useParams();
 
     useEffect(() => {
         loadData();
     }, []);
 
     const loadData = async () => {
-        const parts = window.location.pathname.split("/");
-        const orderId = parseInt(parts[parts.length - 1]);
-        const response = await fetch(`/api/orders/${orderId}`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-
-        if (response.ok) {
-            const order = await response.json();
+        try {
+            const response = await orderApi.getById(orderId);
+            const order = response.data;
             setOrder(order);
             setDetails(order["details"]);
             setDeliveryDate(order["delivery_date"]);
             setLoading(false);
+        } catch (err) {
+            console.log(err);
         }
     };
 
@@ -172,17 +171,21 @@ const OrderDetail = (props) => {
 
         return (
             <tr>
-                <td className={styles.productsCol}>
-                    <img
-                        src={imgURL}
-                        alt={detail["product_name"]}
-                        title={detail["product_name"]}
-                        width={55}
-                        height={55}
-                        className={styles.img}
-                    />
-                    {detail["product_name"]}
-                </td>
+                <table className={styles.productName}>
+                    <tr>
+                        <td>
+                            <img
+                                src={imgURL}
+                                alt={detail["product_name"]}
+                                title={detail["product_name"]}
+                                width={55}
+                                height={55}
+                                className={styles.img}
+                            />
+                        </td>
+                        <td>{detail["product_name"]}</td>
+                    </tr>
+                </table>
 
                 <td className={styles.unitPriceCol}>
                     {detail["unit_price"].toLocaleString()}

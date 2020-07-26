@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tomee>
+<resources>
     <Resource id="jdbc/laptop-store" type="javax.sql.DataSource">
         JdbcDriver com.mysql.jdbc.Driver
         <!--JdbcUrl jdbc:mysql://localhost:3306/laptop_store?autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useSSL=false-->
@@ -8,4 +8,12 @@
         Password LaptopStore54321
         JtaManaged true
     </Resource>
-</tomee>
+    <Resource id="jdbc/laptop-store-jdbc" type="javax.sql.DataSource">
+        JdbcDriver com.mysql.jdbc.Driver
+        <!--JdbcUrl jdbc:mysql://localhost:3306/laptop_store?autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useSSL=false-->
+        JdbcUrl jdbc:mysql://laptop-store.mysql.database.azure.com:3306/laptop_store?autoReconnect=true&amp;useUnicode=yes&amp;characterEncoding=UTF-8&amp;useSSL=true&amp;requireSSL=false&amp;serverTimezone=Asia/Ho_Chi_Minh
+        UserName LS_Admin@laptop-store
+        Password LaptopStore54321
+        JtaManaged false
+    </Resource>
+</resources>

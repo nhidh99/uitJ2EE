@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.List;
 
 @Path("/api/promotions")
@@ -43,7 +44,7 @@ public class PromotionServiceImpl implements PromotionService {
         }
     }
 
-    private Response findByPage(Integer page) throws JsonProcessingException {
+    private Response findByPage(Integer page) throws JsonProcessingException, SQLException {
         List<Promotion> promotions = (page == null) ? promotionDAO.findAll() : promotionDAO.findByPage(page);
         Long promotionCount = promotionDAO.findTotalPromotions(null);
         ObjectMapper om = new ObjectMapper();

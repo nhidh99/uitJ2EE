@@ -6,6 +6,8 @@ import lombok.*;
 import org.example.type.ProductType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,4 +54,15 @@ public class OrderDetail {
     @JsonIgnore
     @ToString.Exclude
     private Order order;
+
+    public static OrderDetail fromResultSet(ResultSet rs) throws SQLException {
+        return OrderDetail.builder()
+                .id(rs.getInt("id"))
+                .productId(rs.getInt(("product_id")))
+                .productName(rs.getString("product_name"))
+                .productType(ProductType.valueOf(rs.getString("product_type")))
+                .quantity(rs.getInt("quantity"))
+                .unitPrice(rs.getLong("unit_price"))
+                .totalPrice(rs.getLong("total_price")).build();
+    }
 }

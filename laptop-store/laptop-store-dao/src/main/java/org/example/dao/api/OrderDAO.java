@@ -10,19 +10,19 @@ import java.util.Optional;
 
 @Local
 public interface OrderDAO {
-    void save(Order order);
+    void save(Order order) throws SQLException;
 
-    Optional<Order> findById(Integer id);
+    Optional<Order> findById(Integer id) throws SQLException;
 
-    Long findTotalOrder(String filter, String status);
+    Long findTotalOrder(String filter, String status) throws SQLException;
 
-    List<Order> findByFilter(String filter, String status, Integer page);
+    List<Order> findByFilter(String filter, String status, Integer page) throws SQLException;
 
-    List<Order> findByUserId(Integer page, Integer userId);
+    List<Order> findByUserId(Integer page, Integer userId) throws SQLException;
 
-    List<Order> findByPages(Integer page);
+    List<Order> findByPages(Integer page) throws SQLException;
 
-    Long findTotalOrdersByUserId(Integer userId);
+    Long findTotalOrdersByUserId(Integer userId) throws SQLException;
 
     void updateStatus(Integer orderId, OrderStatus orderStatus) throws SQLException;
 }

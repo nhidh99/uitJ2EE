@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @POST
+    @PUT
     @Path("/me/carts")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response updateCart(String cartJSON, @Context SecurityContext securityContext) {

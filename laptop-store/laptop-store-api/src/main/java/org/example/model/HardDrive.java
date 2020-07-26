@@ -7,8 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.type.HardDriveType;
+import org.example.type.ResolutionType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Data
 @Entity
@@ -35,4 +38,13 @@ public class HardDrive {
     @Column(name = "detail")
     @JsonProperty("detail")
     private String detail;
+
+    public static HardDrive fromResultSet(ResultSet rs) throws SQLException {
+        return HardDrive.builder()
+                .id(rs.getInt("id"))
+                .type(HardDriveType.valueOf(rs.getString("type")))
+                .size(rs.getInt("size"))
+                .detail(rs.getString("detail"))
+                .build();
+    }
 }

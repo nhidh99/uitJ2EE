@@ -1,97 +1,98 @@
-import React, { Component, Fragment } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 import AddressBlock from "./components/AddressBlock";
 import ProductsBlock from "./components/ProductsBlock";
 import PromotionsBlock from "./components/PromotionsBlock";
 import SummaryBlock from "./components/SummaryBlock";
 import { Button, Spinner } from "reactstrap";
-import { getCart, removeFromCart } from "../../../../services/helper/cart";
-import { getCookie } from "../../../../services/helper/cookie";
+import { removeFromCart } from "../../../../services/helper/cart";
 import { FaBoxOpen } from "react-icons/fa";
 import Loader from "react-loader-advanced";
 import { withRouter } from "react-router-dom";
+import userApi from "../../../../services/api/userApi";
+import laptopApi from "../../../../services/api/laptopApi";
+import EmptyBlock from "../../../../components/EmptyBlock";
+import { MAXIMUM_QUANTITY_IN_CART } from "../../../../constants";
 
-class PaymentPage extends Component {
-    state = {
-        addresses: [],
-        promotions: [],
-        promotionQties: {},
-        products: [],
-        cart: {},
-        isEmptyCart: false,
-        submitted: false,
-        loading: true,
-    };
+const PaymentPage = (props) => {
+    const [addresses, setAddresses] = useState([]);
+    const [promotions, setPromotions] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [productPrice, setProductPrice] = useState(0);
+    const [promotionQties, setPromotionQties] = useState(0);
+    const [cart, setCart] = useState(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    async componentDidMount() {
-        const cart = await this.loadCart();
-        this.setState({ cart: cart }, () => this.loadData());
-    }
+    useEffect(() => {
+        loadData();
+    }, []);
 
-    loadCart = async () => {
-        const response = await fetch("/api/users/me", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
+    useEffect(() => {
+        if (!cart) return;
+        loadDetail();
+    }, [cart]);
 
-        if (response.ok) {
-            const user = await response.json();
-            return JSON.parse(user["cart"]);
-        } else {
-            return getCart();
+    useEffect(() => {
+        const productPrice = products
+            .map((p) => cart[p["id"]] * (p["unit_price"] - p["discount_price"]))
+            .reduce((a, b) => a + b, 0);
+        setProductPrice(productPrice);
+    }, [products]);
+
+    const loadData = async () => {
+        try {
+            const response = await userApi.getCurrentUser();
+            const user = response.data;
+            setCart(JSON.parse(user["cart"]));
+        } catch (err) {
+            console.log("err");
         }
     };
 
-    loadData = async () => {
-        await Promise.all([this.loadProducts(), this.loadAddresses(), this.loadPromotions()]);
-        this.setState({ loading: false });
+    const loadDetail = async () => {
+        await Promise.all([loadProducts(), loadAddresses(), loadPromotions()]);
+        setLoading(false);
     };
 
-    loadProducts = async () => {
-        const cart = this.state.cart;
-        if (Object.keys(cart).length === 0) {
-            this.setState({ products: [] });
+    const loadProducts = async () => {
+        const ids = Object.keys(cart);
+        if (ids.length === 0) {
+            setProducts([]);
             return;
         }
 
-        const params = new URLSearchParams();
-        Object.keys(cart).forEach((id) => params.append("ids", id));
-
-        const response = await fetch("/api/laptops?" + params.toString());
-        if (response.ok) {
-            const products = await response.json();
+        try {
+            const response = await laptopApi.getByIds(ids);
+            const products = response.data;
             const productIds = products.map((product) => product["id"].toString());
-            Object.keys(cart)
-                .filter((id) => !productIds.includes(id))
-                .forEach((id) => removeFromCart(id));
-            this.setState({ products: products });
+            ids.filter((id) => !productIds.includes(id)).forEach((id) => removeFromCart(id));
+            setProducts(products);
+        } catch (err) {
+            console.log("fail");
         }
     };
 
-    loadAddresses = async () => {
-        const response = await fetch("/api/users/me/addresses", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-
-        if (response.ok) {
-            const addresses = await response.json();
-            this.setState({ addresses: addresses });
+    const loadAddresses = async () => {
+        try {
+            const response = await userApi.getCurrentUserAddresses();
+            setAddresses(response.data);
+        } catch (err) {
+            console.log("fail");
         }
     };
 
-    loadPromotions = async () => {
-        const cart = this.state.cart;
+    const loadPromotions = async () => {
         const quantities = {};
         const promotions = [];
         const length = Object.keys(cart).length;
         let count = 0;
 
-        Object.keys(cart).forEach(async (id) => {
-            const response = await fetch(`/api/laptops/${id}/promotions`);
-            if (response.ok) {
-                const data = await response.json();
-                data.forEach((promotion) => {
+        Object.keys(cart).map(async (id) => {
+            try {
+                const response = await laptopApi.getLaptopPromotions(id);
+                response.data.forEach((promotion) => {
                     const key = promotion["id"];
                     if (key in quantities) {
                         quantities[key] = cart[id] + quantities[key];
@@ -100,82 +101,76 @@ class PaymentPage extends Component {
                         promotions.push(promotion);
                     }
                 });
+            } catch (err) {
+                console.log("fail");
             }
 
             if (++count === length) {
-                this.setState({
-                    promotionQties: quantities,
-                    promotions: promotions,
-                });
+                setPromotionQties(quantities);
+                setPromotions(promotions);
             }
         });
     };
 
-    toggleSubmit = () => {
-        this.setState({ submitted: !this.state.submitted });
+    const toggleSubmit = () => {
+        setIsSubmitted(!isSubmitted);
     };
 
-    redirectToCreateAddress = () => {
-        this.props.history.push("/user/address/create");
-    }
+    const redirectToCreateAddress = () => {
+        props.history.push("/user/address/create");
+    };
 
-    render() {
-        const {
-            addresses,
-            promotions,
-            products,
-            promotionQties,
-            loading,
-            submitted,
-            cart,
-        } = this.state;
+    const PaymentDetail = () => {
+        const totalQty = Object.values(cart).reduce((a, b) => a + b, 0);
+        return totalQty <= MAXIMUM_QUANTITY_IN_CART ? (
+            <div className={styles.container}>
+                <div className={styles.address}>
+                    <header className={styles.header}>A. ĐỊA CHỈ GIAO HÀNG</header>
+                    <Button onClick={redirectToCreateAddress} color="primary">
+                        Tạo địa chỉ mới
+                    </Button>
+                </div>
+                <AddressBlock addresses={addresses} />
 
-        const productsPrice = products
-            .map((p) => cart[p["id"]] * (p["unit_price"] - p["discount_price"]))
-            .reduce((a, b) => a + b, 0);
+                <header className={styles.header}>B. DANH SÁCH SẢN PHẨM</header>
+                <ProductsBlock products={products} cart={cart} />
 
-        return (
-            <Loader show={loading || submitted} message={<Spinner />}>
-                {products.length === 0 ? (
-                    <div className={styles.emptyCart}>
-                        <FaBoxOpen size={80} />
-                        <br />
-                        {loading ? (
-                            <h5>Đang tải giỏ hàng...</h5>
-                        ) : (
-                            <Fragment>
-                                <h4>Giỏ hàng trống</h4>
-                                <Button size="lg" color="warning" type="a" href="/">
-                                    Quay lại trang mua sắm
-                                </Button>
-                            </Fragment>
-                        )}
-                    </div>
-                ) : (
-                    <div className={styles.container}>
-                        <div className={styles.address}>
-                            <header className={styles.header}>A. ĐỊA CHỈ GIAO HÀNG</header>
-                            <Button onClick={this.redirectToCreateAddress} color="primary">
-                                Tạo địa chỉ mới
-                            </Button>
-                        </div>
-                        <AddressBlock addresses={addresses} />
+                <header className={styles.header}>C. DANH SÁCH KHUYẾN MÃI</header>
+                <PromotionsBlock promotions={promotions} quantities={promotionQties} />
 
-                        <header className={styles.header}>B. DANH SÁCH SẢN PHẨM</header>
-                        <ProductsBlock products={products} />
-
-                        <header className={styles.header}>C. DANH SÁCH KHUYẾN MÃI</header>
-                        <PromotionsBlock promotions={promotions} quantities={promotionQties} />
-
-                        <SummaryBlock
-                            productsPrice={productsPrice}
-                            toggleSubmit={this.toggleSubmit}
-                        />
-                    </div>
-                )}
-            </Loader>
+                <SummaryBlock
+                    productsPrice={productPrice}
+                    toggleSubmit={toggleSubmit}
+                    cart={cart}
+                />
+            </div>
+        ) : (
+            <EmptyBlock
+                loading={false}
+                icon={<FaBoxOpen />}
+                backToHome={true}
+                emptyText={`Tối đa ${MAXIMUM_QUANTITY_IN_CART} sản phẩm trong giỏ hàng`}
+                borderless
+            />
         );
-    }
-}
+    };
+
+    return (
+        <Loader show={isSubmitted} message={<Spinner />} className={styles.loader}>
+            {products.length === 0 ? (
+                <EmptyBlock
+                    loading={loading}
+                    backToHome={!loading}
+                    icon={<FaBoxOpen />}
+                    loadingText="Đang tải giỏ hàng..."
+                    emptyText="Giỏ hàng trống"
+                    borderless
+                />
+            ) : (
+                <PaymentDetail />
+            )}
+        </Loader>
+    );
+};
 
 export default withRouter(PaymentPage);

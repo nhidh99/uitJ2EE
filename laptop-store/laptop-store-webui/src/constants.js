@@ -7,7 +7,8 @@ export const MINIMUM_PROMOTION_IMAGE_HEIGHT = 400;
 export const MAXIMUM_RESOLUTION_WIDTH = 10_000;
 export const MAXIMUM_RESOLUTION_HEIGHT = 10_000;
 
-export const MAXIMUM_QUANTITY_PER_PRODUCT = 10;
+export const MAXIMUM_QUANTITY_PER_PRODUCT = 80;
+export const MAXIMUM_QUANTITY_IN_CART = 500;
 
 export const ROLE_GUEST = "GUEST";
 export const ROLE_USER = "USER";
@@ -27,13 +28,13 @@ export const ALL = "Tất cả";
 export const BRANDFILTERTITLE = "Thương hiệu";
 
 //cpu
-export const CPUFILTERTITLE = "CPU" ;
+export const CPUFILTERTITLE = "CPU";
 export const CPUI3 = "Intel Core I3";
 export const CPUI5 = "Intel Core I5";
 export const CPUI7 = "Intel Core I7";
 export const CPUCELERON = "Intel Celeron";
 export const CUPPENTIUM = "Intel Pentium";
-export const CPUAMD  = "AMD";
+export const CPUAMD = "AMD";
 
 //demand
 export const DEMANDFILTERTITLE = "Nhu cầu sử dụng";

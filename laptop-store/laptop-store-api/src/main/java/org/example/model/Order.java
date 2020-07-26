@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.example.type.OrderStatus;
+import org.example.type.ProductType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -79,4 +82,22 @@ public class Order {
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     private List<OrderDetail> orderDetails;
+
+    public static Order fromResultSet(ResultSet rs) throws SQLException {
+        return Order.builder()
+                .id(rs.getInt("id"))
+                .transportFee(rs.getInt(("transport_fee")))
+                .totalPrice(rs.getLong("total_price"))
+                .status(OrderStatus.valueOf(rs.getString("status")))
+                .orderDate(rs.getDate("order_date").toLocalDate())
+                .deliveryDate(rs.getDate("delivery_date").toLocalDate())
+                .receiverName(rs.getString("receiver_name"))
+                .receiverPhone(rs.getString("receiver_phone"))
+                .addressNum(rs.getString("address_num"))
+                .street(rs.getString("street"))
+                .ward(rs.getString("ward"))
+                .district(rs.getString("district"))
+                .city(rs.getString("city"))
+                .build();
+    }
 }

@@ -1,195 +1,176 @@
-import React, { Component } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import { Col, Row, Label, Button, Input, InputGroup } from "reactstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import styles from "./styles.module.scss";
 import { convertCPUType } from "../../../../../../services/helper/converter";
 import {
     getCart,
-    updateCartQuantity,
     removeFromCart,
-    updateCart,
-    updateCartDatabase,
+    updateCartQuantity,
 } from "../../../../../../services/helper/cart";
 import { Link } from "react-router-dom";
 import NumberFormat from "react-number-format";
 import { MAXIMUM_QUANTITY_PER_PRODUCT } from "../../../../../../constants";
+import laptopApi from "../../../../../../services/api/laptopApi";
 
-class ItemBlock extends Component {
-    state = {
-        promotions: [],
-    };
+const ItemBlock = ({ product, quantity, toggleLoading }) => {
+    const [promotions, setPromotions] = useState([]);
+    const [qty, setQty] = useState(quantity);
+    const { cpu, ram, hard_drive, monitor } = product;
 
-    timeout = null;
+    useEffect(() => {
+        loadPromotions();
+    }, []);
 
-    componentDidMount() {
-        this.loadPromotions();
-    }
+    useEffect(() => {
+        toggleLoading();
+    }, [qty]);
 
-    loadPromotions = async () => {
-        const { product } = this.props;
-        const response = await fetch(`/api/laptops/${product["id"]}/promotions`);
-        if (response.ok) {
-            const promotions = await response.json();
-            this.setState({ promotions: promotions });
+    useEffect(() => {
+        setQty(quantity);
+    }, [quantity]);
+
+    const loadPromotions = async () => {
+        try {
+            const response = await laptopApi.getLaptopPromotions(product["id"]);
+            setPromotions(response.data);
+        } catch (err) {
+            console.log("fail");
         }
     };
 
-    minusQuantity = (productId) => {
-        const input = document.getElementById("quantity-" + productId);
+    const minusQuantity = async (productId) => {
         const cart = getCart();
-        const quantity = parseInt(input.value);
-
-        if (quantity > 1 && productId in cart) {
-            input.value = quantity - 1;
-            cart[productId] = quantity - 1;
+        if (qty > 1 && productId in cart) {
+            cart[productId] = qty - 1;
             updateCartQuantity(cart);
-            this.reloadPageAfterTimeout();
+            setQty(qty - 1);
         }
     };
 
-    addQuantity = (productId) => {
-        const input = document.getElementById("quantity-" + productId);
+    const addQuantity = async (productId) => {
         const cart = getCart();
-        const quantity = parseInt(input.value);
-
-        if (quantity < 10 && productId in cart) {
-            input.value = quantity + 1;
-            cart[productId] = quantity + 1;
+        if (qty < MAXIMUM_QUANTITY_PER_PRODUCT && productId in cart) {
+            cart[productId] = qty + 1;
             updateCartQuantity(cart);
-            this.reloadPageAfterTimeout();
+            setQty(qty + 1);
         }
     };
 
-    updateQuantity = (productId) => {
+    const updateQuantity = async (productId) => {
         const input = document.getElementById("quantity-" + productId);
-        const cart = getCart();
         const quantity = parseInt(input.value);
+        const cart = getCart();
 
         if (productId in cart && cart[productId] !== quantity) {
             cart[productId] = quantity;
-            updateCart(cart);
-            window.location.reload();
+            updateCartQuantity(cart);
+            // await updateCart(cart);
+            setQty(quantity);
         }
     };
 
-    reloadPageAfterTimeout = () => {
-        const cart = getCart();
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(async () => {
-            updateCartDatabase(cart);
-            window.location.reload();
-        }, 600);
-    };
-
-    removeProduct = (productId) => {
+    const removeProduct = async (productId) => {
         removeFromCart(productId);
-        window.location.reload();
+        toggleLoading();
     };
 
-    render() {
-        const { product, quantity } = this.props;
-        const { promotions } = this.state;
-        const { cpu, ram, hard_drive, monitor } = product;
+    return qty === 0 ? null : (
+        <Row className={styles.row}>
+            <Col xs="2" className={styles.blockLeft}>
+                <Link to={`/product/${product["alt"]}/${product["id"]}`}>
+                    <img
+                        src={`/api/images/400/laptops/${product["id"]}/${product["alt"]}.jpg`}
+                        width={135}
+                        height={135}
+                        alt={product["name"]}
+                        title={product["name"]}
+                    />
+                </Link>
+            </Col>
 
-        return (
-            <Row>
-                <Col xs="2" className={styles.blockLeft}>
-                    <Link to={`/product/${product["alt"]}/${product["id"]}`}>
-                        <img
-                            src={`/api/images/400/laptops/${product["id"]}/${product["alt"]}.jpg`}
-                            width={135}
-                            height={135}
-                            alt={product["name"]}
-                            title={product["name"]}
-                        />
-                    </Link>
-                </Col>
+            <Col xs="8" className={styles.blockCenter}>
+                <Link to={`/product/${product["alt"]}/${product["id"]}`}>
+                    <Label className={styles.name}>
+                        {product["name"]} (
+                        {`${convertCPUType(cpu["type"])}/${ram["size"]}GB-${ram["bus"]}MHz/${
+                            hard_drive["type"]
+                        }-${
+                            hard_drive["size"] !== 1024
+                                ? hard_drive["size"] + "GB"
+                                : hard_drive["size"] / 1024 + "TB"
+                        }/${monitor["size"]}-inch`}
+                        )
+                    </Label>
+                </Link>
+                <br />
 
-                <Col xs="8" className={styles.blockCenter}>
-                    <Link to={`/product/${product["alt"]}/${product["id"]}`}>
-                        <Label className={styles.name}>
-                            {product["name"]} (
-                            {`${convertCPUType(cpu["type"])}/${ram["size"]}GB-${ram["bus"]}MHz/${
-                                hard_drive["type"]
-                            }-${
-                                hard_drive["size"] !== 1024
-                                    ? hard_drive["size"] + "GB"
-                                    : hard_drive["size"] / 1024 + "TB"
-                            }/${monitor["size"]}-inch`}
+                <Label className={styles.priceLabel}>
+                    {(product["unit_price"] - product["discount_price"]).toLocaleString()}đ
+                </Label>
+
+                <Label className={styles.pricePromotion}>
+                    <s>{product["unit_price"].toLocaleString()}đ</s>
+                </Label>
+                <br />
+
+                {promotions.length === 0 ? null : (
+                    <Label>
+                        <b>
+                            <i>Quà khuyến mãi:&nbsp;&nbsp;</i>
+                        </b>
+                        {promotions
+                            .map(
+                                (promotion) =>
+                                    `${promotion["name"]} (${promotion["price"].toLocaleString()}đ)`
                             )
-                        </Label>
-                    </Link>
-
-                    <br />
-                    <Label className={styles.priceLabel}>
-                        {(product["unit_price"] - product["discount_price"]).toLocaleString()}đ
+                            .join(", ")}
                     </Label>
-                    <Label className={styles.pricePromotion}>
-                        <s>{product["unit_price"].toLocaleString()}đ</s>
-                    </Label>
+                )}
+            </Col>
 
-                    <br />
-                    {promotions.length === 0 ? null : (
-                        <Label>
-                            <b>
-                                <i>Quà khuyến mãi:&nbsp;&nbsp;</i>
-                            </b>
-                            {promotions
-                                .map(
-                                    (promotion) =>
-                                        `${promotion["name"]} (${promotion[
-                                            "price"
-                                        ].toLocaleString()}đ)`
-                                )
-                                .join(", ")}
-                        </Label>
-                    )}
-                </Col>
-
-                <Col xs="2" className={styles.blockRight}>
-                    <InputGroup>
-                        <Input
-                            className={styles.updateQuantity}
-                            onClick={() => this.minusQuantity(product["id"])}
-                            value="-"
-                            type="button"
-                        ></Input>
-                        <NumberFormat
-                            id={`quantity-${product["id"]}`}
-                            className={`form-control ${styles.quantity}`}
-                            thousandSeparator={true}
-                            decimalSeparator={false}
-                            allowNegative={false}
-                            defaultValue={quantity}
-                            onBlur={() => this.updateQuantity(product["id"])}
-                            isAllowed={(values) => {
-                                const { formattedValue, floatValue } = values;
-                                return (
-                                    !formattedValue.startsWith("0") &&
-                                    floatValue <= MAXIMUM_QUANTITY_PER_PRODUCT
-                                );
-                            }}
-                        />
-                        <Input
-                            className={styles.updateQuantity}
-                            onClick={() => this.addQuantity(product["id"])}
-                            value="+"
-                            type="button"
-                        >
-                            -
-                        </Input>
-                        <Button
-                            className={styles.remove}
-                            color="transparent"
-                            onClick={() => this.removeProduct(product["id"])}
-                        >
-                            <FaTrashAlt />
-                        </Button>
-                    </InputGroup>
-                </Col>
-            </Row>
-        );
-    }
-}
+            <Col xs="2" className={styles.blockRight}>
+                <InputGroup>
+                    <Input
+                        className={styles.updateQuantity}
+                        onClick={() => minusQuantity(product["id"])}
+                        value="-"
+                        type="button"
+                    />
+                    <NumberFormat
+                        id={`quantity-${product["id"]}`}
+                        className={`form-control ${styles.quantity}`}
+                        thousandSeparator={true}
+                        decimalSeparator={false}
+                        allowNegative={false}
+                        value={qty}
+                        onBlur={() => updateQuantity(product["id"])}
+                        isAllowed={(values) => {
+                            const { formattedValue, floatValue } = values;
+                            return (
+                                !formattedValue.startsWith("0") &&
+                                floatValue <= MAXIMUM_QUANTITY_PER_PRODUCT
+                            );
+                        }}
+                    />
+                    <Input
+                        className={styles.updateQuantity}
+                        onClick={() => addQuantity(product["id"])}
+                        value="+"
+                        type="button"
+                    />
+                    <Button
+                        className={styles.remove}
+                        color="transparent"
+                        onClick={() => removeProduct(product["id"])}
+                    >
+                        <FaTrashAlt className={styles.trashIcon} />
+                    </Button>
+                </InputGroup>
+            </Col>
+        </Row>
+    );
+};
 
 export default ItemBlock;

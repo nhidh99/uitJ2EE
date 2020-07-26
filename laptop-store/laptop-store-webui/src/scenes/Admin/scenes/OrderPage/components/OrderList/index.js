@@ -2,13 +2,15 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Table, Spinner } from "reactstrap";
 import styles from "./styles.module.scss";
-import { getCookie } from "../../../../../../services/helper/cookie";
 import { convertOrderStatus } from "../../../../../../services/helper/converter";
 import OrderUpdate from "../OrderUpdate";
 import Loader from "react-loader-advanced";
 import Pagination from "react-js-pagination";
 import { ITEM_COUNT_PER_PAGE } from "../../../../../../constants";
 import { withRouter } from "react-router-dom";
+import orderApi from "../../../../../../services/api/orderApi";
+import store from "../../../../../../services/redux/store";
+import { buildErrorModal } from "../../../../../../services/redux/actions";
 
 const OrderList = (props) => {
     const [loading, setLoading] = useState(true);
@@ -36,31 +38,28 @@ const OrderList = (props) => {
     }, [page]);
 
     const search = async (id, status) => {
-        const response = await fetch(`/api/orders/search?id=${id}&status=${status}&page=${page}`, {
-            method: "GET",
-            headers: { Authorization: "Bearer " + getCookie("access_token") }
-        });
-        if (response.ok) {
-            const orders = await response.json();
-            const count = parseInt(response.headers.get("X-Total-Count"));
+        try {
+            const response = await orderApi.searchOrders(id, status, page);
+            const orders = response.data;
+            const count = parseInt(response.headers["x-total-count"]);
             setOrders(orders);
             setCount(count);
             setLoading(false);
+        } catch (err) {
+            store.dispatch(buildErrorModal());
         }
-    }
+    };
 
     const loadData = async () => {
-        const response = await fetch(`/api/orders?page=${page}`, {
-            method: "GET",
-            headers: { Authorization: `Bearer ${getCookie("access_token")}` },
-        });
-
-        if (response.ok) {
-            const orders = await response.json();
-            const count = parseInt(response.headers.get("X-Total-Count"));
+        try {
+            const response = await orderApi.getByPage(page);
+            const orders = response.data;
+            const count = parseInt(response.headers["x-total-count"]);
             setOrders(orders);
             setCount(count);
             setLoading(false);
+        } catch (err) {
+            console.log("fail");
         }
     };
 
@@ -72,7 +71,9 @@ const OrderList = (props) => {
         if (id === null) {
             props.history.push("/admin/orders?page=" + pageNumber);
         } else {
-            props.history.push("/admin/orders/search?id=" + id + "&status=" + status + "&page=" + pageNumber);
+            props.history.push(
+                "/admin/orders/search?id=" + id + "&status=" + status + "&page=" + pageNumber
+            );
         }
         setPage(pageNumber);
     };

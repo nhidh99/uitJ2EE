@@ -1,126 +1,165 @@
-import React, { Component, Fragment } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useState, useEffect } from "react";
 import OverviewBlock from "./components/OverviewBlock";
 import DetailBlock from "./components/DetailBlock";
 import SuggestBlock from "./components/SuggestBlock";
 import RatingBlock from "./components/RatingBlock";
-import CommentBlock from "./components/CommentBlock";
+import RatingList from "./components/RatingList";
 import { Row, Label } from "reactstrap";
 import styles from "./styles.module.scss";
 import { FaCaretRight } from "react-icons/fa";
 import { convertBrandType } from "../../../../services/helper/converter";
-import { getCookie } from "../../../../services/helper/cookie";
+import ReactPlaceholder from "react-placeholder/lib";
+import { Link, withRouter, useParams } from "react-router-dom";
+import laptopApi from "../../../../services/api/laptopApi";
+import ratingApi from "../../../../services/api/ratingApi";
 
-class DetailPage extends Component {
-    state = {
-        loading: true,
-        product: null,
-        ratings: null,
-        replies: null,
-    };
+const DetailPage = (props) => {
+    const [loading, setLoading] = useState(true);
+    const [product, setProduct] = useState(null);
+    const [ratings, setRatings] = useState([]);
+    const [promotions, setPromotions] = useState([]);
+    const [suggestions, setSuggestions] = useState([]);
+    const { productId } = useParams();
 
-    componentDidMount() {
-        const path = window.location.pathname;
-        const productId = path.split("/").slice(-1).pop();
+    useEffect(() => {
+        loadData();
+    }, [props.location]);
+
+    const loadData = () => {
+        window.scroll(0, 0);
+        setLoading(true);
         if (isNaN(parseInt(productId))) {
             window.location.href = "/";
         } else {
-            this.loadData(productId);
-        }
-    }
-
-    loadData = async (productId) => {
-        await Promise.all([this.loadProduct(productId), this.loadRating(productId)]);
-        this.setState({ loading: false })
-    }
-
-
-    loadProduct = async (productId) => {
-        const response = await fetch(`/api/laptops/${productId}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getCookie('access_token'),
-            }
-        });
-        if (response.ok) {
-            const product = await response.json();
-            this.setState({
-                product: product
-            });
-        } else {
-            window.location.href = "/";
+            loadProductDetail();
         }
     };
 
-    loadRating = async (productId) => {
-        const response = await fetch(`/api/ratings/${productId}`, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + getCookie('access_token'),
-            }
-        });
-        if (response.ok) {
-            const ratings = await response.json();
-            this.setState({
-                ratings: ratings
-            })
+    const loadProductDetail = async () => {
+        const [product, ratings, promotions, suggestions] = await Promise.all([
+            loadProduct(),
+            loadRatings(),
+            loadPromotions(),
+            loadSuggestions(),
+        ]);
+        setProduct(product);
+        setRatings(ratings);
+        setPromotions(promotions);
+        setSuggestions(suggestions);
+        setLoading(false);
+    };
+
+    const loadProduct = async () => {
+        try {
+            const response = await laptopApi.getById(productId);
+            console.log(response.data);
+            return response.data;
+        } catch (err) {
+            console.log("fail");
+            return null;
         }
-    }
+    };
 
+    const loadRatings = async () => {
+        try {
+            const response = await ratingApi.getByProductId(productId);
+            return response.data;
+        } catch (err) {
+            console.log("Fail to get product ratings");
+            return [];
+        }
+    };
 
-    render() {
-        const { loading, product, ratings } = this.state;
-        return loading ? null : (
-            <Fragment>
-                <ContentBlock
-                    title={<ProductTitle product={product} />}
-                    component={<OverviewBlock product={product} />}
-                />
+    const loadPromotions = async () => {
+        try {
+            const response = await laptopApi.getLaptopPromotions(productId);
+            return response.data;
+        } catch (err) {
+            console.log("fail");
+            return [];
+        }
+    };
 
-                <ContentBlock
-                    title="Thông tin chi tiết"
-                    component={<DetailBlock product={product} />}
-                />
+    const loadSuggestions = async () => {
+        try {
+            const response = await laptopApi.getLaptopSuggestions(productId);
+            return response.data;
+        } catch (err) {
+            console.log("fail");
+            return [];
+        }
+    };
 
-                <ContentBlock title="Sản phẩm tương tự" component={<SuggestBlock />} />
-
-                <ContentBlock title="Đánh giá sản phẩm" component={<RatingBlock ratings={ratings} product ={product} />} />
-
-                {ratings.length > 0  ? <ContentBlock title="Khách hàng nhận xét" component={<CommentBlock ratings={ratings}/>} /> : null}
-            </Fragment>
+    const ContentBlock = ({ hide, title, component }) => {
+        return hide ? null : (
+            <section className={styles.section}>
+                <Label className={styles.title}>{title}</Label>
+                <Row className={styles.info}>{component}</Row>
+            </section>
         );
-    }
-}
+    };
 
-const ContentBlock = (props) => {
-    const { title, component } = props;
-    return (
-        <section className={styles.section}>
-            <Label className={styles.title}>{title}</Label>
-            <Row className={styles.info}>{component}</Row>
-        </section>
-    );
-};
-
-const ProductTitle = (props) => {
-    const { product } = props;
-    return (
+    const ProductTitle = ({ product }) => (
         <Label className={styles.title}>
-            <a href="/" className={styles.productRedirect}>
+            <Link to="/" className={styles.productRedirect}>
                 Trang chủ
-            </a>
+            </Link>
             &nbsp;
             <FaCaretRight color="#007bff" />
             &nbsp;
-            <a href="/" className={styles.productRedirect}>
+            <Link to={`/search?brands=${product["brand"]}`} className={styles.productRedirect}>
                 {convertBrandType(product?.["brand"])}
-            </a>
+            </Link>
             &nbsp;
             <FaCaretRight color="#007bff" />
             &nbsp;Laptop {product?.["name"]}
         </Label>
     );
+
+    const DetailLoading = () =>
+        [...Array(5)].map((_) => (
+            <Fragment>
+                <ReactPlaceholder
+                    type="textRow"
+                    className={styles.textHolder}
+                    showLoadingAnimation
+                />
+                <ReactPlaceholder type="rect" className={styles.rectHolder} showLoadingAnimation />
+            </Fragment>
+        ));
+
+    return loading ? (
+        <DetailLoading />
+    ) : (
+        <Fragment>
+            <ContentBlock
+                title={<ProductTitle product={product} />}
+                component={<OverviewBlock product={product} promotions={promotions} />}
+            />
+
+            <ContentBlock
+                title="Thông tin chi tiết"
+                component={<DetailBlock product={product} />}
+            />
+
+            <ContentBlock
+                title="Sản phẩm tương tự"
+                component={<SuggestBlock suggestions={suggestions} />}
+            />
+
+            <ContentBlock
+                title="Đánh giá sản phẩm"
+                component={<RatingBlock ratingAvg={product["avg_rating"]} ratings={ratings} />}
+            />
+
+            <ContentBlock
+                hide={ratings.length === 0}
+                title="Khách hàng đánh giá"
+                component={<RatingList ratings={ratings} />}
+            />
+        </Fragment>
+    );
 };
 
-export default DetailPage;
+export default withRouter(DetailPage);

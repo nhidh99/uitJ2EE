@@ -1,14 +1,18 @@
 .form {
-    background-color: white;
-    margin: calc(30px + 5vh) auto 0 auto !important;
+    margin-top: calc(70px + 10vh) !important;
     width: 500px;
     margin: 0 auto;
     border-radius: 5px;
-    padding: 30px 50px !important;
+}
+
+.loginForm {
     text-align: center;
-    font-size: 14px;
+    background-color: white;
+    font-size: 16px;
+    padding: 30px 50px !important;
     color: #454545;
-    box-shadow: 0 0 8px 8px #cfcfcf;
+    margin-bottom: 25px;
+    box-shadow: 0 0 1px 1px #ddd;
 
     > *:not(:first-child) {
         margin-top: 15px;
@@ -38,6 +42,45 @@
         font-size: 15px;
         border-radius: 20px;
     }
+}
+
+.altLogin {
+    font-size: 14px;
+    margin-top: 20px;
+    padding: 15px 0;
+}
+
+.altBtn {
+    width: 500px !important;
+    display: block;
+    color: black;
+    border: none;
+    width: 125px;
+    height: 40px;
+    font-size: 16px;
+    margin-top: 10px;
+    padding: 0;
+    color: white;
+    font-weight: 600;
+}
+
+.altBtn:focus {
+    outline: none;
+}
+
+.facebookBtn {
+    background-color: #3b5998;
+}
+
+.googleBtn {
+    background-color: #db4a39;
+}
+
+.iconLogin {
+    float: left;
+    border-right: 1px solid #bbb;
+    padding: 0 10px;
+    margin: auto 0;
 }
 
 .borderInputLeft {

@@ -1,106 +1,101 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 import styles from "./styles.module.scss";
 import { Table, Button } from "reactstrap";
 import { FaShoppingCart } from "react-icons/fa";
 import { NUMBER_OF_DELIVERY_DAYS, DELIVERY_FEE } from "../../../../../../constants";
-import { getCookie } from "../../../../../../services/helper/cookie";
-import { getCart } from "../../../../../../services/helper/cart";
+import { withRouter } from "react-router-dom";
+import orderApi from "../../../../../../services/api/orderApi";
+import store from "../../../../../../services/redux/store";
+import { buildErrorModal } from "../../../../../../services/redux/actions";
 
-class SummaryBlock extends Component {
-    createOrder = async () => {
-        this.props.toggleSubmit();
-        const addressId = parseInt(document.getElementById("address").value);
-        const cart = getCart();
-        const response = await fetch("/api/orders", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${getCookie("access_token")}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                addressId: addressId,
-                cartJSON: JSON.stringify(cart),
-            }),
-        });
+const SummaryBlock = (props) => {
+    const { toggleSubmit, cart, productsPrice, history } = props;
 
-        if (response.ok) {
+    const addBusinessDaysToDate = (date, days) => {
+        const day = date.getDay();
+        date = new Date(date.getTime());
+        date.setDate(
+            date.getDate() +
+                days +
+                (day === 6 ? 2 : +!day) +
+                Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2
+        );
+        return date;
+    };
+
+    const createOrder = async () => {
+        try {
+            toggleSubmit();
+            const addressId = parseInt(document.getElementById("address").value);
+            const data = { addressId: addressId, cartJSON: JSON.stringify(cart) };
+            const response = await orderApi.postOrder(data);
             localStorage.setItem("cart", null);
-            const orderId = await response.text();
-            window.location.href = "/user/order/" + orderId;
+            const orderId = response.data;
+            const url = `/user/order/${orderId}`;
+            history.push(url);
+        } catch (err) {
+            toggleSubmit();
+            store.dispatch(buildErrorModal());
         }
     };
 
-    render() {
-        const { productsPrice } = this.props;
-        return (
-            <Fragment>
-                <header className={styles.caution}>
-                    Kiểm tra kĩ các thông tin trước khi ĐẶT MUA
-                </header>
-                <Table className={styles.table} borderless>
-                    <tbody>
-                        <tr>
-                            <th className={styles.headerCol}>Dự kiến giao hàng</th>
-                            <td>
-                                {addBusinessDaysToDate(
-                                    new Date(),
-                                    NUMBER_OF_DELIVERY_DAYS
-                                ).toLocaleDateString("vi-VN")}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Tạm tính</th>
-                            <td>
-                                {productsPrice.toLocaleString()}
-                                <sup>đ</sup>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Phí vận chuyển</th>
-                            <td>
-                                {DELIVERY_FEE.toLocaleString()}
-                                <sup>đ</sup>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Thành tiền</th>
-                            <td>
-                                <b>
-                                    {(productsPrice + DELIVERY_FEE).toLocaleString()}
-                                    <sup>đ</sup>
-                                </b>
-                            </td>
-                        </tr>
+    return (
+        <Fragment>
+            <header className={styles.caution}>Kiểm tra kĩ các thông tin trước khi ĐẶT MUA</header>
+            <Table className={styles.table} borderless>
+                <tbody>
+                    <tr>
+                        <th className={styles.headerCol}>Dự kiến giao hàng</th>
+                        <td>
+                            {addBusinessDaysToDate(
+                                new Date(),
+                                NUMBER_OF_DELIVERY_DAYS
+                            ).toLocaleDateString("vi-VN")}
+                        </td>
+                    </tr>
 
-                        <tr>
-                            <td colSpan={2}>
-                                <Button
-                                    color="success"
-                                    className={styles.btnOrder}
-                                    onClick={this.createOrder}
-                                >
-                                    <FaShoppingCart />
-                                    &nbsp;&nbsp;ĐẶT MUA
-                                </Button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </Fragment>
-        );
-    }
-}
+                    <tr>
+                        <th>Tạm tính</th>
+                        <td>
+                            {productsPrice.toLocaleString()}
+                            <sup>đ</sup>
+                        </td>
+                    </tr>
 
-const addBusinessDaysToDate = (date, days) => {
-    const day = date.getDay();
-    date = new Date(date.getTime());
-    date.setDate(
-        date.getDate() +
-            days +
-            (day === 6 ? 2 : +!day) +
-            Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2
+                    <tr>
+                        <th>Phí vận chuyển</th>
+                        <td>
+                            {DELIVERY_FEE.toLocaleString()}
+                            <sup>đ</sup>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Thành tiền</th>
+                        <td>
+                            <b>
+                                {(productsPrice + DELIVERY_FEE).toLocaleString()}
+                                <sup>đ</sup>
+                            </b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colSpan={2}>
+                            <Button
+                                color="success"
+                                className={styles.btnOrder}
+                                onClick={createOrder}
+                            >
+                                <FaShoppingCart />
+                                &nbsp;&nbsp;ĐẶT MUA
+                            </Button>
+                        </td>
+                    </tr>
+                </tbody>
+            </Table>
+        </Fragment>
     );
-    return date;
 };
 
-export default SummaryBlock;
+export default withRouter(SummaryBlock);
