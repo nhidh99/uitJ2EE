@@ -124,9 +124,6 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     private void clearUserCart(Connection conn, Integer userId) throws SQLException {
-//        User user = em.find(User.class, userId);
-//        user.setCart("{}");
-//        em.merge(user);
         String sql = "UPDATE `user` SET cart = '{}' WHERE id = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, userId);
@@ -163,7 +160,7 @@ public class OrderDAOImpl implements OrderDAO {
         String sql = "SELECT id, transport_fee, total_price, status, order_date, delivery_date, " +
                 "receiver_name, receiver_phone, address_num, street, ward, district, city " +
                 "FROM `Order` o " +
-                "WHERE o.user_id = ? LIMIT ?,? ";
+                "WHERE o.user_id = ? ORDER BY o.id DESC LIMIT ?,? ";
 
         try (Connection conn = ds.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, userId);
@@ -213,7 +210,7 @@ public class OrderDAOImpl implements OrderDAO {
         String sql = "SELECT id, transport_fee, total_price, status, order_date, delivery_date, " +
                 "receiver_name, receiver_phone, address_num, street, ward, district, city FROM `Order` o " +
                 "WHERE (o.id is NULL OR o.id = '' OR o.id LIKE ?)" +
-                "AND (o.status is NULL OR o.status = '' OR o.status LIKE ?) LIMIT ?,?";
+                "AND (o.status is NULL OR o.status = '' OR o.status LIKE ?) ORDER BY o.id DESC LIMIT ?,?";
         try (Connection conn = ds.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setString(1, "%" + id + "%");
             statement.setString(2, "%" + status + "%");

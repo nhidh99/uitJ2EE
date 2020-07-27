@@ -27,7 +27,7 @@ public class UserDAOImpl implements UserDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    @Resource(name = "jdbc/laptop-store")
+    @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     private static final int WORKLOAD = 12;

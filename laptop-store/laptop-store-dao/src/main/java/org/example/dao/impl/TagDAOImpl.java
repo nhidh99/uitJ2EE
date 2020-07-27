@@ -27,7 +27,7 @@ public class TagDAOImpl implements TagDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    @Resource(name = "jdbc/laptop-store")
+    @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override

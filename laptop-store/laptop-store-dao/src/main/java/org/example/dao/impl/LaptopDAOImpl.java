@@ -35,7 +35,7 @@ public class LaptopDAOImpl implements LaptopDAO {
     @EJB(mappedName = "TagDAOImpl")
     private TagDAO tagDAO;
 
-    @Resource(name = "jdbc/laptop-store")
+    @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override

@@ -28,7 +28,7 @@ public class AddressDAOImpl implements AddressDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    @Resource(name = "jdbc/laptop-store")
+    @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override

@@ -27,7 +27,7 @@ public class PromotionDAOImpl implements PromotionDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    @Resource(name = "jdbc/laptop-store")
+    @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override
