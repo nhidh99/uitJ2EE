@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 @Data
@@ -42,4 +44,11 @@ public class RatingReply {
     @JsonProperty("reply_date")
     private LocalDate replyDate;
 
+    public static RatingReply fromResultSet(ResultSet rs) throws SQLException {
+        return RatingReply.builder()
+                .id(rs.getInt("id"))
+                .reply(rs.getString("reply"))
+                .replyDate(rs.getDate("reply_date").toLocalDate())
+                .build();
+    }
 }

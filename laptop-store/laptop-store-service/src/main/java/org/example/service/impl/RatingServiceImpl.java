@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -90,6 +91,7 @@ public class RatingServiceImpl implements RatingService {
             String ratingsJSON = om.writeValueAsString(ratings);
             return Response.ok(ratingsJSON).header("X-Total-Count", ratingCount).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.serverError().build();
         }
     }
@@ -174,7 +176,7 @@ public class RatingServiceImpl implements RatingService {
 
     private RatingReply buildReplyFromRequestBody(Integer ratingId,
                                                   ReplyInput replyInput,
-                                                  SecurityContext securityContext) {
+                                                  SecurityContext securityContext) throws SQLException {
         Principal principal = securityContext.getUserPrincipal();
         Integer userId = Integer.parseInt(principal.getName());
         User user = userDAO.findById(userId).orElseThrow(BadRequestException::new);

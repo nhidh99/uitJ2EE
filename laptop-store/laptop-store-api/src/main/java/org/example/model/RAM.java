@@ -6,9 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.type.CPUType;
 import org.example.type.RAMType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Data
 @Entity
@@ -43,4 +46,14 @@ public class RAM {
 //    @OneToOne(mappedBy = "ram", fetch = FetchType.LAZY)
 //    @JsonIgnore
 //    private Laptop laptop;
+
+    public static RAM fromResultSet(ResultSet rs) throws SQLException {
+        return RAM.builder()
+                .id(rs.getInt("id"))
+                .size(rs.getInt("size"))
+                .type(RAMType.valueOf(rs.getString("type")))
+                .bus(rs.getInt("bus"))
+                .extraSlot(rs.getInt("extra_slot"))
+                .build();
+    }
 }

@@ -6,9 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.type.RAMType;
 import org.example.type.ResolutionType;
 
 import javax.persistence.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Data
 @Entity
@@ -39,4 +42,14 @@ public class Monitor {
     @Column(name = "resolution_height")
     @JsonProperty("resolution_height")
     private Integer resolutionHeight;
+
+    public static Monitor fromResultSet(ResultSet rs) throws SQLException {
+        return Monitor.builder()
+                .id(rs.getInt("id"))
+                .size(rs.getFloat("size"))
+                .resolutionType(ResolutionType.valueOf(rs.getString("resolution_type")))
+                .resolutionWidth(rs.getInt("resolution_width"))
+                .resolutionHeight(rs.getInt("resolution_height"))
+                .build();
+    }
 }
