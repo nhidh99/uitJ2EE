@@ -2,14 +2,11 @@ package org.example.dao.impl;
 
 import org.example.dao.api.AddressDAO;
 import org.example.model.Address;
-import org.example.model.Tag;
 import org.example.model.User;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
@@ -25,14 +22,10 @@ import java.util.Optional;
 @LocalBean
 public class AddressDAOImpl implements AddressDAO {
 
-    @PersistenceContext(name = "laptop-store")
-    private EntityManager em;
-
     @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<Address> findById(Integer id) {
         String query = String.format("SELECT * FROM address WHERE id = %s", id);
         Address address = null;
@@ -57,7 +50,6 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Address> findByUserId(Integer userId) {
         String query = String.format("SELECT a.* FROM address a INNER JOIN user u " +
                 "ON a.user_id = u.id WHERE u.id = %s", userId);
@@ -76,7 +68,6 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void save(Address address) {
         if (address.getId() == null) {
             insert(address);
@@ -86,20 +77,23 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void delete(Integer id) {
-        Address address = em.find(Address.class, id);
-        if (address == null) throw new BadRequestException();
+        String selectAddress = String.format("SELECT id FROM address where id = %s", id);
         String query = String.format("UPDATE address SET record_status = 0 WHERE id = %s", id);
         try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
-            statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(selectAddress);
+            if(rs.next()) {
+                statement.executeQuery(query);
+            }
+            else {
+                throw new BadRequestException();
+            }
         }
         catch (SQLException sqlException) {
 
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
     private void insert(Address address) {
         String query = String.format(
                 "INSERT INTO address VALUES(%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s)",
@@ -113,8 +107,7 @@ public class AddressDAOImpl implements AddressDAO {
             int a=1;
         }
     }
-
-    @Transactional(Transactional.TxType.REQUIRED)
+    
     private void update(Address address) {
 
         String query = String.format(

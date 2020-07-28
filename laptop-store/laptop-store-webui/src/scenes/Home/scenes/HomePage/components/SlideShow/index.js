@@ -16,7 +16,7 @@ class SlideShow extends Component {
                 {
                     id: 2,
                     src:
-                        "https://salt.tikicdn.com/cache/w885/ts/banner/ad/51/c6/aa1a0e23b0525755ade46fe9d72723c3.jpg",
+                        "https://salt.tikicdn.com/cache/w885/ts/banner/9e/b7/d7/0610d23317c63da00ced7d8a1d88a005.jpg",
                     title: "Picture 2",
                 },
                 {

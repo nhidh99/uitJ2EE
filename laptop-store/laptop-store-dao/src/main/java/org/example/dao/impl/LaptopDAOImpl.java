@@ -1,14 +1,10 @@
 package org.example.dao.impl;
 
 import org.example.dao.api.LaptopDAO;
-import org.example.dao.api.TagDAO;
 import org.example.filter.SearchFilter;
 import org.example.model.*;
-import org.example.type.BrandType;
-import org.example.type.CPUType;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -32,14 +28,10 @@ public class LaptopDAOImpl implements LaptopDAO {
     @PersistenceContext(name = "laptop-store")
     private EntityManager em;
 
-    @EJB(mappedName = "TagDAOImpl")
-    private TagDAO tagDAO;
-
     @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void save(Laptop laptop) {
         if (laptop.getId() == null) {
             insert(laptop);
@@ -120,13 +112,68 @@ public class LaptopDAOImpl implements LaptopDAO {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
+    private void updateCPU(Laptop laptop) {
+        String query = String.format("UPDATE cpu SET type = '%s',detail = '%s'" +
+                        ", speed = '%s', max_speed = '%s' WHERE id = %s"
+                , laptop.getCpu().getType(), laptop.getCpu().getDetail()
+                , laptop.getCpu().getSpeed(), laptop.getCpu().getMaxSpeed(), laptop.getCpu().getId());
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            return;
+        }
+        catch (SQLException sqlException) {
+            return;
+        }
+    }
+
+    private void updateRAM(Laptop laptop) {
+        String query = String.format("UPDATE ram SET size = '%s', type = '%s'" +
+                        ", bus = '%s', extra_slot = '%s' WHERE id = %s"
+                , laptop.getRam().getSize(), laptop.getRam().getType()
+                , laptop.getRam().getBus(), laptop.getRam().getExtraSlot(), laptop.getRam().getId());
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            return;
+        }
+        catch (SQLException sqlException) {
+            return;
+        }
+    }
+
+    private void updateMonitor(Laptop laptop) {
+        String query = String.format("UPDATE monitor SET size = '%s', type = '%s'" +
+                        ", resolution_width = '%s', resolution_height = '%s' WHERE id = %s"
+                , laptop.getMonitor().getSize(), laptop.getMonitor().getResolutionType()
+                , laptop.getMonitor().getResolutionWidth(), laptop.getMonitor().getResolutionHeight(), laptop.getMonitor().getId());
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            return;
+        }
+        catch (SQLException sqlException) {
+            return;
+        }
+    }
+
+    private void updateHardDrive(Laptop laptop) {
+        String query = String.format("UPDATE hard_drive SET type = '%s', size = '%s'" +
+                        ", detail = '%s' WHERE id = %s"
+                , laptop.getHardDrive().getType()
+                , laptop.getHardDrive().getSize(), laptop.getHardDrive().getDetail(), laptop.getHardDrive().getId());
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            statement.execute(query);
+            return;
+        }
+        catch (SQLException sqlException) {
+            return;
+        }
+    }
+
+
     private void insert(Laptop laptop) {
         laptop.setAvgRating(5.0f);
         em.merge(laptop);
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
     private void update(Laptop laptop) {
         Laptop oldLaptop = findById(laptop.getId()).orElseThrow(BadRequestException::new);
         if (laptop.getImage() == null) {
@@ -134,11 +181,83 @@ public class LaptopDAOImpl implements LaptopDAO {
             laptop.setThumbnail(oldLaptop.getThumbnail());
         }
         laptop.setAvgRating(oldLaptop.getAvgRating());
-        em.merge(laptop);
+        String query = "";
+        boolean imageChanged = false;
+        boolean thumbnailChange = false;
+        List<Tag> tags = laptop.getTags();
+        List<Promotion> promotions = laptop.getPromotions();
+        if(laptop.getImage() != null) {
+            if(laptop.getThumbnail()!=null) {
+                query = String.format(
+                "UPDATE laptop SET name = '%s', brand = '%s', unit_price = '%s', discount_price = '%s', " +
+                        "quantity = '%s', avg_rating = '%s', alt = '%s', graphics_card = '%s', " +
+                        "ports = '%s', os = '%s', design = '%s', thickness = '%s', weight = '%s', " +
+                        "image = ?, thumbnail = ? " +
+                        "WHERE id = '%s'", laptop.getName(), laptop.getBrand(),
+                    laptop.getUnitPrice(), laptop.getDiscountPrice(), laptop.getQuantity(),
+                        laptop.getAvgRating(), laptop.getAlt(), laptop.getGraphisCard(),
+                        laptop.getPorts(), laptop.getOs(), laptop.getDesign(), laptop.getThickness(),
+                        laptop.getWeight(), laptop.getId());
+                thumbnailChange = true;
+            }
+            else {
+                query = String.format(
+                "UPDATE laptop SET name = '%s', brand = '%s', unit_price = '%s', discount_price = '%s', " +
+                        "quantity = '%s', avg_rating = '%s', alt = '%s', graphics_card = '%s', " +
+                        "ports = '%s', os = '%s', design = '%s', thickness = '%s', weight = '%s', " +
+                        "image = ? " +
+                        "WHERE id = '%s'", laptop.getName(), laptop.getBrand(),
+                    laptop.getUnitPrice(), laptop.getDiscountPrice(), laptop.getQuantity(),
+                        laptop.getAvgRating(), laptop.getAlt(), laptop.getGraphisCard(),
+                        laptop.getPorts(), laptop.getOs(), laptop.getDesign(), laptop.getThickness(),
+                        laptop.getWeight(), laptop.getId());
+            }
+            imageChanged = true;
+        }
+        else  {
+            query = String.format(
+                    "UPDATE laptop SET name = '%s', brand = '%s', unit_price = '%s', discount_price = '%s', " +
+                            "quantity = '%s', avg_rating = '%s', alt = '%s', graphics_card = '%s', " +
+                            "ports = '%s', os = '%s', design = '%s', thickness = '%s', weight = '%s' " +
+                            "WHERE id = '%s'", laptop.getName(), laptop.getBrand(),
+                    laptop.getUnitPrice(), laptop.getDiscountPrice(), laptop.getQuantity(),
+                    laptop.getAvgRating(), laptop.getAlt(), laptop.getGraphisCard(),
+                    laptop.getPorts(), laptop.getOs(), laptop.getDesign(), laptop.getThickness(),
+                    laptop.getWeight(), laptop.getId());
+        }
+        updateCPU(laptop);
+        updateRAM(laptop);
+        updateHardDrive(laptop);
+        updateMonitor(laptop);
+        try (Connection conn = ds.getConnection(); PreparedStatement pstm = conn.prepareStatement(query); Statement statement = conn.createStatement()) {
+            if(imageChanged) {
+                pstm.setBytes(1, laptop.getImage());
+                if(thumbnailChange) {
+                    pstm.setBytes(2, laptop.getThumbnail());
+                }
+            }
+            pstm.execute();
+            query = String.format("DELETE laptop_tag WHERE laptop_id = %s", laptop.getId());
+            statement.execute(query);
+            query = String.format("DELETE laptop_promotion WHERE laptop_id = %s", laptop.getId());
+            for(Tag tag: tags) {
+                query = String.format("INSERT INTO laptop_tag VALUES(%s, %s)"
+                        , laptop.getId(), tag.getId());
+                statement.execute(query);
+            }
+            for (Promotion p: promotions) {
+                query = String.format("INSERT INTO laptop_ptomotion VALUES(%s, %s)"
+                        , laptop.getId(), p.getId());
+                statement.execute(query);
+            }
+            return;
+        }
+        catch (SQLException sqlException) {
+            return;
+        }
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByPage(Integer page) {
         String query = String.format("SELECT * FROM laptop l " +
                         "WHERE l.record_status = true ORDER BY l.id DESC LIMIT %s, %s"
@@ -164,13 +283,17 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void delete(Integer id) {
-        Laptop laptop = em.find(Laptop.class, id);
-        if (laptop == null) throw new BadRequestException();
+        String selectPromotion = String.format("SELECT id FROM promotion where id = %s", id);
         String query = String.format("UPDATE laptop l SET record_status = 0 WHERE id = %s", id);
         try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
-            statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(selectPromotion);
+            if(rs.next()) {
+                statement.executeQuery(query);
+            }
+            else {
+                throw new BadRequestException();
+            }
         }
         catch (SQLException sqlException) {
 
@@ -178,7 +301,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<Laptop> findById(Integer id) {
         String query = String.format("SELECT * FROM laptop l " +
                 "WHERE l.id = %s ", id);
@@ -200,7 +322,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByCondition(SearchFilter filter) {
         String query = String.format("SELECT * FROM laptop l WHERE l.record_status = true LIMIT %s, %s"
         , ELEMENT_PER_BLOCK * (filter.getPage() - 1), ELEMENT_PER_BLOCK);
@@ -276,7 +397,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByFilter(String filter, Integer page) {
         String query = String.format("SELECT * FROM laptop l " +
                         "WHERE l.id = '%s' OR l.name LIKE CONCAT('%','%s','%') " +
@@ -304,7 +424,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Long findTotalLaptops(String filter) {
         String query = "";
         if (filter == null) {
@@ -327,7 +446,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByType(String type, Integer page) {
         String query = "";
         switch (type) {
@@ -374,7 +492,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByIds(List<Integer> ids) {
         if (ids.isEmpty()) return new ArrayList<>();
         String idsFormatted = "";
@@ -410,7 +527,6 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findByName(String name, Integer page) {
         String query = String.format("SELECT * FROM laptop l WHERE l.record_status = true " +
                 "AND l.name LIKE CONCAT('%','%s','%') LIMIT %s, %s"
@@ -435,23 +551,40 @@ public class LaptopDAOImpl implements LaptopDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public byte[] findImageById(Integer id) {
-        Laptop laptop = em.find(Laptop.class, id);
-        if (laptop == null) return null;
-        return laptop.getImage();
+        String query = String.format("SELECT image FROM laptop l WHERE l.id = %s ", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(query);
+            byte []image = null;
+            while (rs.next()) {
+                Blob blob = rs.getBlob("image");
+                int blobLength = (int) blob.length();
+                image = blob.getBytes(1, blobLength);
+            }
+            return  image;
+        } catch (SQLException sqlException) {
+            return null;
+        }
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public byte[] findThumbnailById(Integer id) {
-        Laptop laptop = em.find(Laptop.class, id);
-        if (laptop == null) return null;
-        return laptop.getThumbnail();
+        String query = String.format("SELECT thumbnail FROM laptop l WHERE l.id = %s ", id);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(query);
+            byte []image = null;
+            while (rs.next()) {
+                Blob blob = rs.getBlob("thumbnail");
+                int blobLength = (int) blob.length();
+                image = blob.getBytes(1, blobLength);
+            }
+            return  image;
+        } catch (SQLException sqlException) {
+            return null;
+        }
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Laptop> findSuggestionsByLaptop(Integer laptopId) {
         String query = "CALL laptop_suggest(?, ?)";
         return em.createNativeQuery(query, Laptop.class)

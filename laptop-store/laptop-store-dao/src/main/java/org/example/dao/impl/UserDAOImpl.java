@@ -1,31 +1,20 @@
 package org.example.dao.impl;
 
 import org.example.dao.api.UserDAO;
-import org.example.model.Rating;
-import org.example.model.Tag;
 import org.example.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import javax.swing.text.html.Option;
-import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import java.sql.*;
-import java.util.List;
 import java.util.Optional;
 
 @Stateless
 @LocalBean
 public class UserDAOImpl implements UserDAO {
-
-    @PersistenceContext(name = "laptop-store")
-    private EntityManager em;
 
     @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
@@ -38,7 +27,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public boolean login(String username, String plainPassword) {
         Optional<User> optUser = findByUsername(username);
         if (optUser.isPresent()) {
@@ -49,7 +37,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void register(User user) {
         String hashedPassWord = hashPassword(user.getPassword());
         String query = String.format("INSERT INTO user VALUES(%s, '%s', '%s', '%s', '%s'" +
@@ -67,7 +54,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void update(User user) {
         String  query = String.format("UPDATE user set name = '%s', phone = '%s', email = '%s'" +
                         ", gender = '%s', birthday = ? where id = '%s'",
@@ -84,7 +70,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<User> findByUsername(String username) {
         String query = String.format("SELECT * FROM user u " +
                 "WHERE u.username = '%s' LIMIT 0,1", username);
@@ -101,7 +86,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<User> findById(Integer id) {
         String query = String.format("SELECT * FROM user u WHERE u.id = %s", id);
         User user = null;
@@ -117,7 +101,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public boolean checkRegister(String username, String email) {
         String query = String.format("SELECT * FROM user u WHERE u.email = '%s' OR u.username = '%s'",
                 email, username);
@@ -133,7 +116,6 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public boolean checkEmailExisted(String email) {
         String query = String.format("SELECT * FROM user u WHERE u.email = '%s'", email);
         boolean existed = false;
@@ -150,23 +132,38 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void saveCart(Integer userId, String cartJSON) {
-        User user = em.find(User.class, userId);
-        if (user == null) throw new NoResultException();
+        String selectUser = String.format("SELECT id FROM user where id = %s", userId);
         String query = String.format("UPDATE user u SET cart = '%s' WHERE u.id = %s", cartJSON, userId);
         try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
-            statement.execute(query);
+            ResultSet rs = statement.executeQuery(selectUser);
+            if(rs.next()) {
+                statement.executeQuery(query);
+            }
+            else {
+                throw new BadRequestException();
+            }
         } catch (SQLException sqlException) {
             return;
         }
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public boolean updatePassword(Integer userId, String oldPassword, String newPassword) {
-        User user = em.find(User.class, userId);
-        boolean isValidCredential = user != null && BCrypt.checkpw(oldPassword, user.getPassword());
+        boolean isValidCredential = false;
+        String selectUser = String.format("SELECT * FROM user where id = %s", userId);
+        try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
+            ResultSet rs = statement.executeQuery(selectUser);
+            if(rs.next()) {
+                User user = User.fromResultSet(rs);
+                if(BCrypt.checkpw(oldPassword, user.getPassword())) {
+                    isValidCredential = true;
+                }
+            }
+        }
+        catch (SQLException sqlException) {
+
+        }
         if (isValidCredential) {
             String newHashedPassword = hashPassword(newPassword);
             String query = String.format("UPDATE user u SET password = '%s' WHERE u.id = %s", newHashedPassword, userId);

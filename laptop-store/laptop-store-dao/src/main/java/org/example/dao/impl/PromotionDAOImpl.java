@@ -1,9 +1,7 @@
 package org.example.dao.impl;
 
 import org.example.dao.api.PromotionDAO;
-import org.example.model.Laptop;
 import org.example.model.Promotion;
-import org.example.model.Tag;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -14,7 +12,6 @@ import javax.sql.DataSource;
 import javax.transaction.Transactional;
 import javax.ws.rs.BadRequestException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -24,14 +21,10 @@ import java.util.Optional;
 public class PromotionDAOImpl implements PromotionDAO {
     private static final Integer ELEMENT_PER_BLOCK = 5;
 
-    @PersistenceContext(name = "laptop-store")
-    private EntityManager em;
-
     @Resource(name = "jdbc/laptop-store-jdbc")
     private DataSource ds;
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findAll() {
         String query = "SELECT * " +
                 "FROM promotion p " +
@@ -53,7 +46,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByPage(Integer page){
         String query = String.format("SELECT * FROM promotion p " +
                         "WHERE p.record_status = true ORDER BY p.id DESC LIMIT %s, %s"
@@ -74,7 +66,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByIds(List<Integer> ids){
         if (ids.isEmpty()) return new LinkedList<>();
         String idsFormatted = "";
@@ -105,7 +96,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByFilter(String filter, Integer page) {
         String query = String.format("SELECT * FROM promotion p " +
                 "WHERE p.id = %s OR p.name LIKE CONCAT('%',%s,'%') LIMIT %s, %s" +
@@ -127,7 +117,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Long findTotalPromotions(String filter) {
         String query = "";
         if (filter == null) {
@@ -152,7 +141,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void save(Promotion promotion) {
         if (promotion.getId() == null) {
             insert(promotion);
@@ -161,7 +149,6 @@ public class PromotionDAOImpl implements PromotionDAO {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
     private void insert(Promotion promotion) {
         String query = String.format("INSERT INTO promotion VALUES(0, '%s', '%s', '%s', '%s', ?, '1')",
                 promotion.getName(), promotion.getPrice(), promotion.getQuantity()
@@ -177,7 +164,6 @@ public class PromotionDAOImpl implements PromotionDAO {
         }
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
     private void update(Promotion promotion) {
         String query = "";
         boolean imageChanged = false;
@@ -206,13 +192,17 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void delete(Integer id) {
-        Promotion promotion = em.find(Promotion.class, id);
-        if (promotion == null) throw new BadRequestException();
+        String selectPromotion = String.format("SELECT id FROM promotion where id = %s", id);
         String query = String.format("UPDATE promotion p SET record_status = 0 WHERE id = %s", id);
         try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
-            statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(selectPromotion);
+            if(rs.next()) {
+                statement.executeQuery(query);
+            }
+            else {
+                throw new BadRequestException();
+            }
         }
         catch (SQLException sqlException) {
 
@@ -220,7 +210,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public Optional<Promotion> findById(Integer id) {
         String query = String.format("SELECT * FROM promotion p " +
                 "WHERE p.id = %s ", id);
@@ -237,7 +226,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public List<Promotion> findByLaptopId(Integer laptopId) {
         String query = String.format("select p.* from promotion p " +
                 "inner join laptop_promotion lp inner join laptop l " +
@@ -257,7 +245,6 @@ public class PromotionDAOImpl implements PromotionDAO {
     }
 
     @Override
-    @Transactional(Transactional.TxType.SUPPORTS)
     public byte[] findImageById(Integer id) {
         String query = String.format("SELECT image FROM promotion p WHERE p.id = %s ", id);
         try (Connection conn = ds.getConnection(); Statement statement = conn.createStatement()) {
